@@ -47,6 +47,6 @@ export async function signProfilePhotos(db: NonNullable<Awaited<ReturnType<typeo
   const paths = [...new Set(profiles.map((p) => p.headshot_path).filter((p): p is string => Boolean(p)))];
   if (!paths.length) return profiles;
   const { data } = await db.storage.from("event-headshots").createSignedUrls(paths, 120);
-  const urls = new Map((data ?? []).filter((d) => d.signedUrl && !d.error).map((d) => [d.path, d.signedUrl]));
-  return profiles.map((p) => ({ ...p, avatar_url: p.headshot_path ? urls.get(p.headshot_path) : undefined }));
+  const urls = new Map((data ?? []).filter((d) => d.signedUrl && !d.error).map((d) => [d.path, d.signedUrl ?? undefined]));
+  return profiles.map((p): Profile => ({ ...p, avatar_url: p.headshot_path ? urls.get(p.headshot_path) ?? undefined : undefined }));
 }

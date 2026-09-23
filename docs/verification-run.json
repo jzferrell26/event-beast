@@ -1,48 +1,21 @@
 {
-  "timestamp": "2026-09-23T02:30:43.191Z",
+  "timestamp": "2026-09-22T21:40:31.6631123-05:00",
+  "branch": "feat/event-beast-launch",
+  "baseCommit": "44eed531861b53326f91a81276e9ebbf06642926",
+  "pullRequest": "https://github.com/jzferrell26/event-beast/pull/1",
   "results": [
-    {
-      "command": "git remote get-url origin",
-      "exitCode": 0,
-      "error": null
-    },
-    {
-      "command": "git branch --show-current",
-      "exitCode": 0,
-      "error": null
-    },
-    {
-      "command": "npm run icons",
-      "exitCode": 0,
-      "error": null
-    },
-    {
-      "command": "C:\\Program Files\\nodejs\\node.exe scripts/generate-seed.mjs",
-      "exitCode": 0,
-      "error": null
-    },
-    {
-      "command": "npm run typecheck",
-      "exitCode": 2,
-      "error": null
-    },
-    {
-      "command": "npm run lint",
-      "exitCode": 1,
-      "error": null
-    },
-    {
-      "command": "npm test",
-      "exitCode": 0,
-      "error": null
-    },
-    {
-      "command": "npm run build",
-      "exitCode": 1,
-      "error": null
-    }
+    { "command": "npm run typecheck", "exitCode": 0 },
+    { "command": "npm run lint", "exitCode": 0 },
+    { "command": "npm test", "exitCode": 0, "detail": "35 tests passed" },
+    { "command": "npm run build", "exitCode": 0, "detail": "Next.js 16.3.6 production build completed" },
+    { "command": "playwright test", "exitCode": 0, "detail": "7 passed, 1 intentional desktop skip" },
+    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People and desktop Organizer Overview screenshots captured and reviewed" }
   ],
-  "automatedChecksPassed": false,
+  "automatedChecksPassed": true,
+  "browserQualificationPassed": true,
+  "productionBuildVerified": true,
+  "pushVerified": true,
+  "deploymentVerified": false,
   "liveInfrastructureQualified": false,
-  "deploymentVerified": false
+  "remainingExternalGate": "Dedicated Supabase project is not created because its quoted recurring cost requires owner approval."
 }

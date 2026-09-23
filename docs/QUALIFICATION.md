@@ -2,15 +2,17 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
-## Confirmed test result from this implementation session
+## Confirmed local qualification result
 
-The initial 18 PostgreSQL authorization tests passed using PGlite with real PostgreSQL roles, RLS and RPC execution. These covered eligibility, verified-email claims, private profiles, conversation ownership, durable message idempotency, receipts, blocks, reports, organizer access, agenda operations, sponsor-placement constraints, imports and private storage paths.
+On September 22, 2026, the final local qualification run completed with typecheck passing, lint passing, 35 automated tests passing, the Next.js production build passing, and the Playwright browser suite passing seven desktop/mobile/offline checks with one intentional desktop skip for the mobile-only navigation assertion.
 
-The managed Auth, Storage and Realtime interfaces are represented by small database shims in this test suite. That result does not establish successful hosted email delivery, WebSocket transport, browser reconnection or storage upload operation.
+The PostgreSQL tests use PGlite with real PostgreSQL roles, RLS and RPC execution. They cover eligibility, verified-email claims, private profiles, conversation ownership, durable message idempotency, receipts, blocks, reports, organizer access, agenda operations, sponsor-placement constraints, imports and private storage paths. Domain tests also cover CSV parsing, event-timezone conversion, redirect boundaries, reconnect deduplication and constrained organizer schemas.
 
-Additional read-model/integrity migrations and domain tests were added later. The tool responses stopped exposing final command output during the session. Their current results, the final production build, browser checks, commit and deployment must be read from actual command/deployment output before being marked verified.
+The browser suite verifies the main attendee experience, organizer demo controls, mobile bottom navigation and the public-only offline cache contract in a production Next.js build. Review screenshots were captured for mobile Home, Agenda, People and desktop Organizer Overview and visually inspected during this session.
 
-## Automated checks to execute
+The managed Supabase Auth, Storage and Realtime interfaces are represented by small database shims in the local PostgreSQL suite. Local qualification therefore does not establish successful hosted email delivery, WebSocket transport, production storage upload behavior or the required two-real-account messaging check.
+
+## Automated checks for repeat qualification
 
 Run:
 
@@ -25,6 +27,8 @@ npm run build
 ```
 
 Review every failing command. Do not suppress auth/RLS test failures or switch to a permissive policy to make a demonstration work. Run the production server on port 3100 to qualify service-worker behavior; development does not register the worker automatically.
+
+Then run the Playwright browser suite and the screenshot review helper.
 
 ## Browser checks
 
@@ -48,4 +52,4 @@ Exercise concurrent sign-in and first-load traffic at a representative level for
 
 ## Launch prerequisites still requiring external configuration
 
-Dedicated Cuantico Supabase project cost approval and creation; migration application; organizer bootstrap; production email sender and callback allowlist; confirmed event content; real attendee import; dedicated Vercel project and production domain/environment configuration; two-account live browser checks; production build and mobile/offline checks; deployment verification.
+Dedicated Cuantico Supabase project cost approval and creation; migration application; organizer bootstrap; production email sender and callback allowlist; confirmed event content; real attendee import; dedicated Vercel project and production domain/environment configuration; two-account live browser checks; hosted Auth/Realtime/Storage verification; deployment verification.

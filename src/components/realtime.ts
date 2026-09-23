@@ -28,7 +28,7 @@ export function useInboxSignal(onChange: () => void) {
       if (disposed) return;
       channel = db.channel(`event:${guide.event.id}:attendee:${me.attendeeId}`, { config: { private: true } })
         .on("broadcast", { event: "changed" }, () => { if (!disposed && document.visibilityState === "visible") callback.current(); })
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (disposed) return;
           setConnected(status === "SUBSCRIBED");
           if (status === "SUBSCRIBED") callback.current();

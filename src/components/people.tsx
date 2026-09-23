@@ -42,7 +42,14 @@ function PeopleResults({ params, onlySaved }: { params: string; onlySaved: boole
     } catch (error) { if (active.current) setError(errorMessage(error)); }
     finally { loading.current = false; if (active.current) setBusy(false); }
   };
-  useEffect(() => { active.current = true; void load(); return () => { active.current = false; }; }, []); // New search mounts a fresh result set.
+  useEffect(() => {
+    active.current = true;
+    void load();
+    return () => { active.current = false; };
+    // params is captured by this keyed child instance; the parent remounts the
+    // component whenever the search/filter query changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const visible = guide.mode === "demo" && onlySaved ? people.filter((p) => saved.attendees.includes(p.attendee_id)) : people;
   return <>{error && <ErrorState message={error} retry={() => void load(people.length)} />}{busy && !people.length ? <LoadingCards count={4} /> : !visible.length && !error ? <EmptyState title={onlySaved ? "Keep your next connection close." : "No matches just yet."} icon={<Users size={28} />}>{onlySaved ? "Bookmark an attendee to find them easily later." : "Try a different name, company or networking interest."}</EmptyState> : <><p className="results-caption">{visible.length}{hasMore ? "+" : ""} {visible.length === 1 ? "connection" : "connections"} to explore{guide.mode === "demo" ? " · Sample profiles" : ""}</p><div className="people-grid">{visible.map((person) => <PersonCard key={person.attendee_id} person={person} />)}</div>{hasMore && <button type="button" className="button button-outline load-more" disabled={busy} onClick={() => void load(people.length)}>{busy ? <Busy label="Loading…" /> : "More attendees"}</button>}</>}</>;
 }
