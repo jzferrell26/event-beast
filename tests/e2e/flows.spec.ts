@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 
+const appOrigin = new URL(process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3100").origin;
+
 test("agenda day switching, search and saved sessions survive reload", async ({ page }) => {
   await page.goto("/agenda");
   await page.getByRole("tab", { name: /Day 02/ }).click();
@@ -79,7 +81,7 @@ test("onboarding can be explored, dismissed and opened from help", async ({ page
 
 test("direct demo mutations are refused and private API responses are not public-cacheable", async ({ request }) => {
   const response = await request.post("/api/inbox", {
-    headers: { Origin: "http://127.0.0.1:3100" }, data: { recipient: "30000000-0000-4000-8000-000000000101" },
+    headers: { Origin: appOrigin }, data: { recipient: "30000000-0000-4000-8000-000000000101" },
   });
   expect(response.status()).toBe(409);
   const forged = await request.post("/api/admin/import", {
