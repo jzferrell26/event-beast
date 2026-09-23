@@ -10,6 +10,8 @@ The PostgreSQL tests use PGlite with real PostgreSQL roles, RLS and RPC executio
 
 The browser suite verifies the main attendee experience, organizer demo controls, mobile bottom navigation and the public-only offline cache contract in a production Next.js build. Review screenshots were captured for mobile Home, Agenda, People and desktop Organizer Overview and visually inspected during this session.
 
+The dedicated Cuantico AI Vercel project was created and its first deployment completed successfully. The public alias is https://event-beast.vercel.app. The full Playwright browser suite was rerun against that hosted alias and passed the same seven desktop/mobile/offline checks with the mobile-only desktop skip. It is intentionally configured as a labeled demo preview until the dedicated Supabase environment is approved, created and qualified.
+
 The managed Supabase Auth, Storage and Realtime interfaces are represented by small database shims in the local PostgreSQL suite. Local qualification therefore does not establish successful hosted email delivery, WebSocket transport, production storage upload behavior or the required two-real-account messaging check.
 
 ## Automated checks for repeat qualification

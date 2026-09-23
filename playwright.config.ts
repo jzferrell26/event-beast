@@ -15,7 +15,7 @@ export default defineConfig({
     env: { EVENT_BEAST_DEMO_MODE: "true" },
   },
   use: {
-    baseURL: "http://127.0.0.1:3100",
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3100",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
   },

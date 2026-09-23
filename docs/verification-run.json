@@ -9,13 +9,21 @@
     { "command": "npm test", "exitCode": 0, "detail": "35 tests passed" },
     { "command": "npm run build", "exitCode": 0, "detail": "Next.js 16.3.6 production build completed" },
     { "command": "playwright test", "exitCode": 0, "detail": "7 passed, 1 intentional desktop skip" },
-    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People and desktop Organizer Overview screenshots captured and reviewed" }
+    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People and desktop Organizer Overview screenshots captured and reviewed" },
+    { "command": "PLAYWRIGHT_BASE_URL=https://event-beast.vercel.app playwright test", "exitCode": 0, "detail": "Hosted Vercel deployment: 7 passed, 1 intentional desktop skip" }
   ],
   "automatedChecksPassed": true,
   "browserQualificationPassed": true,
   "productionBuildVerified": true,
   "pushVerified": true,
-  "deploymentVerified": false,
+  "deploymentVerified": true,
+  "deployment": {
+    "provider": "Vercel",
+    "team": "Cuantico AI",
+    "project": "event-beast",
+    "url": "https://event-beast.vercel.app",
+    "mode": "demo preview"
+  },
   "liveInfrastructureQualified": false,
   "remainingExternalGate": "Dedicated Supabase project is not created because its quoted recurring cost requires owner approval."
 }
