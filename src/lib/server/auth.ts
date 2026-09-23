@@ -1,3 +1,4 @@
+import { directoryProfile } from "../profile-fields";
 import "server-only";
 import { redirect } from "next/navigation";
 import { serverSupabase } from "../supabase/server";
@@ -75,6 +76,7 @@ export async function pageAccess(next: string, admin = false) {
   }
 }
 export async function signProfilePhotos(db: NonNullable<Awaited<ReturnType<typeof serverSupabase>>>, profiles: Profile[]) {
+  profiles = profiles.map(directoryProfile);
   const paths = [...new Set(profiles.map((p) => p.headshot_path).filter((p): p is string => Boolean(p)))];
   if (!paths.length) return profiles;
   const { data } = await db.storage.from("event-headshots").createSignedUrls(paths, 120);

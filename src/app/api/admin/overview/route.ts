@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { requireAdmin } from "@/lib/server/auth";
-import { isDemo } from "@/lib/server/guide";
+import { isDemo, invalidatePublicGuide } from "@/lib/server/guide";
 import { demoGuide, demoProfiles } from "@/lib/demo";
 import { databaseError, handle, json, parseBody } from "@/lib/server/http";
 export const GET = () => handle(async () => {
@@ -23,5 +23,6 @@ export const PATCH = (request: Request) => handle(async () => {
   const { db, event } = await requireAdmin();
   const result = await db.from("events").update(body).eq("id", event.id).select("id").single();
   databaseError(result.error);
+  invalidatePublicGuide();
   return json({ saved: true });
 });

@@ -21,15 +21,15 @@ Open `http://localhost:3100`. The sample program, dates, venues and people are c
 
 The repository is the source of truth. Event Beast requires its own Supabase project and Vercel project under Cuantico AI. It must never share the Listing Studio or Cuantico SMS database. SMS is handled separately in HighLevel.
 
-Authentication, event registration eligibility and directory visibility are separate. Imports contain private registration records. A verified account must match an approved registration to access private attendee features. Directory visibility and messaging consent start off. Chosen public contact fields are not copied from registration data.
+Authentication, event registration eligibility and directory visibility are separate. Imports contain private registration records. A verified account must match an approved registration to access private attendee features. Directory visibility and messaging consent start off. Attendee email, phone and personal contact details are visible only to Admins; members and sponsors connect through private chat.
 
 Postgres owns conversations, messages, read state and idempotency. Private Realtime broadcasts signal clients to re-read authorized durable data. Blocking, disabled access and consent are enforced in database RPCs and RLS. Organizer moderation is limited to reported messages; organizers do not receive blanket access to private inboxes.
 
-The installable PWA has a separate offline reader for previously loaded public event essentials. It does not offline-cache private messages, profiles, auth responses or organizer data. Web push is optional future work; app announcements and core event use do not depend on it.
+Event Beast launches as a website: no App Store review or download is needed. Home-screen installation is optional. A separate offline reader preserves previously loaded public essentials; it never caches private messages, profiles, auth responses or organizer data. Sessions persist on the attendee's browser, with revocation still enforced by the backend.
 
 ## Checks and deployment
 
-The Admin / Sponsor / Member permission model is implemented. Admins manage users and permissions at `/admin/users`; sponsors maintain their assigned pages at `/sponsor`. See [role permissions](docs/ROLES.md) and the [role-release qualification](docs/ROLE-QUALIFICATION.md). The latest local qualification is 70 database/domain tests and 49 browser checks passing, with three intentional project-specific skips.
+The Admin / Sponsor / Member permission model is implemented. Admins manage users and permissions at `/admin/users`; sponsors maintain their assigned pages at `/sponsor`. See [role permissions](docs/ROLES.md), [website activation](docs/WEBSITE-ACTIVATION.md), and the [qualification records](docs/QUALIFICATION.md). The dedicated Supabase project is now created and migrated.
 
 ```sh
 npm run lint
@@ -40,4 +40,4 @@ npm run build
 
 Database migrations are in `supabase/migrations`. Generate the explicit public demo SQL seed with `node scripts/generate-seed.mjs`; it creates no authentication accounts or attendee registrations. Use real confirmed content and a separate organizer bootstrap for production.
 
-Read [architecture](docs/ARCHITECTURE.md), [deployment setup](docs/DEPLOYMENT.md) and [qualification status](docs/QUALIFICATION.md) before connecting live infrastructure. The initial 18 PostgreSQL security tests passed. Final verification after subsequent additions, hosted two-account messaging and deployment remain unconfirmed until their command and browser results are reviewed.
+Read [architecture](docs/ARCHITECTURE.md), [deployment setup](docs/DEPLOYMENT.md) and [qualification status](docs/QUALIFICATION.md) before a live release. The current increment includes 86 SQL/domain tests, real-backend verification/sign-in burst measurements, and browser qualification records. Production SMTP delivery, the real attendee roster and final organizer logistics remain launch prerequisites; do not equate the recorded login benchmark with end-to-end signup delivery.

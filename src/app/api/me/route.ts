@@ -1,3 +1,4 @@
+import { PROFILE_SELECT } from "@/lib/profile-fields";
 import { demoMe } from "@/lib/demo";
 import type { Profile } from "@/lib/types";
 import { getActor, signProfilePhotos } from "@/lib/server/auth";
@@ -13,7 +14,7 @@ export const GET = () => handle(async () => {
     let preferences = null;
     if (eligible && actor.attendee) {
       const [p, prefs] = await Promise.all([
-        actor.db.from("attendee_profiles").select("*").eq("event_id", actor.event.id).eq("attendee_id", actor.attendee.id).maybeSingle(),
+        actor.db.from("attendee_profiles").select(PROFILE_SELECT).eq("event_id", actor.event.id).eq("attendee_id", actor.attendee.id).maybeSingle(),
         actor.db.from("attendee_preferences").select("onboarding_step,onboarding_done").eq("event_id", actor.event.id).eq("attendee_id", actor.attendee.id).maybeSingle(),
       ]);
       databaseError(p.error); databaseError(prefs.error);

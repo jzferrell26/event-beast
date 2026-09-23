@@ -3,12 +3,14 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { supabaseConfig } from "./config";
+import { sessionCookieOptions } from './session-options';
 
 export async function serverSupabase() {
   const config = supabaseConfig();
   if (!config) return null;
   const store = await cookies();
   return createServerClient(config.url, config.key, {
+    cookieOptions: sessionCookieOptions(),
     cookies: {
       getAll: () => store.getAll(),
       setAll: (values) => {

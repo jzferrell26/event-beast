@@ -38,7 +38,11 @@ export function databaseError(error: { code?: string; message: string } | null) 
 export async function handle(run: () => Promise<Response>): Promise<Response> {
   try { return await run(); }
   catch (error) {
-    if (error instanceof ApiError) return json({ error: error.message }, error.status);
+    if (error instanceof ApiError) {
+      const response = json({ error: error.message }, error.status);
+      if (error.status === 429) response.headers.set('Retry-After', '5');
+      return response;
+    }
     if (error instanceof z.ZodError) return json({ error: error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ") }, 400);
     console.error("Event Beast request failed", error instanceof Error ? error.name : "Unknown error");
     return json({ error: "Something went wrong. Your changes have not been confirmed. Please try again." }, 500);

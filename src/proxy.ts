@@ -1,12 +1,14 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseConfig } from "./lib/supabase/config";
+import { sessionCookieOptions } from './lib/supabase/session-options';
 
 export async function proxy(request: NextRequest) {
   const config = supabaseConfig();
   let response = NextResponse.next({ request });
   if (!config || !request.cookies.getAll().some((c) => c.name.startsWith("sb-"))) return response;
   const db = createServerClient(config.url, config.key, {
+    cookieOptions: sessionCookieOptions(),
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (values) => {

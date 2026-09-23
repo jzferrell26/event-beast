@@ -79,7 +79,7 @@ export const demoProfiles: Profile[] = [
 ].map(([n, name, company, title, city, state, interests]) => ({
   attendee_id: id(3, Number(n) + 100), event_id: e, full_name: String(name), company: String(company), title: String(title), city: String(city), state: String(state),
   bio: "This is an illustrative attendee profile. In the live app, attendees write their own introduction and choose what to share.",
-  interests: interests as string[], headshot_path: null, public_email: "", public_phone: "", website: "", directory_visible: true, messaging_available: true,
+  interests: interests as string[], headshot_path: null, directory_visible: true, messaging_available: true,
 }));
 
 export const demoMe: Me = { mode: "demo", authenticated: false, eligible: false, isAdmin: false, attendeeId: null, profile: null, preferences: null };

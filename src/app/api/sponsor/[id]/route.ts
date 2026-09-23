@@ -3,7 +3,7 @@ import { uuid } from "@/lib/validation";
 import { sponsorPageSchema } from "@/lib/roles";
 import { demoGuide } from "@/lib/demo";
 import { requireSponsor } from "@/lib/server/auth";
-import { isDemo } from "@/lib/server/guide";
+import { isDemo, invalidatePublicGuide } from "@/lib/server/guide";
 import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/http";
 
 type Context = { params: Promise<{ id: string }> };
@@ -28,5 +28,6 @@ export const PATCH = (request: Request, context: Context) => handle(async () => 
   const { db, event } = await requireSponsor(id);
   const result = await db.rpc("save_sponsor_page", { p_event: event.id, p_sponsor: id, p_expected_version: body.expected_version, p_values: body.values });
   databaseError(result.error);
+  invalidatePublicGuide();
   return json({ saved: true, sponsor: result.data });
 });

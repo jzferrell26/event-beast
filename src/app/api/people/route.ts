@@ -1,3 +1,4 @@
+import { PROFILE_SELECT } from "@/lib/profile-fields";
 import { demoProfiles } from "@/lib/demo";
 import type { Profile } from "@/lib/types";
 import { requireMember, signProfilePhotos } from "@/lib/server/auth";
@@ -14,7 +15,7 @@ export const GET = (request: Request) => handle(async () => {
     return json({ people: filtered.slice(offset, offset + 30), hasMore: filtered.length > offset + 30 });
   }
   const { db, event, attendee } = await requireMember();
-  let search = db.from("attendee_profiles").select("*").eq("event_id", event.id).eq("directory_visible", true).order("full_name").order("attendee_id").range(offset, offset + 30);
+  let search = db.from("attendee_profiles").select(PROFILE_SELECT).eq("event_id", event.id).eq("directory_visible", true).order("full_name").order("attendee_id").range(offset, offset + 30);
   if (params.get("saved") === "true") {
     const favorites = await db.from("saved_attendees").select("target_id").eq("event_id", event.id).eq("attendee_id", attendee.id);
     databaseError(favorites.error);

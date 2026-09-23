@@ -5,6 +5,7 @@ import "@fontsource/barlow-condensed/700.css";
 import "@fontsource/barlow-condensed/800.css";
 import "./globals.css";
 import "./experience.css";
+import './speakers.css';
 import "./organizer.css";
 import "./launch.css";
 import "./readability.css";

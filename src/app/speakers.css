@@ -1,0 +1,15 @@
+.speaker-profile-hero{display:flex;gap:24px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px}
+.speaker-profile-hero .avatar{width:112px;height:112px;flex-shrink:0;font-size:32px}
+.speaker-profile-hero h1{font:700 46px/1.05 var(--display);margin-top:12px}
+.speaker-profile-hero p{font-size:13px;color:#62626d;line-height:1.8;margin-top:12px}
+.agenda-working-notice{font-size:12px;line-height:1.8;padding:15px 18px;background:#fff3d4;border:1px solid #e5cd8b;border-radius:9px;margin-bottom:20px;color:#675226}
+.admin-record-copy .admin-import-note{font-size:10px;background:#fff3d4;color:#675226;padding:9px 12px;border-radius:6px;margin-top:10px;display:block;-webkit-line-clamp:unset;white-space:normal}
+.speaker-card:hover{border-color:#b5b5c1}
+.detail-section>.text-button{margin-top:15px}
+.auth-success .button-full{margin:18px 0 12px}
+.auth-success .text-button{min-height:44px;font-size:11px}
+.access-card form{margin:20px 0;text-align:left}
+.access-card form .button{margin-top:15px}
+.private-contact-editor{border-top:1px solid var(--line);margin-top:28px;padding-top:22px}
+.private-contact-editor h2{font:700 26px/1.1 var(--display)}
+@media(max-width:600px){.speaker-profile-hero{padding:25px 20px;gap:16px;align-items:flex-start}.speaker-profile-hero .avatar{width:78px;height:78px;font-size:25px}.speaker-profile-hero h1{font-size:34px}.speaker-profile-hero .eyebrow{font-size:7px}.speaker-profile-hero p{font-size:11px}.agenda-working-notice{font-size:10px;padding:13px 15px}}

@@ -2,6 +2,10 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 23 website activation increment
+
+The paid project approval is recorded and the dedicated Supabase backend is created with all ten migrations applied. Current results: **86 SQL/domain tests**, **57 browser passes with 3 intentional skips**, TypeScript, lint and production build all pass. Eleven real-service browser checks also pass against dedicated Supabase Auth, Storage, private Realtime and Postgres; see `docs/hosted-website-qualification.json`. The 500-account benchmark completed verification, sign-in and membership-claim phases; see `docs/hosted-auth-burst.json` and its explicit exclusion of public signup/email delivery. Speaker/schedule import and remaining live prerequisites are recorded in `docs/WEBSITE-ACTIVATION.md`. Earlier results below are retained as historical qualification records.
+
 ## Confirmed local qualification result
 
 On September 22, 2026, the current release-candidate qualification completed with typecheck passing, lint passing, **54 automated database/domain tests passing**, the Next.js 16.3.6 production build passing, and the expanded Playwright suite passing **37 checks with 3 intentional project-specific skips and 0 failures** across desktop and mobile Chromium. Playwright also successfully started and stopped its own production Next.js server on port 3100, which is the same lifecycle used by CI.
@@ -57,4 +61,4 @@ Exercise concurrent sign-in and first-load traffic at a representative level for
 
 ## Launch prerequisites still requiring external configuration
 
-The dedicated Vercel project is already created. Remaining live gates are: explicit approval for the quoted **$10/month dedicated Event Beast Supabase project**, project creation, migration application, organizer bootstrap, production email sender and callback allowlist, confirmed organizer event content, real attendee import, Vercel environment connection to that dedicated backend, two independent real-account messaging/recovery checks, hosted Auth/Realtime/Storage verification, representative shared-network/burst testing and physical iPhone/Android install/offline checks. Do not switch the public alias out of demo mode until those checks are complete.
+The paid backend and dedicated Vercel project now exist. Remaining event-day gates are production SMTP delivery and actual public-signup qualification, the real attendee roster and role assignments, organizer confirmation of held schedule/logistics details, and physical iPhone/Android and venue-network checks. The public working agenda and speaker website can be released with email signup explicitly gated; opening signup requires verified email delivery. Consult the current website-activation record above rather than the historical demo-only status.

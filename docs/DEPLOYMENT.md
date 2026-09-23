@@ -4,7 +4,7 @@
 
 Create a dedicated Supabase project and a dedicated Vercel project under Cuantico AI. Do not configure either application against Listing Studio or Cuantico SMS. GitHub `jzferrell26/event-beast` is the source of truth. HighLevel handles SMS separately.
 
-The dedicated Supabase project has not been provisioned in this implementation session. The connected Supabase tool quoted $10/month. Obtain explicit approval for that recurring project cost before confirming the cost and creating the project. No service-role key is needed by the application runtime.
+Jonathan approved the $10/month dedicated project on September 23, 2026. The Cuantico Event Beast project `nyhzmazbfctuttizwnxp` now exists; migrations 202609230001 through 202609230010 are applied. The dedicated Vercel project also exists. Do not create duplicate infrastructure. No service-role key is needed by the application runtime.
 
 ## Local development
 
@@ -20,7 +20,7 @@ All schema, RLS, RPCs, storage policies and Realtime policies are versioned in `
 
 For production, insert one event and its settings with the canonical slug `momentum-builder-live-2026`; keep it unpublished while configuring the organizer account. Use confirmed event dates or null dates. Create sponsor tiers and confirmed sponsor records through the organizer console. Cuantico’s Platinum sponsorship was supplied by the project owner; other example sponsor agreements are fictional and must not be promoted as real.
 
-After the initial organizer has created and verified an auth account, a database owner must insert the exact event ID and verified auth user ID into `public.event_admins`, with role `owner`. This bootstrap is intentionally unavailable from the public API. Do not grant access by putting admin flags in user-editable auth metadata.
+The first Admin registration was prepared with the working-program import. The matching verified email claims that role. A database owner can alternatively bootstrap an exact verified user through `public.event_admins`; this is intentionally unavailable from the public API. Later Admin/Sponsor/Member assignments use the audited role-management RPC. Do not grant access from user-editable metadata.
 
 ## Authentication and email
 
@@ -30,7 +30,9 @@ Set the Supabase Site URL to the production HTTPS origin. Add the exact local an
 
 Email templates can direct users to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/more/profile` for verification, `type=recovery` for password recovery, and `type=invite` for invitations. The recovery handler always routes to the password-reset page. Verify each template against the selected Supabase email flow before launch.
 
-Organizer CSV import creates eligibility records, not auth accounts. Share the application’s `/auth?mode=sign-up` link through the approved event registration channel. No mass email or SMS is sent by the import. Attendees must register and verify the matching email to claim their access.
+Organizer CSV import creates eligibility records, not auth accounts. Share `/join` through the event QR code or registration channel. Attendees enter the registration email, choose a password, and verify by an eight-digit code or secure link. No mass email or SMS is sent by import. A missing roster match goes to a pending access request; it does not gain automatic access.
+
+Keep `EVENT_BEAST_EMAIL_READY=false` until a custom SMTP sender is configured and real inbox delivery/recovery are tested. The built-in provider's two-email/hour allowance cannot serve the event. Configure the custom provider and the Supabase email-sending quota for the launch burst (at least 500 initial messages plus resend/recovery headroom), then measure actual public signup and delivery. The 500-account verification/login report is not proof of 500 successful public signups or emails.
 
 ## Vercel
 
@@ -41,6 +43,7 @@ Configure each environment separately:
 | Variable | Preview/demo | Live production |
 | --- | --- | --- |
 | `EVENT_BEAST_DEMO_MODE` | `true` for public sample preview | `false` |
+| `EVENT_BEAST_EMAIL_READY` | `false` | `true` only after verified production SMTP setup |
 | `NEXT_PUBLIC_SITE_URL` | Exact preview origin | Exact production HTTPS origin |
 | `NEXT_PUBLIC_EVENT_SLUG` | `momentum-builder-live-2026` | Same canonical event slug |
 | `NEXT_PUBLIC_SUPABASE_URL` | Empty for the standalone demo, or dedicated staging URL | Dedicated Event Beast project URL |
@@ -59,3 +62,5 @@ The service worker caches only the marked public guide response, its standalone 
 ## Release gate
 
 Run `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build`. Complete the browser and live-infrastructure qualification in `docs/QUALIFICATION.md`. Review Supabase security advisors, Vercel logs, auth delivery/rate settings, storage policy behavior and representative load before announcing the live app. Optional web push is not enabled by this baseline; organizer announcements remain available in the app, and critical SMS is handled in HighLevel.
+
+The current website-activation records are in `docs/WEBSITE-ACTIVATION.md`, `docs/hosted-auth-burst.json`, `docs/hosted-website-qualification.json`, and `docs/program-import.json`. Synthetic qualification uses an isolated event and must be cleaned up, with its temporary email hook removed, before attendee launch.

@@ -34,11 +34,11 @@ Add a GitHub Actions check that installs pinned dependencies, checks TypeScript/
 
 Connect a dedicated Event Beast Supabase project, apply reviewed migrations and create the verified organizer membership. Set the dedicated Vercel project's environment variables and exact callback origins. Configure organizer-approved auth email delivery. Replace sample content with confirmed event details and import the approved registration roster.
 
-The previous Supabase quote was $10/month for an additional project. Explicit cost approval has not been recorded. Do not confirm billing or create a paid project on the basis of this document. Inspect actual connector/CLI access before claiming deployment capability. Never reuse Listing Studio or Cuantico SMS infrastructure credentials.
+Jonathan approved the $10/month dedicated Supabase project on September 23. Project `nyhzmazbfctuttizwnxp` is now created and migrated. Never create a duplicate or reuse Listing Studio/Cuantico SMS database credentials.
 
 Run the hosted two-account messaging, recovery, offline and load checks against the deployed release. A passing local test suite or demo preview does not satisfy those live checks. Publish a production URL only after verifying its deployment, environment mode and backend configuration.
 
-**Status: blocked only on external/live inputs.** The dedicated Vercel project exists and the public alias remains intentionally in demo mode. The dedicated Supabase project has not been created because the additional-project quote is $10/month and explicit approval has not been recorded. Real organizer content, roster import, hosted email/Auth/Storage/Realtime qualification, real-account checks, physical-device checks and arrival-load qualification therefore remain pending.
+**Status: website activation implemented.** The dedicated backend is migrated; working agenda and official speaker content are imported; persistent sessions, Admin-only contacts, hosted-service browser checks and a measured 500-verification/sign-in burst are complete. Production SMTP/public-signup delivery, real roster/roles, final organizer logistics and physical-device/venue-network qualification remain. See `WEBSITE-ACTIVATION.md` and the machine-readable reports for the exact scope.
 
 ## Completion record
 

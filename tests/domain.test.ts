@@ -10,7 +10,7 @@ describe("registration import validation", () => {
   it("normalizes registration email without publishing optional CRM fields", () => {
     const parsed = parseAttendeeCsv('email,name,company,phone\n JANE@EXAMPLE.COM ,Jane Example,Private Company,555-0000');
     expect(parsed.errors).toEqual([]);
-    expect(parsed.rows).toEqual([{ email: "jane@example.com", name: "Jane Example" }]);
+    expect(parsed.rows).toEqual([{ email: "jane@example.com", name: "Jane Example", phone: "555-0000" }]);
   });
   it("supports a BOM and quoted commas in names", () => {
     expect(parseAttendeeCsv('\uFEFFemail,name\na@example.com,"Example, Alex"').rows).toEqual([{ email: "a@example.com", name: "Example, Alex" }]);

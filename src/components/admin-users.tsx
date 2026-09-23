@@ -6,6 +6,7 @@ import { errorMessage, mutate } from "@/lib/client";
 import { useDebounced, useResource } from "@/lib/hooks";
 import { useApp } from "./app-provider";
 import { Busy, EmptyState, ErrorState, LoadingCards, Modal, PageTitle } from "./ui";
+import { AdminContactButton } from './admin-contacts';
 
 type SponsorOption = { id: string; name: string };
 type UserResponse = { rows: EventUser[]; hasMore: boolean; sponsors: SponsorOption[] };
@@ -36,7 +37,7 @@ function UserRoster({ query }: { query: string }) {
       {data.rows.map((user) => <article className="user-access-row" key={user.id}>
         <div className="user-access-identity"><strong>{user.registration_name}</strong><span>{user.registration_email}</span><small>{user.user_id ? "Account connected" : "Awaiting verified sign-in"}</small></div>
         <div className="user-access-permissions"><span className={`role-chip role-${user.role}`}>{roleDescriptions[user.role].label}</span><span className={`access-badge badge-${user.status}`}>{user.status}</span>{user.sponsor_ids.length > 0 && <p>{user.sponsor_ids.map((id) => data.sponsors.find((s) => s.id === id)?.name ?? "Assigned sponsor").join(", ")}</p>}</div>
-        <button className="button button-outline button-small" type="button" onClick={() => { setEditing(user); setOpen(true); }} aria-label={`Edit access for ${user.registration_name}`}>Edit access</button>
+        <div className="record-actions"><AdminContactButton attendeeId={user.id} name={user.registration_name} /><button className="button button-outline button-small" type="button" onClick={() => { setEditing(user); setOpen(true); }} aria-label={`Edit access for ${user.registration_name}`}>Edit access</button></div>
       </article>)}
     </div>}
     {(offset > 0 || data?.hasMore) && <div className="pagination"><button type="button" className="button button-outline button-small" disabled={offset === 0} onClick={() => setOffset(Math.max(0, offset - 50))}>Previous</button><span>Page {offset / 50 + 1}</span><button type="button" className="button button-outline button-small" disabled={!data?.hasMore} onClick={() => setOffset(offset + 50)}>Next</button></div>}

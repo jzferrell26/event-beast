@@ -8,11 +8,11 @@ import { Modal } from "./ui";
 
 const steps = [
   { title: "Start with you.", description: "Add your name, a photo and a few words about what you do. Your profile is how the right people recognize you.", icon: UserRound, href: "/more/profile", action: "Complete my profile" },
-  { title: "Choose how you show up.", description: "Your directory listing is your choice. Turn it on in My Profile when you are ready. Your registration email is never automatically shared.", icon: Eye, href: "/more/profile", action: "Review my privacy" },
+  { title: "Choose how you show up.", description: "Your directory listing is your choice. Turn it on in My Profile when you are ready. Only event Admins can see attendee emails and phone numbers.", icon: Eye, href: "/more/profile", action: "Review my privacy" },
   { title: "Make a little room for big ideas.", description: "Tap the bookmark beside a session. Your picks stay together in Saved Sessions, ready when you need them.", icon: Bookmark, href: "/agenda", action: "Explore the agenda" },
   { title: "Find your people.", description: "Search the directory by name, company or shared interest. Save someone you would like to catch up with.", icon: Users, href: "/people", action: "Meet the attendees" },
   { title: "Keep the conversation going.", description: "Enable messaging in My Profile, then tap Message on another available attendee. Your one-to-one conversations stay in Inbox. You can block or report someone at any time.", icon: MessageCircle, href: "/inbox", action: "Take a look at Inbox" },
-  { title: "One tap away.", description: "Add Event Beast to your Home Screen for easy access. On iPhone, open the Share menu in Safari and choose Add to Home Screen. On Android, look for Install app in your browser menu.", icon: Smartphone, href: "/more/help", action: "Installation & help" },
+  { title: "One tap away.", description: "Keep this website bookmarked in your usual browser. You stay signed in on your own device. Adding it to your Home Screen is optional; no App Store download is needed.", icon: Smartphone, href: "/more/help", action: "Website access & help" },
 ];
 
 export function Onboarding({ restart = false }: { restart?: boolean }) {

@@ -28,10 +28,10 @@ describe("registration and directory boundaries", () => {
       await expect(db.query("select public.claim_attendee($1)", [ids.event])).rejects.toThrow(/Verify your email/);
     });
   });
-  it("creates profiles with directory and messaging opt-out and no copied contact email", async () => {
-    const result = await db.query<{ directory_visible: boolean; messaging_available: boolean; public_email: string }>("select directory_visible,messaging_available,public_email from public.attendee_profiles");
+  it("creates profiles with directory and messaging opt-out and no contact columns", async () => {
+    const result = await db.query<{ directory_visible: boolean; messaging_available: boolean }>("select directory_visible,messaging_available from public.attendee_profiles");
     expect(result.rows).toHaveLength(2);
-    for (const row of result.rows) expect(row).toEqual({ directory_visible: false, messaging_available: false, public_email: "" });
+    for (const row of result.rows) expect(row).toEqual({ directory_visible: false, messaging_available: false });
     await asUser(db, ids.alice, async () => expect((await db.query("select * from public.attendee_profiles")).rows).toHaveLength(1));
   });
   it("prevents attendee role escalation and cross-profile changes", async () => {

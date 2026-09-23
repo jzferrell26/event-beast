@@ -12,6 +12,10 @@ Dedicated Supabase and Vercel projects belong under Cuantico. Existing applicati
 
 Auth proves control of an email account. An organizer-approved attendee record grants event access. Claiming a record requires a confirmed email match from auth.users. Profile visibility and messaging consent are separate opt-in fields. Imported registration email/name are private; only the attendee's chosen profile fields are exposed to eligible directory viewers. Disabled attendees lose directory, messaging, storage and realtime access.
 
+Attendee emails, phone numbers and personal contact links are stored outside directory records in Admin-only registration/contact tables. Members and sponsors receive an explicit allowlist of profile fields, including when fetching sponsor representatives. There is no contact opt-in that can expose attendee email/phone data. An attendee can voluntarily type information into chat; the platform does not provide contact exports or directory contact fields.
+
+The browser retains a refresh-capable session cookie for up to 365 days, subject to sign-out, cookie deletion and server revocation. Email verification is required once; approved roster membership is checked separately on every private request. Recovery and verification redirects use the configured website origin rather than an internal proxy hostname. A verified person missing from the roster can submit a pending Member access request, which requires Admin approval.
+
 ## Messaging
 
 A conversation has exactly two event attendees, canonical ordering and a unique pair constraint. Send operations run as transaction-scoped RPCs, lock the conversation, validate both memberships, consent and blocks, and use a sender-generated UUID idempotency key. Retries return the original durable message; reuse with different text is rejected. Clients render pending/failed states and reconcile from the database after reconnect or private Realtime invalidation. No message text is broadcast. Database read authorization remains authoritative after a channel was joined. Read cursors are monotonic server-generated sequence positions. Messages are paginated by sequence.

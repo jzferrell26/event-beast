@@ -7,6 +7,7 @@ export interface EventInfo {
 export interface EventSettings {
   event_id: string; welcome_title: string; welcome_body: string; support_email: string;
   support_location: string; technology_attribution: boolean; directory_enabled: boolean; messaging_enabled: boolean;
+  agenda_notice?: string;
 }
 export interface AgendaDay { id: string; event_id: string; label: string; date: string; sort_order: number; published: boolean }
 export interface AgendaSession {
@@ -14,7 +15,7 @@ export interface AgendaSession {
   starts_at: string; ends_at: string; room: string; session_type: SessionType;
   sponsor_id: string | null; published: boolean; is_demo: boolean;
 }
-export interface Speaker { id: string; event_id: string; full_name: string; title: string; bio: string; headshot_url: string; published: boolean; is_demo: boolean }
+export interface Speaker { id: string; event_id: string; full_name: string; title: string; bio: string; headshot_url: string; published: boolean; is_demo: boolean; source_url?: string }
 export interface SponsorTier { id: string; event_id: string; name: string; sort_order: number }
 export interface Sponsor {
   id: string; event_id: string; tier_id: string | null; name: string; description: string;
@@ -48,7 +49,6 @@ export interface Guide {
 export interface Profile {
   attendee_id: string; event_id: string; full_name: string; company: string; title: string;
   city: string; state: string; bio: string; interests: string[]; headshot_path: string | null;
-  public_email: string; public_phone: string; website: string;
   directory_visible: boolean; messaging_available: boolean; avatar_url?: string;
 }
 export interface Preferences { onboarding_step: number; onboarding_done: boolean }
