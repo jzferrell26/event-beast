@@ -1,0 +1,349 @@
+{
+  "source_url": "https://www.momentumbuilderevent.com/",
+  "captured_at": "2026-09-23T10:40:44.131Z",
+  "description_policy": "Concise factual descriptions based on the official event site. Full source text is not republished. Names and images are paired from the same official card.",
+  "speakers": [
+    {
+      "name": "Neel Dhingra",
+      "bio": "Personal-branding educator.",
+      "headshot_path": "/speakers/neel-dhingra.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486591-0URAADODW6D3LGZUB2QS/Neel+preferred_smaller.jpg?format=500w",
+      "image_sha256": "79c00a023d8e7ec1714421a36a80bc6e388696f983b410a838805c73faa4472a",
+      "source_description_sha256": "bed3448330a7f087eec08c06a015bad16b8c168837a796a6d9ef54f1378290f4"
+    },
+    {
+      "name": "Michael Burt",
+      "bio": "High-performance coach.",
+      "headshot_path": "/speakers/michael-burt.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486540-S32387BPWV170LQWRMG7/Michael+Burt.png?format=500w",
+      "image_sha256": "b30d50c210f337e3e81316281efab31bd9fb6fad3fcda6a74cbb7b704814d24d",
+      "source_description_sha256": "05e8e407d988496fa86e06df97053a09ebb7782482ec5a8e53f4b26966403329"
+    },
+    {
+      "name": "Rory Vaden",
+      "bio": "Author and speaker.",
+      "headshot_path": "/speakers/rory-vaden.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/9194219f-4b98-46b0-b1f8-5fe4b733d70b/Rory+Vaden.png?format=500w",
+      "image_sha256": "2facec39430b938d9ecf797fdc85b7ebcf044367f6310fa1135e8835fff07a3e",
+      "source_description_sha256": "ff7e148d33c5827c6568ea3518c41ce87cb59c4af62ee94c54b4be747c42274a"
+    },
+    {
+      "name": "Sasha Stair",
+      "bio": "Xactus marketing executive.",
+      "headshot_path": "/speakers/sasha-stair.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/283c7b54-b7e9-4029-8a6a-3556f91e1bb2/Sasha+Stair.jpeg?format=500w",
+      "image_sha256": "1225c353353a74d8ecee56d4c94381de57eb812bc7c766edc1f7f3455839ef1a",
+      "source_description_sha256": "9e0e51fa42b2d8f37bdd89c5c780b69ea59748aecb26c684b0d018a5fa4a6f73"
+    },
+    {
+      "name": "Dave Savage",
+      "bio": "Mortgage Coach founder.",
+      "headshot_path": "/speakers/dave-savage.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/77070ca8-b766-436b-9f63-d26764e0c41f/Dave+Savage+2026+new.jpg?format=500w",
+      "image_sha256": "ca4c4bef836697ac068c7318387ad88b977ce4dabeb4607d6072af1a897e90da",
+      "source_description_sha256": "2e18ede9c603425c1ad90e19274ad8e36a4fc1e4b47bd72cb3d782195def5100"
+    },
+    {
+      "name": "Anita Padilla-Fitzgerald",
+      "bio": "Fintech founder.",
+      "headshot_path": "/speakers/anita-padilla-fitzgerald.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486563-N8LATKSVIE20CMQNWF7H/Anita+Padilla-Fitzgerald_higher+res.png?format=500w",
+      "image_sha256": "2ae6ce5213fa3cd421df5662c5b07067fb30a398d2c149174e4618cb0875a695",
+      "source_description_sha256": "fc23f31ee4641bff5564f4696ca158858e54b24db53f3df7645a010a08a28ea2"
+    },
+    {
+      "name": "Rachel Lambert",
+      "bio": "Braincode Centers founder.",
+      "headshot_path": "/speakers/rachel-lambert.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486585-8U4YRIK2VSARVEAF37H0/Rachel+Lambert.jpg?format=500w",
+      "image_sha256": "59b2971a6e463fac14c57d76220bc938b1efa7173a7e5990df7f1a8594c6f224",
+      "source_description_sha256": "44ebeac01f3162c09a999aae1eaa03adf1a9b95d58566d58d7e3e491496229b8"
+    },
+    {
+      "name": "Neena Vlamis",
+      "bio": "Mortgage company founder.",
+      "headshot_path": "/speakers/neena-vlamis.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/6d348dd0-2564-4fb2-9a4c-643595cd975c/ANmtg-Headshots-High_Res-Neena_Vlamis.jpg?format=500w",
+      "image_sha256": "17cc4a193051160720c8f8b1d0b4b5b0027fb10d11bba96e96fc4828f2ee31c7",
+      "source_description_sha256": "02e24cb022fc7a62e34cffa9d68785f6582911769ca859c3885ef86cda3192c3"
+    },
+    {
+      "name": "Deborah Byrd",
+      "bio": "Social-media agency founder.",
+      "headshot_path": "/speakers/deborah-byrd.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/4fb6ac69-b203-4e35-ad13-9524a65ad31e/Deborah+Byrd2.jpg?format=500w",
+      "image_sha256": "568b35fa712fc3822030be1217e7037c3a32ae0a68cfbb2e8b2c10e7f2070ab7",
+      "source_description_sha256": "03930356d88693f2e3d5fed14e484c156f83608e557a8b49f52183508a973d76"
+    },
+    {
+      "name": "Chris Welton",
+      "bio": "Performance coach and author.",
+      "headshot_path": "/speakers/chris-welton.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486597-3SBM1PPOE3OSDHNT9BZU/chris-welton-headshot-1.png?format=500w",
+      "image_sha256": "c57b264ad77d9564126140115a3e61f43208d32b3ede8f81fcf36dbff25d261c",
+      "source_description_sha256": "1ed756d58a720a58aa7cb171e6b7e2a9a98d6d02b108fa9673cbe0a2cf0a009e"
+    },
+    {
+      "name": "Rose Marie David",
+      "bio": "CMG lending executive.",
+      "headshot_path": "/speakers/rose-marie-david.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/ea4ae495-f588-4206-98e7-51f69857928b/Rose+Marie+David.jpg?format=500w",
+      "image_sha256": "7276e6bdae8aecd480e41ee101e8e7e3863b73ccb501c504ab308fd628286546",
+      "source_description_sha256": "2adab555eeeb89d425e0122077aaed69065dc2c521c8639de4af3d8641077444"
+    },
+    {
+      "name": "Brady Thomas",
+      "bio": "CMG branch manager.",
+      "headshot_path": "/speakers/brady-thomas.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/cec292c5-fe35-4c0a-b177-b73884fc8c93/Brady+Thomas_preferred_cropped.jpg?format=500w",
+      "image_sha256": "8b74d824062265db404c77ce014093f1014147459f592cebe7bbdd1a37a364b5",
+      "source_description_sha256": "c3b38bb4ad9fec06cee95e6f3a66ce855586408ab291e1e1f25ccd2b6e12daf7"
+    },
+    {
+      "name": "Alex Varela",
+      "bio": "Neighborhood Loans sales leader.",
+      "headshot_path": "/speakers/alex-varela.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/88a53461-d9cf-49a0-84c8-630e1f9416e2/Alex+Varela.jpg?format=500w",
+      "image_sha256": "3bfa0b24547a278e9690177ea44730f99eaff21fb501337061c5a609e54cb93b",
+      "source_description_sha256": "68dbc1f7e5a26c14959a419402a13a1657b2b96d9e589b0329b225de43dbdb69"
+    },
+    {
+      "name": "Angie Noack",
+      "bio": "Braincode Centers executive.",
+      "headshot_path": "/speakers/angie-noack.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486604-GRY898P95A4CJQO717WW/Angie+Noack.png?format=500w",
+      "image_sha256": "18127da6c64e8df6d7a25dbbe64b777667a71b6985c77fa570c4eefdea080281",
+      "source_description_sha256": "71d9f77a7c7622f06e577f580191196bd6de168c602b3a28205ff38aeb279eef"
+    },
+    {
+      "name": "Nicki Montelongo",
+      "bio": "NEO mortgage originator.",
+      "headshot_path": "/speakers/nicki-montelongo.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/7cdc6d4d-ab2d-4dc2-b763-287692db2d67/Nicki+Montelongo.jpg?format=500w",
+      "image_sha256": "a24e7837b6c2fc90bb8ba670d0517a0e0eeb3f4e22849d594be3a0cee58a97ce",
+      "source_description_sha256": "909be205bb279777c8a440c017d8558c9fc5184108e5d00b133140f79a5ba315"
+    },
+    {
+      "name": "Brian Biro",
+      "bio": "Breakthrough speaker.",
+      "headshot_path": "/speakers/brian-biro.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486624-T0EVCJX94E7AHNDTWGO7/Brian-Biro-Breakthrough-Speaker.webp?format=500w",
+      "image_sha256": "a50d0aae01a5308074f44672aa082846126654d7dc716f928540d2906341535e",
+      "source_description_sha256": "72c787a74d914b516ba8a1834e8bd9481676ddf3a960d600c70feb3c3a62f66d"
+    },
+    {
+      "name": "Candice McNaught",
+      "bio": "Planet Home Lending executive.",
+      "headshot_path": "/speakers/candice-mcnaught.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/6fc1e392-eeb7-403a-9e38-cf969da2932a/Candice+McNaught.jpg?format=500w",
+      "image_sha256": "0510aa09180e964b12a25ad297d521f3659d6feb919a114795f8921857def420",
+      "source_description_sha256": "3da48b25601b9bb1201b9624bd87e5d312fb56379588d63239700e61486d6d84"
+    },
+    {
+      "name": "Abdel Khawatmi",
+      "bio": "PRMG originator.",
+      "headshot_path": "/speakers/abdel-khawatmi.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/b16b98f3-b8d0-48d5-9cce-365ff02305fd/Abdel_cropped.jpeg?format=500w",
+      "image_sha256": "579a00996905ae0cb87289b592242046e47f25e5065666fc63f9feb4c11e4f6c",
+      "source_description_sha256": "0d6861c6b0c8cf10433652f184f513ac4c20db094853cc8d1b1c95f9a25892af"
+    },
+    {
+      "name": "Ross Bernstein",
+      "bio": "Coach and sports author.",
+      "headshot_path": "/speakers/ross-bernstein.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486631-6HT0K6K4HQTAXSTMAV8B/RossBernstein+cropped.png?format=500w",
+      "image_sha256": "0f41a3f15086d76ec7b15bc05e47c6f0017ffad89dec971aec809972fb90cd25",
+      "source_description_sha256": "413b846e780569d542187b01c9c15f772c4de1b922790de1dd71e738a5902f89"
+    },
+    {
+      "name": "Bill Hart",
+      "bio": "Executive coach.",
+      "headshot_path": "/speakers/bill-hart.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/b25828aa-0ad2-4f7a-9d94-20f141e11908/Bill+Hart+Headshot.jpg?format=500w",
+      "image_sha256": "6f67f7ca10eabb4b085321e43ad96977d62d0ee87de2114b81df6b2406a0379c",
+      "source_description_sha256": "9fa589a9c679b5698d0bce9885e59a46ee95226eb3b952a03c1eec30a58eb827"
+    },
+    {
+      "name": "Jim McMahan",
+      "bio": "Benchmark Mortgage president.",
+      "headshot_path": "/speakers/jim-mcmahan.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/ce2a8115-0e2b-4b7a-b5f1-66fca92a77ec/Jim+McMahon.jpg?format=500w",
+      "image_sha256": "b0623752d1720d7ba54a48fba2f79112848c3cd9bbe30ca6d4667cefbbb8ccd1",
+      "source_description_sha256": "bc0f69f5b564cdb359c6c991b7848b57c62b2965db55cad2320af19e95ab1809"
+    },
+    {
+      "name": "Thomas Meister",
+      "bio": "Ascendant Partners founder.",
+      "headshot_path": "/speakers/thomas-meister.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/8d644e6b-92ec-452b-86a2-b7bd37522130/Thomas+Meister.png?format=500w",
+      "image_sha256": "ec7038e402cfc8e55065165e6b4e6444fe12805259c4a3bc3ce12d081a1f64c4",
+      "source_description_sha256": "c0c498a72c30f62fd8b8872a5553a5242b3d9310de5e97d712bc82e74c06d9fc"
+    },
+    {
+      "name": "Allison Johnston",
+      "bio": "Success Mortgage Partners president.",
+      "headshot_path": "/speakers/allison-johnston.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/a1ba34f8-eac9-47a8-8d62-055a1c7663a8/Allison+Johnston.webp?format=500w",
+      "image_sha256": "9cbb6d8d131e8b8fbc8bf600b40840339629c2213a86e7d67586ed5690caef29",
+      "source_description_sha256": "c5373d9b0ced1e707517a9b744c67a3cb7049f937f6fa3bdfdbf265b09f68d26"
+    },
+    {
+      "name": "Lyra Waggoner",
+      "bio": "Movement Mortgage COO.",
+      "headshot_path": "/speakers/lyra-waggoner.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/29771f95-79fc-4c4e-b398-0585f4741151/Lyra+Waggoner_cropped.png?format=500w",
+      "image_sha256": "d215f9d9a3d0b4119c4502e9095d693f93acf3ab96d6ec5ac2e32127abc92318",
+      "source_description_sha256": "62f88bd02fba7074a1e90582dcea771e60312c20e884e3047375836aab2ca910"
+    },
+    {
+      "name": "Jeremy Forcier",
+      "bio": "Originator and coach.",
+      "headshot_path": "/speakers/jeremy-forcier.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/450ad95e-87c1-4c42-ad89-b1dca7bbdb9d/Jeremy+Forcier.JPG?format=500w",
+      "image_sha256": "faea7c1c7eb33043f94e7b0a1bd1843493365a698dfc8300a41b9bd1b2b27048",
+      "source_description_sha256": "aa16c19afe1525bf99afaf45138548b060f73f432ced8f3a31312d16ef9c9a85"
+    },
+    {
+      "name": "Angelica Ventrice",
+      "bio": "Leadership performance coach.",
+      "headshot_path": "/speakers/angelica-ventrice.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/2072cb54-6c56-46bb-bfdd-e348900a6b36/Angelica+Ventrice.jpg?format=500w",
+      "image_sha256": "20f3ff244ebd21f1145a2f530cc203dd4b30b1b13927f6aa3a1c15d58b019da0",
+      "source_description_sha256": "668886dde65e8b8785b224bb434aa5bc3e33bb4e5ec8b08b3a368ab6e4c69ba4"
+    },
+    {
+      "name": "Simon Thomsen",
+      "bio": "Peak-performance coach.",
+      "headshot_path": "/speakers/simon-thomsen.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486641-JZ8GXYMIBPKJQGFBCGAD/Simon+Thomsen.png?format=500w",
+      "image_sha256": "3f500b18e09a461de49a81ffa61e9d5661aff0d2cdb72a10fcb166c62d499458",
+      "source_description_sha256": "a290534f055a9f26a63a2e3e2b17f90e7a6af967da0edf601546ce587a52c83f"
+    },
+    {
+      "name": "Robert Clark",
+      "bio": "Income-protection specialist.",
+      "headshot_path": "/speakers/robert-clark.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/39ea1b1d-e122-47f7-b27f-99f2d3f6f0ee/Robert+Clark%2C+Prosperitas.jpg?format=500w",
+      "image_sha256": "899ddbce44d470796253c54e20b9e2385764222dcfe63244a47d119af47c1fc6",
+      "source_description_sha256": "4da5c061eb3aaadceabf506c5d56985423628bb790baea352e1c0647a40d9ad1"
+    },
+    {
+      "name": "Josh Pitts",
+      "bio": "ShrEDIT founder.",
+      "headshot_path": "/speakers/josh-pitts.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/d1bf10fb-d15c-4965-876f-4ca839133773/Josh+Pitts1.jpg?format=500w",
+      "image_sha256": "6525d13266afdc2c936547e7d4177f827e00fee803bf16b572b8fdbbd4a0a33f",
+      "source_description_sha256": "04d43c483b4acbf929b861f1f1de60315dae87f8dbc10177c1cf6359c37cd2b8"
+    },
+    {
+      "name": "Haley Parker",
+      "bio": "Fairway business-development leader.",
+      "headshot_path": "/speakers/haley-parker.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/c751b839-dbb7-4256-bb64-e8e51a4f6200/Haley+Parker.jpg?format=500w",
+      "image_sha256": "a54460ba34c201cff9673497d244a54280cbf07dafb3cbea059185f7da1661dd",
+      "source_description_sha256": "8058d85269fbe2ba215fe331faf6777f14c11a380ab5622888af12a562b08ea4"
+    },
+    {
+      "name": "Jason Jacobs",
+      "bio": "Guild Mortgage originator.",
+      "headshot_path": "/speakers/jason-jacobs.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/0f6f2fcd-06df-43b7-a559-1f1221b5ee1e/Jason+Jacobs.jpg?format=500w",
+      "image_sha256": "47b5513d179a51b5f1ac2ccbc8025302924fd8c9db2c85dc0c554bb3bca421c3",
+      "source_description_sha256": "84254c7c04f4f63106714fca3fddd28eedae1cae9542fafc88c789f746f23135"
+    },
+    {
+      "name": "Sam Mistretta",
+      "bio": "Auto Appointment Engine founder.",
+      "headshot_path": "/speakers/sam-mistretta.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/d5ed7891-8513-43fa-b4d3-1353bf1f7c08/Sam+Mistretta.jpg?format=500w",
+      "image_sha256": "8fcee5f8f2d201485d91df39d2dc3971946be83dd1c4015008a69f1e7222479f",
+      "source_description_sha256": "5a3a84e6e94207aa15fb8ba5eaa5893ef1f1d3bd9f9f1d959cafbeab5fa97e78"
+    },
+    {
+      "name": "Ken Perry",
+      "bio": "Knowledge Coop founder.",
+      "headshot_path": "/speakers/ken-perry.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/8926966c-db90-4ad9-98d9-57f5e141d7d3/Ken+Perry.png?format=500w",
+      "image_sha256": "3eaca57acc6f2bf91db6ff26fc7d42bf0f08243261d9b78e1faf84154bb1eba5",
+      "source_description_sha256": "88109a90372b7b30926e63f4271ed1a9d0af41918209220570f66602831a3b60"
+    },
+    {
+      "name": "Kristin Messerli",
+      "bio": "FirstHome IQ executive director.",
+      "headshot_path": "/speakers/kristin-messerli.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486653-K8FSJW9KH7UIRQLBF7GB/Kristin+Messerli+cropped.jpg?format=500w",
+      "image_sha256": "eee7d94e1ac93f79af5926b9a74c86d35db0b55f64028c14b957b78d16a7d44e",
+      "source_description_sha256": "e60d4e751ad602d9e69cf7688ad305013142d6426a14a5c0da0beb6a233cd117"
+    },
+    {
+      "name": "Andrew Moon",
+      "bio": "West Capital Lending executive.",
+      "headshot_path": "/speakers/andrew-moon.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/4d0578fb-8da7-4059-b433-2fc4f8c53741/Andrew+Moon.png?format=500w",
+      "image_sha256": "01c60ec4480aa56337d67e8241ce70bebe5fff74cc3d1bbff4342ae48b1f2694",
+      "source_description_sha256": "7c3a73191eba9b5a2bcc3b121aae9ccd28eb43599f742bc15cf7a4e8cfba00e2"
+    },
+    {
+      "name": "Craig Davis",
+      "bio": "Ascend Xperience founder.",
+      "headshot_path": "/speakers/craig-davis.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486660-OTW0UNP1LOH3GJUYKIHT/Craig+Davis.png?format=500w",
+      "image_sha256": "247b00f24f72656fcfc2b38af48b3fa4881882b69d6a66c574e62d7c6a72f569",
+      "source_description_sha256": "65977864db9c4ed89aedd7771b4f87816360d6aea0f8b714aab84724dd6fa570"
+    },
+    {
+      "name": "Gino Fronti",
+      "bio": "Momentum Builder co-founder.",
+      "headshot_path": "/speakers/gino-fronti.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/1779254486673-KUJXTSKCUUOMHXJTX1PH/gino.webp?format=500w",
+      "image_sha256": "fe438a2040242971e636901118a373dd740f02b4a1d25a4b15373c9e79756390",
+      "source_description_sha256": "f4283b2031ee0b911db07bc761a34b693a83476cda6c4d75b949ca5d4dad3c90"
+    },
+    {
+      "name": "Don Goettling",
+      "bio": "Momentum Builder founder.",
+      "headshot_path": "/speakers/don-goettling.webp",
+      "source_url": "https://www.momentumbuilderevent.com/",
+      "image_source_url": "https://images.squarespace-cdn.com/content/v1/6a0d448f6450cc68028dcd21/819feb85-19a8-4125-9338-c2640599d930/Don+at+SM25+%2828%29+cropped.png?format=500w",
+      "image_sha256": "5a66e405c662c33cfaa847b0cad1982cad15e65af19aa89d00376bb685f6268f",
+      "source_description_sha256": "2056981885eb47fe062985a627e4fa6e4a62d932bfd5c2b01f10ac00daa5e119"
+    }
+  ]
+}

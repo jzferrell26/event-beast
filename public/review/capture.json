@@ -1,0 +1,88 @@
+{
+  "revision": "72fb7395f8ae2c2b2f3c4f2333b8bfe40b3f8dc4",
+  "capturedAt": "2026-09-23T04:01:30.522Z",
+  "mode": "demo",
+  "scenes": [
+    {
+      "id": "home",
+      "role": "member",
+      "title": "Welcome home",
+      "path": "/",
+      "device": "phone",
+      "text": "An event-specific welcome, fast links, announcements and the next sessions.",
+      "live": "https://event-beast.vercel.app/"
+    },
+    {
+      "id": "agenda",
+      "role": "member",
+      "title": "Plan the day",
+      "path": "/agenda",
+      "device": "phone",
+      "text": "Switch days, search the program and save the sessions you want to attend.",
+      "live": "https://event-beast.vercel.app/agenda"
+    },
+    {
+      "id": "people",
+      "role": "member",
+      "title": "Find your people",
+      "path": "/people",
+      "device": "phone",
+      "text": "An opt-in attendee directory with search, networking interests and saved connections.",
+      "live": "https://event-beast.vercel.app/people"
+    },
+    {
+      "id": "inbox",
+      "role": "member",
+      "title": "Keep in touch",
+      "path": "/inbox",
+      "device": "phone",
+      "text": "Private one-to-one conversations. These example conversations are sample data.",
+      "live": "https://event-beast.vercel.app/inbox"
+    },
+    {
+      "id": "sponsor-home",
+      "role": "sponsor",
+      "title": "Your sponsor workspace",
+      "path": "/sponsor",
+      "device": "phone",
+      "text": "Sponsors see only their assigned sponsor pages and an entry point to edit each one.",
+      "live": "https://event-beast.vercel.app/sponsor"
+    },
+    {
+      "id": "sponsor-editor",
+      "role": "sponsor",
+      "title": "Make a great introduction",
+      "path": "/sponsor/60000000-0000-4000-8000-000000000002",
+      "device": "desktop",
+      "text": "Edit the company introduction, logo, booth and call-to-action with an instant attendee-page preview.",
+      "live": "https://event-beast.vercel.app/sponsor/60000000-0000-4000-8000-000000000002"
+    },
+    {
+      "id": "admin",
+      "role": "admin",
+      "title": "Run the event",
+      "path": "/admin",
+      "device": "desktop",
+      "text": "Event content, agenda, sponsors, registrations and moderation from one organizer console.",
+      "live": "https://event-beast.vercel.app/admin"
+    },
+    {
+      "id": "users",
+      "role": "admin",
+      "title": "The right access for everyone",
+      "path": "/admin/users",
+      "device": "desktop",
+      "text": "Add users, choose Admin / Sponsor / Member, and assign the sponsor pages a user can edit.",
+      "live": "https://event-beast.vercel.app/admin/users"
+    },
+    {
+      "id": "launch",
+      "role": "admin",
+      "title": "Ready for the room",
+      "path": "/admin/launch",
+      "device": "desktop",
+      "text": "Content-readiness checks and recorded verification of real email, messaging, devices and event-network testing.",
+      "live": "https://event-beast.vercel.app/admin/launch"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+/* Event-floor readability: clear secondary text and comfortable controls on
+   both light and dark surfaces. Keep these shared adjustments after features. */
+:root{--secondary:#60606d;--secondary-on-dark:#b6b6c2}
+.desktop-sidebar .brand-type b,.admin-topbar .brand-type b,.auth-story .brand-type b{color:#ff5864}
+.sidebar-credit,.auth-credit{color:#a6a6b3}
+.hero-emblem{color:#72727d}
+.quiet-card,.session-location,.session-end,.agenda-caption,.app-footer,
+.person-company,.person-city,.person-interests>span,.interest-filters>button,
+.inbox-caption,.conversation-copy time,.conversation-copy>span,
+.demo-notice,.help-topic p,.help-topic .fine-print,
+.auth-panel .back-link,.auth-description,.forgot-password,.auth-switch,.auth-assurance,
+.form-field small,.privacy-hint,.profile-save-bar>span,.profile-summary>p,
+.more-menu p,.my-profile-banner p,.sponsor-card-copy>p,.sponsor-card-copy>span,
+.sponsor-card-copy>small,.practical-facts p,.practical-description,.dietary-note p,
+.notification-note,.announcement-detail p,.announcement-detail-meta time,
+.access-card>p,.access-help p,.access-email,.auth-success p,
+.thread-person>span,.thread-privacy,.message-meta,.message-meta>button,
+.message-date,.composer-caption,.thread-older,.thread-welcome,.thread-welcome p{color:var(--secondary)}
+.interest-filters>button.active{color:#fff}
+.person-interests>span{background:#ededf1}
+.thread-messages .message-failed .message-meta,.thread-messages .message-error{color:#963244}
+.admin-sidebar nav>a,.organizer-help,.admin-demo,.admin-stats>a>span,
+.admin-stats small,.event-publication p,.admin-work-grid p,.organizer-launch-note,
+.admin-subnav>a,.admin-record-copy>p,.admin-record-copy small,.pagination,
+.admin-roster-toolbar select,.roster-table thead,.roster-table td,
+.roster-table td>span:not(.access-badge),.record-actions .text-button,
+.import-help code,.import-drop,.import-drop strong,.import-drop>span,
+.import-sample span,.report-subtitle,.report-reason,.report-heading time,
+.report-card blockquote>span,.report-actions select{color:var(--secondary)}
+.admin-sidebar nav>a.active{color:#34343e}
+.published-badge,.badge-approved{color:#326441}
+.draft-badge,.badge-pending{color:#795514}
+.sample-badge{color:#60606d}
+.badge-disabled{color:#913e51}
+.import-errors p{color:#943c4c}
+.settings-preview>p,.settings-status{color:var(--secondary-on-dark)}
+.help-callout p,.venue-feature p{color:#c4c4ce}
+.search-field input::placeholder,.composer textarea::placeholder,.form-field input::placeholder,.form-field textarea::placeholder{color:#70707e;opacity:1}
+.interest-filters>button,.profile-interest-picker>button{min-height:44px}
+.moderation-actions button,.message-meta>button{min-height:36px}
+.people-grid .person-top>a{display:inline-flex;min-width:44px;min-height:44px}
+.session-card .bookmark-button{min-width:44px;min-height:44px}
+.app-footer{font-size:10px;line-height:1.8}
+.session-card .session-location,.session-card .session-duration,.session-speakers{font-size:12px}
+.session-end{font-size:11px}
+.person-company,.person-city,.person-role,.person-link{font-size:12px}
+.person-interests>span{font-size:10px}
+.conversation-copy time,.conversation-copy>span,.inbox-caption{font-size:11px}
+.help-topic p,.practical-description,.announcement-detail p{font-size:13px}
+.admin-stats>a>span,.admin-stats small,.admin-work-grid p,.event-publication p,.organizer-launch-note p{font-size:12px}
+.admin-sidebar nav>a{font-size:12px}
+.admin-demo{font-size:11px}
+.admin-event-label>strong,.organizer-help p{font-size:11px}
+.admin-record-copy>p,.report-reason{font-size:12px}
+.admin-roster-toolbar select{font-size:12px}
+.auth-description{font-size:14px}
+.auth-assurance p,.auth-switch,.forgot-password{font-size:12px}
+.form-description{font-size:13px}
+
+@media(max-width:600px){
+  .home-hero p{font-size:13px;line-height:1.8}
+  .home-hero .button,.quick-links strong{font-size:12px}
+  .quick-links div>span{font-size:10px}
+  .quick-links>a{padding:14px 11px;min-height:82px}
+  .quick-icon{width:28px}
+  .onboarding-card strong{font-size:12px}
+  .onboarding-card>span>span{font-size:10px;line-height:1.7}
+  .home-announcement strong{font-size:12px}
+  .home-announcement p,.quiet-card p{font-size:12px}
+  .quiet-card h3{font-size:12px;line-height:1.6}
+  .page-description{font-size:13px;max-width:100%}
+  .section-title>a{font-size:11px}
+  .day-tabs span{font-size:11px}
+  .agenda-caption{font-size:10px}
+  .agenda-caption>span:last-child{max-width:210px}
+  .session-title h3,.session-card.compact .session-title h3{font-size:14px;line-height:1.5}
+  .session-time strong{font-size:19px}
+  .session-time>span:not(.time-line){font-size:10px}
+  .session-meta .type-pill{font-size:9px}
+  .session-speakers,.session-card .session-location,.session-card .session-duration,.session-card.compact .session-location{font-size:11px;line-height:1.7}
+  .session-card.compact .session-duration{font-size:12px}
+  .session-card .session-location>svg{width:13px;height:13px}
+  .agenda-ad p{font-size:11px}
+  .agenda-ad .eyebrow{font-size:8px}
+  .directory-note{font-size:10px}
+  .directory-note>a{font-size:10px}
+  .interest-filters>button{font-size:11px}
+  .results-caption{font-size:11px}
+  .person-name h2{font-size:14px;line-height:1.5}
+  .person-role,.person-company,.person-city{font-size:11px;line-height:1.7}
+  .person-company{min-height:30px}
+  .person-interests{min-height:46px;gap:5px}
+  .person-interests>span{font-size:9px;padding:4px 6px}
+  .person-link{font-size:10px}
+  .conversation-copy h2{font-size:13px}
+  .conversation-copy>p{font-size:12px}
+  .conversation-copy time,.conversation-copy>span{font-size:10px}
+  .inbox-caption,.connection-state{font-size:10px}
+  .inbox-caption>span:first-child{max-width:none}
+  .thread-person h1{font-size:13px}
+  .thread-person>span{font-size:10px}
+  .thread-privacy{font-size:10px}
+  .message-meta,.message-meta>button{font-size:10px}
+  .composer-caption{font-size:9px}
+  .message-date{font-size:10px}
+  .form-description,.privacy-option small,.form-field small,.fine-print{font-size:11px}
+  .privacy-option strong,.form-field>span{font-size:12px}
+  .privacy-hint{font-size:10px}
+  .my-profile-banner p,.more-menu p{font-size:11px}
+  .more-menu h2{font-size:13px}
+  .practical-description,.help-topic p,.announcement-detail p{font-size:12px}
+  .practical-facts p,.dietary-note p,.notification-note{font-size:11px}
+  .help-topic .fine-print{font-size:11px}
+  .auth-description{font-size:13px}
+  .auth-assurance p,.auth-switch,.forgot-password{font-size:11px}
+  .auth-panel .demo-notice{font-size:11px}
+  .app-footer{font-size:9px;flex-wrap:wrap}
+  .admin-main .page-description{font-size:12px}
+  .admin-demo{font-size:10px}
+  .admin-sidebar nav>a{font-size:11px}
+  .admin-stats>a>span,.admin-stats small{font-size:11px}
+  .event-publication strong{font-size:12px}
+  .event-publication p,.admin-work-grid p,.organizer-launch-note p{font-size:12px}
+}
