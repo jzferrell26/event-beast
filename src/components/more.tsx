@@ -14,6 +14,7 @@ export function MoreScreen() {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const rows = [
+    ...(guide.mode === "demo" || me?.role === "sponsor" || me?.isAdmin ? [{ href: "/sponsor", name: "Sponsor workspace", detail: "Set up and edit your assigned sponsor pages", icon: Trophy }] : []),
     { href: "/more/sponsors", name: "Our sponsors", detail: "The partners behind the momentum", icon: Trophy },
     { href: "/more/lunch", name: "Lunch & a little downtime", detail: "What, when and where to eat", icon: Utensils },
     { href: "/more/venue", name: "Find your way", detail: "Venue, directions and the welcome desk", icon: MapPin },

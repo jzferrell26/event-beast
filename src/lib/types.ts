@@ -20,6 +20,7 @@ export interface Sponsor {
   id: string; event_id: string; tier_id: string | null; name: string; description: string;
   logo_url: string; booth: string; cta_label: string; cta_url: string; featured: boolean;
   sort_order: number; published: boolean; is_demo: boolean;
+  content_version?: number; updated_at?: string;
 }
 export interface SponsorPlacement {
   id: string; event_id: string; day_id: string; after_session_id: string | null; sponsor_id: string;
@@ -55,6 +56,7 @@ export interface Me {
   mode: "demo" | "live"; authenticated: boolean; eligible: boolean; isAdmin: boolean;
   attendeeId: string | null; email?: string; profile: Profile | null; preferences: Preferences | null;
   directoryAllowed?: boolean; status?: string;
+  role?: "admin" | "sponsor" | "member" | null; sponsorIds?: string[];
 }
 export interface Message {
   id: number; event_id: string; conversation_id: string; sender_id: string;

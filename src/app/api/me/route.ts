@@ -20,7 +20,14 @@ export const GET = () => handle(async () => {
       profile = p.data ? (await signProfilePhotos(actor.db, [p.data as Profile]))[0] : null;
       preferences = prefs.data;
     }
+    let sponsorIds: string[] = [];
+    if (eligible && actor.attendee?.access_role === "sponsor") {
+      const assignments = await actor.db.from("sponsor_editors").select("sponsor_id").eq("event_id", actor.event.id).eq("attendee_id", actor.attendee.id);
+      databaseError(assignments.error);
+      sponsorIds = (assignments.data ?? []).map((a) => a.sponsor_id);
+    }
     return json({ mode: "live", authenticated: true, eligible, isAdmin: actor.isAdmin, attendeeId: actor.attendee?.id ?? null,
+      role: actor.isAdmin ? "admin" : eligible ? actor.attendee?.access_role : null, sponsorIds,
       email: actor.user.email, profile, preferences, directoryAllowed: actor.attendee?.directory_allowed, status: actor.attendee?.status });
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) return json({ mode: "live", authenticated: false, eligible: false, isAdmin: false, attendeeId: null, profile: null, preferences: null });

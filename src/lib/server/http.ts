@@ -29,6 +29,7 @@ export function databaseError(error: { code?: string; message: string } | null) 
   if (error.code === "42501") throw new ApiError(403, error.message);
   if (error.code === "22023" || error.code === "23514") throw new ApiError(400, error.message);
   if (error.code === "23505") throw new ApiError(409, "This record already exists.");
+  if (error.code === "40001") throw new ApiError(409, error.message);
   if (error.code === "23503") throw new ApiError(409, "This item is in use or refers to content outside this event.");
   if (error.code === "P0001") throw new ApiError(429, error.message);
   console.error("Event Beast database request failed", { code: error.code });

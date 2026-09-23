@@ -33,7 +33,7 @@ export function sessionSpeakers(guide: Guide, sessionId: string) {
 }
 export function safeNext(next: string | null | undefined): string {
   if (!next) return "/";
-  return /^\/(?:agenda(?:\/[a-f0-9-]{36})?|people(?:\/[a-f0-9-]{36})?|inbox(?:\/[a-f0-9-]{36})?|more(?:\/[a-z-]+)?|admin(?:\/[a-z_]+)?|reset-password)?$/.test(next) ? next : "/";
+  return /^\/(?:agenda(?:\/[a-f0-9-]{36})?|people(?:\/[a-f0-9-]{36})?|inbox(?:\/[a-f0-9-]{36})?|sponsor(?:\/[a-f0-9-]{36})?|more(?:\/[a-z-]+)?|admin(?:\/[a-z_]+)?|reset-password)?$/.test(next) ? next : "/";
 }
 export function httpsUrl(value: string | null | undefined): string | null {
   try { const url = new URL(value ?? ""); return url.protocol === "https:" ? url.href : null; } catch { return null; }

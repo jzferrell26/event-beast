@@ -17,6 +17,7 @@ const adminNav = [
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { href: "/admin/agenda_sessions", label: "Agenda", icon: CalendarDays },
   { href: "/admin/attendees", label: "Attendees", icon: Users },
+  { href: "/admin/users", label: "Users & roles", icon: ShieldCheck },
   { href: "/admin/sponsors", label: "Sponsors", icon: Trophy },
   { href: "/admin/lunch_locations", label: "Lunch", icon: Utensils },
   { href: "/admin/venue_locations", label: "Venue", icon: MapPin },

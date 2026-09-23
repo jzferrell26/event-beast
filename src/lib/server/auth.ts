@@ -10,25 +10,33 @@ export async function getActor() {
   if (!db) throw new ApiError(503, "Event sign-in is not available yet.");
   const { data: { user }, error } = await db.auth.getUser();
   if (error || !user) throw new ApiError(401, "Please sign in to continue.");
-  const event = await db.from("events").select("id,name,timezone").eq("slug", eventSlug()).maybeSingle();
+  let event = await db.from("events").select("id,name,timezone").eq("slug", eventSlug()).maybeSingle();
   databaseError(event.error);
+  if (!event.data && user.email_confirmed_at) {
+    const access = await db.rpc("claim_event_access", { p_slug: eventSlug() });
+    databaseError(access.error);
+    if (access.data) {
+      event = await db.from("events").select("id,name,timezone").eq("id", access.data).maybeSingle();
+      databaseError(event.error);
+    }
+  }
   if (!event.data) throw new ApiError(404, "This event is not available.");
   const [admin, membership] = await Promise.all([
     db.rpc("is_event_admin", { p_event: event.data.id }),
-    db.from("attendees").select("id,status,directory_allowed").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle(),
+    db.from("attendees").select("id,status,directory_allowed,access_role,access_version").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle(),
   ]);
   databaseError(admin.error);
   databaseError(membership.error);
   let attendee = membership;
   if (!membership.data && user.email_confirmed_at) {
-    const claim = await db.rpc("claim_attendee", { p_event: event.data.id });
+    const claim = await db.rpc(admin.data ? "claim_admin_attendee" : "claim_attendee", { p_event: event.data.id });
     databaseError(claim.error);
     if (claim.data) {
-      attendee = await db.from("attendees").select("id,status,directory_allowed").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle();
+      attendee = await db.from("attendees").select("id,status,directory_allowed,access_role,access_version").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle();
       databaseError(attendee.error);
     }
   }
-  return { db, user, event: event.data as { id: string; name: string; timezone: string }, attendee: attendee.data as { id: string; status: string; directory_allowed: boolean } | null, isAdmin: Boolean(admin.data) };
+  return { db, user, event: event.data as { id: string; name: string; timezone: string }, attendee: attendee.data as { id: string; status: string; directory_allowed: boolean; access_role: "admin" | "sponsor" | "member"; access_version: number } | null, isAdmin: Boolean(admin.data) || (attendee.data?.status === "approved" && attendee.data?.access_role === "admin") };
 }
 export async function requireMember() {
   if (isDemo()) throw new ApiError(409, "This is a sample preview. Sign-in and live changes become available when event access opens.");
@@ -40,6 +48,19 @@ export async function requireAdmin() {
   if (isDemo()) throw new ApiError(409, "This organizer preview is read-only. No event records have been changed.");
   const actor = await getActor();
   if (!actor.isAdmin) throw new ApiError(403, "Organizer access is required.");
+  return actor;
+}
+export async function requireSponsor(sponsorId?: string) {
+  if (isDemo()) throw new ApiError(409, "This sponsor preview is read-only. No page content has been changed.");
+  const actor = await getActor();
+  if (!actor.isAdmin && (actor.attendee?.status !== "approved" || actor.attendee.access_role !== "sponsor")) {
+    throw new ApiError(403, "Sponsor access is required for this workspace.");
+  }
+  if (sponsorId) {
+    const permission = await actor.db.rpc("can_edit_sponsor", { p_event: actor.event.id, p_sponsor: sponsorId });
+    databaseError(permission.error);
+    if (!permission.data) throw new ApiError(403, "This sponsor page is not assigned to your account.");
+  }
   return actor;
 }
 export async function pageAccess(next: string, admin = false) {

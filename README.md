@@ -29,6 +29,8 @@ The installable PWA has a separate offline reader for previously loaded public e
 
 ## Checks and deployment
 
+The Admin / Sponsor / Member permission model is implemented. Admins manage users and permissions at `/admin/users`; sponsors maintain their assigned pages at `/sponsor`. See [role permissions](docs/ROLES.md) and the [role-release qualification](docs/ROLE-QUALIFICATION.md). The latest local qualification is 70 database/domain tests and 49 browser checks passing, with three intentional project-specific skips.
+
 ```sh
 npm run lint
 npm run typecheck
