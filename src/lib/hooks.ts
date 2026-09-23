@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { errorMessage, request } from "./client";
+import { errorMessage, request, RequestError } from "./client";
 
 export function useDebounced<T>(value: T, delay = 250): T {
   const [debounced, setDebounced] = useState(value);
@@ -18,7 +18,8 @@ export function useResource<T>(url: string | null) {
       const data = await request<T>(url);
       if (token === generation.current) setState({ url, data, error: "", loading: false });
     } catch (error) {
-      if (token === generation.current) setState((old) => ({ url, data: old.url === url ? old.data : null, error: errorMessage(error), loading: false }));
+      const revoked = error instanceof RequestError && [401, 403, 404].includes(error.status);
+      if (token === generation.current) setState((old) => ({ url, data: !revoked && old.url === url ? old.data : null, error: errorMessage(error), loading: false }));
     }
   }, [url]);
   useEffect(() => { void refresh(); return () => { generation.current += 1; }; }, [refresh]);

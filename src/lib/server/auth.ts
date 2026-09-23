@@ -13,14 +13,21 @@ export async function getActor() {
   const event = await db.from("events").select("id,name,timezone").eq("slug", eventSlug()).maybeSingle();
   databaseError(event.error);
   if (!event.data) throw new ApiError(404, "This event is not available.");
-  const admin = await db.rpc("is_event_admin", { p_event: event.data.id });
+  const [admin, membership] = await Promise.all([
+    db.rpc("is_event_admin", { p_event: event.data.id }),
+    db.from("attendees").select("id,status,directory_allowed").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle(),
+  ]);
   databaseError(admin.error);
-  if (user.email_confirmed_at) {
+  databaseError(membership.error);
+  let attendee = membership;
+  if (!membership.data && user.email_confirmed_at) {
     const claim = await db.rpc("claim_attendee", { p_event: event.data.id });
     databaseError(claim.error);
+    if (claim.data) {
+      attendee = await db.from("attendees").select("id,status,directory_allowed").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle();
+      databaseError(attendee.error);
+    }
   }
-  const attendee = await db.from("attendees").select("id,status,directory_allowed").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle();
-  databaseError(attendee.error);
   return { db, user, event: event.data as { id: string; name: string; timezone: string }, attendee: attendee.data as { id: string; status: string; directory_allowed: boolean } | null, isAdmin: Boolean(admin.data) };
 }
 export async function requireMember() {
@@ -40,7 +47,10 @@ export async function pageAccess(next: string, admin = false) {
   try { if (admin) await requireAdmin(); else await requireMember(); }
   catch (error) {
     if (error instanceof ApiError && error.status === 403) redirect(`/access?next=${encodeURIComponent(next)}`);
-    redirect(`/auth?next=${encodeURIComponent(next)}`);
+    if (error instanceof ApiError && error.status === 401) redirect(`/auth?next=${encodeURIComponent(next)}`);
+    // A configuration/network failure should show an error, not pretend the
+    // attendee's credentials are wrong or route them through a sign-in loop.
+    throw error;
   }
 }
 export async function signProfilePhotos(db: NonNullable<Awaited<ReturnType<typeof serverSupabase>>>, profiles: Profile[]) {

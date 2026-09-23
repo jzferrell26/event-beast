@@ -7,8 +7,8 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [["list"], ["json", { outputFile: "test-results/browser-results.json" }]],
-  webServer: {
-    command: "npm run start",
+  webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
+    command: "node node_modules/next/dist/bin/next start --port 3100",
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 45000,

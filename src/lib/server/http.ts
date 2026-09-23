@@ -9,7 +9,11 @@ export function json(data: unknown, status = 200) {
 }
 export function assertSameOrigin(request: Request) {
   const origin = request.headers.get("origin");
-  if (!origin || origin !== new URL(request.url).origin) throw new ApiError(403, "Please submit this request from Event Beast.");
+  const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const forwardedProto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const requestUrl = new URL(request.url);
+  const expectedOrigin = host ? `${forwardedProto || requestUrl.protocol.replace(":", "") }://${host}` : requestUrl.origin;
+  if (!origin || origin !== expectedOrigin) throw new ApiError(403, "Please submit this request from Event Beast.");
 }
 export async function parseBody<T>(request: Request, schema: z.ZodType<T>, maxBytes = 32768): Promise<T> {
   assertSameOrigin(request);

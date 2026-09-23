@@ -2,22 +2,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Bookmark, CalendarDays, Clock3, MapPin, Search, X } from "lucide-react";
-import { eventDay, eventTime, sessionSpeakers } from "@/lib/format";
-import { useApp } from "./app-provider";
+import { currentAgendaDay, eventDay, eventTime, eventZoneLabel, sessionSpeakers } from "@/lib/format";
+import { useApp, useNow } from "./app-provider";
 import { Avatar, EmptyState, PageTitle } from "./ui";
 import { SessionCard, AgendaPlacement } from "./session-card";
 
 export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
   const { guide, saved } = useApp();
-  const [selected, setSelected] = useState(guide.days[0]?.id ?? "");
+  const [selected, setSelected] = useState<string | null>(null);
+  const now = useNow();
   const [query, setQuery] = useState("");
   const [onlySaved, setOnlySaved] = useState(savedOnly);
-  const day = guide.days.find((d) => d.id === selected) ?? guide.days[0];
+  const day = guide.days.find((d) => d.id === selected) ?? currentAgendaDay(guide.days, now, guide.event.timezone);
   const sessions = guide.sessions.filter((s) => (savedOnly || s.day_id === day?.id) && (!onlySaved || saved.sessions.includes(s.id)) && `${s.title} ${s.description} ${s.room} ${sessionSpeakers(guide, s.id).map((sp) => sp.full_name).join(" ")}`.toLowerCase().includes(query.toLowerCase()));
   return <><PageTitle eyebrow="MAKE THE MOST OF EVERY MOMENT" title={savedOnly ? "Your saved sessions." : "Your next move."} description={savedOnly ? "The sessions you want to be in the room for." : "Big ideas, practical takeaways, and space to connect."} />
     {!savedOnly && <div className="day-tabs" role="tablist" aria-label="Event day">{guide.days.map((d) => <button key={d.id} type="button" role="tab" aria-selected={day?.id === d.id} className={day?.id === d.id ? "active" : ""} onClick={() => setSelected(d.id)}><strong>{d.label}</strong><span>{eventDay(d.date, { weekday: "short", month: "short", day: "numeric" })}</span></button>)}</div>}
     <div className="agenda-toolbar"><label className="search-field"><Search size={20} /><input aria-label="Search sessions" placeholder="Find a session, speaker or topic" value={query} onChange={(e) => setQuery(e.target.value)} />{query && <button type="button" aria-label="Clear search" onClick={() => setQuery("")}><X size={18} /></button>}</label>{!savedOnly && <button type="button" className={`filter-button${onlySaved ? " selected" : ""}`} onClick={() => setOnlySaved((s) => !s)} aria-pressed={onlySaved}><Bookmark size={17} />Saved</button>}</div>
-    <div className="agenda-caption"><span>{sessions.length} {sessions.length === 1 ? "session" : "sessions"}</span><span>All times in {guide.event.timezone.replaceAll("_", " ")}{guide.mode === "demo" ? " · Sample schedule" : ""}</span></div>
+    <div className="agenda-caption"><span>{sessions.length} {sessions.length === 1 ? "session" : "sessions"}</span><span>All times in {eventZoneLabel(guide.event.timezone)}{guide.mode === "demo" || guide.event.is_demo ? " · Sample schedule" : ""}</span></div>
     {!sessions.length ? <EmptyState title={onlySaved ? "Make room for your favorites." : "No sessions found."} icon={<CalendarDays size={30} />} action={onlySaved && <Link className="button button-dark" href="/agenda">Explore the agenda</Link>}>{onlySaved ? "Tap a bookmark on any session to add it here." : query ? "Try another topic or clear the search." : "The event team will publish the agenda here."}</EmptyState> : <div className="agenda-list">{!onlySaved && !query && guide.placements.filter((p) => p.day_id === day?.id && !p.after_session_id).map((p) => <AgendaPlacement key={p.id} placement={p} />)}{sessions.map((session) => <div key={session.id}>{savedOnly && <p className="saved-day-label">{guide.days.find((d) => d.id === session.day_id)?.label}</p>}<SessionCard session={session} />{!onlySaved && !query && guide.placements.filter((p) => p.day_id === day?.id && p.after_session_id === session.id).map((p) => <AgendaPlacement key={p.id} placement={p} />)}</div>)}</div>}
   </>;
 }

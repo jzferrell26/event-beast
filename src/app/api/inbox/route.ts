@@ -4,7 +4,7 @@ import { uuid } from "@/lib/validation";
 import type { ConversationSummary } from "@/lib/types";
 import { requireMember } from "@/lib/server/auth";
 import { isDemo } from "@/lib/server/guide";
-import { databaseError, handle, json, parseBody } from "@/lib/server/http";
+import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/http";
 
 export const GET = (request: Request) => handle(async () => {
   if (isDemo()) return json({ conversations: demoConversations, hasMore: false });
@@ -20,6 +20,7 @@ export const GET = (request: Request) => handle(async () => {
 });
 export const POST = (request: Request) => handle(async () => {
   const body = await parseBody(request, z.object({ recipient: uuid }).strict());
+  if (isDemo()) throw new ApiError(409, "Messaging is read-only in the demo preview.");
   const { db, event } = await requireMember();
   const result = await db.rpc("open_conversation", { p_event: event.id, p_recipient: body.recipient });
   databaseError(result.error);
