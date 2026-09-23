@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Bookmark, MapPin, MessageCircle, Search, Users, X, Mail, Phone, Globe, ShieldCheck } from "lucide-react";
@@ -7,7 +7,7 @@ import type { Profile } from "@/lib/types";
 import { networkingInterests } from "@/lib/demo";
 import { httpsUrl } from "@/lib/format";
 import { useDebounced, useResource } from "@/lib/hooks";
-import { errorMessage, mutate, request } from "@/lib/client";
+import { errorMessage, mutate, request, RequestError } from "@/lib/client";
 import { useApp } from "./app-provider";
 import { Avatar, Busy, EmptyState, ErrorState, LoadingCards, PageTitle } from "./ui";
 import { ModerationActions } from "./moderation";
@@ -31,7 +31,7 @@ function PeopleResults({ params, onlySaved }: { params: string; onlySaved: boole
   const [hasMore, setHasMore] = useState(false);
   const active = useRef(true);
   const loading = useRef(false);
-  const load = async (offset = 0) => {
+  const load = useCallback(async (offset = 0) => {
     if (loading.current) return;
     loading.current = true; setBusy(true);
     try {
@@ -39,17 +39,19 @@ function PeopleResults({ params, onlySaved }: { params: string; onlySaved: boole
       if (!active.current) return;
       setPeople((prior) => offset === 0 ? data.people : [...prior, ...data.people.filter((p) => !prior.some((v) => v.attendee_id === p.attendee_id))]);
       setHasMore(data.hasMore); setError("");
-    } catch (error) { if (active.current) setError(errorMessage(error)); }
+    } catch (error) {
+      if (active.current) {
+        setError(errorMessage(error));
+        if (error instanceof RequestError && [401, 403].includes(error.status)) setPeople([]);
+      }
+    }
     finally { loading.current = false; if (active.current) setBusy(false); }
-  };
+  }, [params]);
   useEffect(() => {
     active.current = true;
     void load();
     return () => { active.current = false; };
-    // params is captured by this keyed child instance; the parent remounts the
-    // component whenever the search/filter query changes.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [load]);
   const visible = guide.mode === "demo" && onlySaved ? people.filter((p) => saved.attendees.includes(p.attendee_id)) : people;
   return <>{error && <ErrorState message={error} retry={() => void load(people.length)} />}{busy && !people.length ? <LoadingCards count={4} /> : !visible.length && !error ? <EmptyState title={onlySaved ? "Keep your next connection close." : "No matches just yet."} icon={<Users size={28} />}>{onlySaved ? "Bookmark an attendee to find them easily later." : "Try a different name, company or networking interest."}</EmptyState> : <><p className="results-caption">{visible.length}{hasMore ? "+" : ""} {visible.length === 1 ? "connection" : "connections"} to explore{guide.mode === "demo" ? " · Sample profiles" : ""}</p><div className="people-grid">{visible.map((person) => <PersonCard key={person.attendee_id} person={person} />)}</div>{hasMore && <button type="button" className="button button-outline load-more" disabled={busy} onClick={() => void load(people.length)}>{busy ? <Busy label="Loading…" /> : "More attendees"}</button>}</>}</>;
 }

@@ -20,8 +20,13 @@ interface AppContext {
 const Context = createContext<AppContext | null>(null);
 export function useApp() { const value = useContext(Context); if (!value) throw new Error("Event context is missing"); return value; }
 export function useNow() {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => { const interval = window.setInterval(() => setNow(Date.now()), 30000); return () => window.clearInterval(interval); }, []);
+  const { guide } = useApp();
+  const [now, setNow] = useState(() => Date.parse(guide.fetchedAt));
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setNow(Date.now()));
+    const interval = window.setInterval(() => setNow(Date.now()), 30000);
+    return () => { cancelAnimationFrame(frame); window.clearInterval(interval); };
+  }, []);
   return now;
 }
 export function AppProvider({ initialGuide, children }: { initialGuide: Guide; children: ReactNode }) {
@@ -31,20 +36,34 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const [saved, setSaved] = useState<SavedItems>({ sessions: [], attendees: [] });
   const [toast, setToast] = useState<{ message: string; error: boolean } | null>(null);
   const inflight = useRef(new Set<string>());
+  const identityGeneration = useRef(0);
+  const identityRequest = useRef<Promise<void> | null>(null);
   const online = useSyncExternalStore(subscribeOnline, onlineSnapshot, serverOnlineSnapshot);
   const router = useRouter();
   const pathname = usePathname();
   const notify = useCallback((message: string, error = false) => setToast({ message, error }), []);
-  const refreshMe = useCallback(async () => {
-    try {
-      const next = await request<Me>("/api/me"); setMe(next); setMeError("");
-      if (next.eligible) setSaved(await request<SavedItems>("/api/saved"));
-      else if (next.mode !== "demo") setSaved({ sessions: [], attendees: [] });
-    } catch (error) { setMeError(errorMessage(error)); }
+  const refreshMe = useCallback((): Promise<void> => {
+    if (identityRequest.current) return identityRequest.current;
+    const generation = identityGeneration.current;
+    const pending = (async () => {
+      try {
+        const next = await request<Me>("/api/me");
+        if (generation !== identityGeneration.current) return;
+        setMe(next); setMeError("");
+        if (next.eligible) {
+          const nextSaved = await request<SavedItems>("/api/saved");
+          if (generation === identityGeneration.current) setSaved(nextSaved);
+        } else if (next.mode !== "demo") setSaved({ sessions: [], attendees: [] });
+      } catch (error) { if (generation === identityGeneration.current) setMeError(errorMessage(error)); }
+    })();
+    identityRequest.current = pending;
+    void pending.finally(() => { if (identityRequest.current === pending) identityRequest.current = null; });
+    return pending;
   }, []);
+  const organizerRoute = pathname === "/admin" || pathname.startsWith("/admin/");
   const refreshGuide = useCallback(async () => {
-    try { const next = await request<Guide>("/api/guide"); setGuide(next); } catch { /* Existing public guide remains usable; offline banner reports connectivity. */ }
-  }, []);
+    try { const next = await request<Guide>(organizerRoute ? "/api/admin/guide" : "/api/guide"); setGuide(next); } catch { /* Existing public guide remains usable; offline banner reports connectivity. */ }
+  }, [organizerRoute]);
 
   useEffect(() => {
     void refreshMe();
@@ -57,7 +76,16 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
       });
     }
     const db = browserSupabase();
-    const listener = db?.auth.onAuthStateChange(() => { void refreshMe(); });
+    const listener = db?.auth.onAuthStateChange((event: string) => {
+      if (event === "SIGNED_OUT") {
+        identityGeneration.current += 1;
+        identityRequest.current = null;
+        setMe({ mode: "live", authenticated: false, eligible: false, isAdmin: false, attendeeId: null, profile: null, preferences: null });
+        setSaved({ sessions: [], attendees: [] });
+      }
+      // Defer work until Supabase has released its auth callback lock.
+      window.setTimeout(() => { void refreshMe(); }, 0);
+    });
     return () => listener?.data.subscription.unsubscribe();
   }, [initialGuide.mode, initialGuide.event.id, refreshMe]);
   useEffect(() => {
@@ -65,7 +93,8 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
     const focus = () => { void refreshGuide(); void refreshMe(); };
     const timer = window.setInterval(() => { if (document.visibilityState === "visible") void refreshGuide(); }, 60000);
     window.addEventListener("focus", focus);
-    return () => { window.clearInterval(timer); window.removeEventListener("focus", focus); };
+    window.addEventListener("online", focus);
+    return () => { window.clearInterval(timer); window.removeEventListener("focus", focus); window.removeEventListener("online", focus); };
   }, [online, refreshGuide, refreshMe]);
   useEffect(() => {
     if (!toast) return;

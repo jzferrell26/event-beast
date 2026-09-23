@@ -19,7 +19,7 @@ export const GET = () => handle(async () => {
   return json({ registered: registered.count ?? 0, approved: approved.count ?? 0, linked: linked.count ?? 0, sessions: sessions.count ?? 0, sponsors: sponsors.count ?? 0, reports: reports.count ?? 0, published: eventRow.data?.published, demo: false });
 });
 export const PATCH = (request: Request) => handle(async () => {
-  const body = await parseBody(request, z.object({ name: z.string().trim().min(1).max(160), tagline: z.string().trim().max(300), start_date: z.iso.date().nullable(), end_date: z.iso.date().nullable(), published: z.boolean() }).strict().refine((b) => !b.start_date || !b.end_date || b.end_date >= b.start_date, "The end date must be on or after the start date"));
+  const body = await parseBody(request, z.object({ name: z.string().trim().min(1).max(160), tagline: z.string().trim().max(300), start_date: z.iso.date().nullable(), end_date: z.iso.date().nullable(), published: z.boolean(), is_demo: z.boolean() }).strict().refine((b) => !b.start_date || !b.end_date || b.end_date >= b.start_date, "The end date must be on or after the start date"));
   const { db, event } = await requireAdmin();
   const result = await db.from("events").update(body).eq("id", event.id).select("id").single();
   databaseError(result.error);

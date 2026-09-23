@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowDown, ArrowUpRight, Check, CheckCheck, Clock3, MessageC
 import type { ConversationSummary, Message, PendingMessage } from "@/lib/types";
 import { errorMessage, mutate, request, RequestError } from "@/lib/client";
 import { eventTime } from "@/lib/format";
-import { mergeMessages, unconfirmedMessages } from "@/lib/message-state";
+import { ingestMessageBatch, unconfirmedMessages, type MessageTimeline } from "@/lib/message-state";
 import { useApp } from "./app-provider";
 import { Avatar, Busy, EmptyState, ErrorState, LoadingCards, PageTitle } from "./ui";
 import { useInboxSignal } from "./realtime";
@@ -39,7 +39,7 @@ export function InboxScreen() {
   }, []);
   useEffect(() => { mounted.current = true; void load(); return () => { mounted.current = false; }; }, [load]);
   const connection = useInboxSignal(() => void load());
-  return <><PageTitle eyebrow="GOOD CONVERSATIONS CONTINUE HERE" title="Keep in touch." description="A quieter place to turn a hello into a connection." action={<Link href="/people" className="button button-outline button-small"><MessageCircle size={17} /><span>New message</span></Link>} /><div className="inbox-caption"><span><ShieldCheck size={15} />Private, one-to-one conversations</span><span className={`connection-state state-${connection}`}>{connection === "demo" ? "Sample conversations" : connection === "offline" ? "Offline" : connection === "connected" ? "Connected" : "Syncing when connected"}</span></div>
+  return <><PageTitle eyebrow="GOOD CONVERSATIONS CONTINUE HERE" title="Keep in touch." description="A quieter place to turn a hello into a connection." action={<Link href="/people" className="button button-outline button-small" aria-label="New message"><MessageCircle size={17} /><span>New message</span></Link>} /><div className="inbox-caption"><span><ShieldCheck size={15} />Private, one-to-one conversations</span><span className={`connection-state state-${connection}`}>{connection === "demo" ? "Sample conversations" : connection === "offline" ? "Offline" : connection === "connected" ? "Connected" : "Syncing when connected"}</span></div>
     {guide.mode === "demo" && <p className="demo-notice">These conversations are examples. No messages are sent to real attendees.</p>}
     {error && <ErrorState message={error} retry={() => void load()} />}
     {loading ? <LoadingCards count={3} /> : conversations.length ? <div className="conversation-list">{conversations.map((conversation) => <Link href={`/inbox/${conversation.id}`} key={conversation.id} className={`conversation-row${Number(conversation.unread_count) > 0 ? " unread" : ""}`}><Avatar name={conversation.peer_name} src={conversation.avatar_url} /><div className="conversation-copy"><div><h2>{conversation.peer_name}</h2><time dateTime={conversation.updated_at}>{eventTime(conversation.updated_at, guide.event.timezone)}</time></div><p>{conversation.blocked_by_me ? "You blocked this attendee" : conversation.last_message ?? "Say hello and start the conversation."}</p><span>{conversation.peer_company || "Event attendee"}</span></div>{Number(conversation.unread_count) > 0 && <span className="unread-badge" aria-label={`${conversation.unread_count} unread messages`}>{Number(conversation.unread_count) > 99 ? "99+" : conversation.unread_count}</span>}</Link>)}</div> : !error && <EmptyState title="Every connection starts with hello." icon={<MessageCircle size={30} />} action={<Link href="/people" className="button button-dark">Find your people<ArrowUpRight size={17} /></Link>}>Visit the directory to start a private conversation with another attendee.</EmptyState>}
@@ -68,7 +68,7 @@ export function ThreadScreen({ id }: { id: string }) {
   const [sending, setSending] = useState(false);
   const scroll = useRef<HTMLDivElement>(null);
   const textarea = useRef<HTMLTextAreaElement>(null);
-  const records = useRef<Message[]>([]);
+  const records = useRef<MessageTimeline>({ messages: [], cursor: 0 });
   const initialized = useRef(false);
   const fetching = useRef(false);
   const rerun = useRef(false);
@@ -82,19 +82,18 @@ export function ThreadScreen({ id }: { id: string }) {
     requestAnimationFrame(() => { if (scroll.current) { scroll.current.scrollTop = scroll.current.scrollHeight; atBottom.current = true; setNewBelow(false); } });
   }, []);
   const markRead = useCallback(async () => {
-    const newest = records.current.at(-1)?.id;
+    const newest = records.current.cursor;
     if (guide.mode === "demo" || !newest || newest <= lastRead.current || marking.current || !atBottom.current || document.visibilityState !== "visible") return;
     marking.current = true;
     try { await mutate(`/api/inbox/${id}`, "PATCH", { lastReadId: newest }); lastRead.current = newest; }
     catch { /* A later read/reconnect retries; never invent read receipts. */ }
     finally { marking.current = false; }
   }, [guide.mode, id]);
-  const accept = useCallback((incoming: Message[]) => {
-    const next = mergeMessages(records.current, incoming);
-    records.current = next;
-    setMessages(next);
-    setPending((previous) => unconfirmedMessages(previous, next, ownId));
-    return next;
+  const accept = useCallback((incoming: Message[], source: "catchup" | "send" | "history" = "catchup") => {
+    records.current = ingestMessageBatch(records.current, incoming, source);
+    setMessages(records.current.messages);
+    setPending((previous) => unconfirmedMessages(previous, records.current.messages, ownId));
+    return records.current.messages;
   }, [ownId]);
 
   const reconcile = useCallback(async () => {
@@ -103,16 +102,16 @@ export function ThreadScreen({ id }: { id: string }) {
     try {
       let pages = 0, more = false;
       do {
-        const cursor = initialized.current ? records.current.at(-1)?.id : undefined;
-        const data = await request<ThreadResponse>(`/api/inbox/${id}${cursor ? `?after=${cursor}` : ""}`);
+        const cursor = initialized.current ? records.current.cursor : undefined;
+        const data = await request<ThreadResponse>(`/api/inbox/${id}${cursor !== undefined ? `?after=${cursor}` : ""}`);
         if (!mounted.current) return;
         setPeer(data.peer); setPeerReadId(Number(data.peerReadId)); setBlocked(data.blockedByMe);
         if (!initialized.current) setHasOlder(data.hasMore);
-        const previousLast = records.current.at(-1)?.id;
+        const previousLast = records.current.messages.at(-1)?.id;
         const next = accept(data.messages);
         if (!initialized.current || atBottom.current) scrollToBottom();
         else if ((next.at(-1)?.id ?? 0) > (previousLast ?? 0)) setNewBelow(true);
-        more = Boolean(cursor) && data.hasMore;
+        more = cursor !== undefined && data.hasMore;
         initialized.current = true;
         pages += 1;
       } while (more && pages < 10);
@@ -122,7 +121,7 @@ export function ThreadScreen({ id }: { id: string }) {
     } catch (error) {
       if (!mounted.current) return;
       setError(errorMessage(error));
-      if (error instanceof RequestError && [401, 403, 404].includes(error.status)) { records.current = []; setMessages([]); setPending([]); setPeer(null); }
+      if (error instanceof RequestError && [401, 403, 404].includes(error.status)) { records.current = { messages: [], cursor: 0 }; initialized.current = false; lastRead.current = 0; setMessages([]); setPending([]); setPeer(null); }
     } finally {
       fetching.current = false;
       if (mounted.current) {
@@ -135,7 +134,7 @@ export function ThreadScreen({ id }: { id: string }) {
   const connection = useInboxSignal(() => void reconcile());
 
   const loadOlder = async () => {
-    const oldest = records.current[0]?.id;
+    const oldest = records.current.messages[0]?.id;
     if (!oldest || olderLoading) return;
     setOlderLoading(true);
     const oldHeight = scroll.current?.scrollHeight ?? 0;
@@ -143,7 +142,7 @@ export function ThreadScreen({ id }: { id: string }) {
     try {
       const data = await request<ThreadResponse>(`/api/inbox/${id}?before=${oldest}`);
       if (!mounted.current) return;
-      accept(data.messages); setHasOlder(data.hasMore);
+      accept(data.messages, "history"); setHasOlder(data.hasMore);
       requestAnimationFrame(() => { if (scroll.current) scroll.current.scrollTop = oldTop + scroll.current.scrollHeight - oldHeight; });
     } catch (error) { notify(errorMessage(error), true); }
     finally { if (mounted.current) setOlderLoading(false); }
@@ -156,7 +155,7 @@ export function ThreadScreen({ id }: { id: string }) {
     try {
       const data = await mutate<{ message: Message }>(`/api/inbox/${id}`, "POST", { client_id: item.client_id, body: item.body });
       if (!mounted.current) return;
-      accept([data.message]); scrollToBottom(); void reconcile();
+      accept([data.message], "send"); scrollToBottom(); void reconcile();
     } catch (error) {
       if (mounted.current) setPending((previous) => previous.map((p) => p.client_id === item.client_id ? { ...p, status: "failed", error: errorMessage(error) } : p));
     } finally { sendingKeys.current.delete(item.client_id); if (mounted.current) setSending(sendingKeys.current.size > 0); }

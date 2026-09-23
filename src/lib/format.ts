@@ -1,4 +1,15 @@
-import type { AgendaSession, Announcement, Guide } from "./types";
+import type { AgendaDay, AgendaSession, Announcement, Guide } from "./types";
+
+export function currentAgendaDay(days: AgendaDay[], now: number, timezone: string): AgendaDay | undefined {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(now).map((part) => [part.type, part.value]));
+  const today = `${parts.year}-${parts.month}-${parts.day}`;
+  const sorted = [...days].sort((a, b) => a.date.localeCompare(b.date));
+  return sorted.find((day) => day.date === today) ?? sorted.find((day) => day.date > today) ?? sorted.at(-1);
+}
+
+export function eventZoneLabel(timezone: string): string {
+  return new Intl.DateTimeFormat("en-US", { timeZone: timezone, timeZoneName: "longGeneric" }).formatToParts(new Date("2026-01-01T12:00:00Z")).find((part) => part.type === "timeZoneName")?.value ?? timezone.replaceAll("_", " ");
+}
 
 export function initials(name: string): string {
   return name.replace(/·.*$/, "").trim().split(/\s+/).filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase() || "MB";

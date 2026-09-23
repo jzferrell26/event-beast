@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, ArrowUpRight, CalendarDays, CheckCircle2, CircleHelp, ClipboardCopy, FileUp, Flag, LayoutDashboard, MapPin, Megaphone, Plus, Search, Settings2, ShieldCheck, Trophy, Users, Utensils, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CalendarDays, CheckCircle2, CircleHelp, ClipboardCheck, ClipboardCopy, FileUp, Flag, LayoutDashboard, MapPin, Megaphone, Plus, Search, Settings2, ShieldCheck, Trophy, Users, Utensils, X } from "lucide-react";
 import { adminDefaults, adminResources, getAdminResource, instantToWall, wallToInstant, type AdminField, type AdminResource } from "@/lib/admin-resources";
 import { errorMessage, mutate, request } from "@/lib/client";
 import { useDebounced, useResource } from "@/lib/hooks";
@@ -12,6 +12,7 @@ import { Brand, Busy, EmptyState, ErrorState, LoadingCards, Modal, PageTitle } f
 
 const adminNav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/launch", label: "Launch readiness", icon: ClipboardCheck },
   { href: "/admin/event_settings", label: "Welcome & settings", icon: Settings2 },
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
   { href: "/admin/agenda_sessions", label: "Agenda", icon: CalendarDays },
@@ -41,11 +42,29 @@ export function AdminOverview() {
     <div className="admin-work-grid">{cards.map(({ title, description, href, icon: Icon }) => <Link href={href} key={href}><Icon size={27} /><h2>{title}</h2><p>{description}</p><span>Open section<ArrowRight size={16} /></span></Link>)}</div><div className="organizer-launch-note"><CircleHelp size={24} /><div><h2>Before you open the doors.</h2><p>Replace sample content with confirmed details. Check the agenda on a phone, review sponsor order, import the registration roster and test attendee sign-in before sharing the app.</p></div></div><Modal open={edit} onOpenChange={setEdit} title="Event details" description={`Event times use ${guide.event.timezone}. Publishing makes the public guide available to everyone with the link.`}><EventDetailsForm onSaved={() => { setEdit(false); void refresh(); }} /></Modal></>;
 }
 function EventDetailsForm({ onSaved }: { onSaved: () => void }) {
-  const { guide, notify } = useApp();
-  const [values, setValues] = useState({ name: guide.event.name, tagline: guide.event.tagline, start_date: guide.event.start_date, end_date: guide.event.end_date, published: guide.event.published });
+  const { guide, notify, refreshGuide } = useApp();
+  const [values, setValues] = useState({ name: guide.event.name, tagline: guide.event.tagline, start_date: guide.event.start_date, end_date: guide.event.end_date, published: guide.event.published, is_demo: guide.event.is_demo });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  return <form onSubmit={async (event) => { event.preventDefault(); setBusy(true); setError(""); try { await mutate("/api/admin/overview", "PATCH", values); notify("Event details saved."); onSaved(); } catch (error) { setError(errorMessage(error)); } finally { setBusy(false); } }}><label className="form-field"><span>Event name</span><input value={values.name} required maxLength={160} onChange={(e) => setValues({ ...values, name: e.target.value })} /></label><label className="form-field"><span>Tagline</span><input value={values.tagline} maxLength={300} onChange={(e) => setValues({ ...values, tagline: e.target.value })} /></label><div className="form-grid"><label className="form-field"><span>First event date</span><input type="date" value={values.start_date ?? ""} onChange={(e) => setValues({ ...values, start_date: e.target.value || null })} /></label><label className="form-field"><span>Last event date</span><input type="date" value={values.end_date ?? ""} onChange={(e) => setValues({ ...values, end_date: e.target.value || null })} /></label></div><label className="admin-checkbox"><input type="checkbox" checked={values.published} onChange={(e) => setValues({ ...values, published: e.target.checked })} /><span>Publish the public event guide</span></label>{error && <ErrorState message={error} />}<div className="dialog-actions"><button className="button button-red" type="submit" disabled={busy}>{busy ? <Busy /> : "Save event details"}</button></div></form>;
+  const submit = async (event: FormEvent) => {
+    event.preventDefault(); setBusy(true); setError("");
+    try { await mutate("/api/admin/overview", "PATCH", values); await refreshGuide(); notify("Event details saved."); onSaved(); }
+    catch (error) { setError(errorMessage(error)); }
+    finally { setBusy(false); }
+  };
+  return <form onSubmit={submit}>
+    <label className="form-field"><span>Event name</span><input value={values.name} required maxLength={160} onChange={(e) => setValues({ ...values, name: e.target.value })} /></label>
+    <label className="form-field"><span>Tagline</span><input value={values.tagline} maxLength={300} onChange={(e) => setValues({ ...values, tagline: e.target.value })} /></label>
+    <div className="form-grid">
+      <label className="form-field"><span>First event date</span><input type="date" value={values.start_date ?? ""} onChange={(e) => setValues({ ...values, start_date: e.target.value || null })} /></label>
+      <label className="form-field"><span>Last event date</span><input type="date" value={values.end_date ?? ""} onChange={(e) => setValues({ ...values, end_date: e.target.value || null })} /></label>
+    </div>
+    <label className="admin-checkbox"><input type="checkbox" checked={values.is_demo} onChange={(e) => setValues({ ...values, is_demo: e.target.checked })} /><span>This event uses a sample program</span></label>
+    <p className="fine-print">Turn off the sample marker only after replacing the example program with organizer-confirmed details. Individual sample records remain flagged separately.</p>
+    <label className="admin-checkbox"><input type="checkbox" checked={values.published} onChange={(e) => setValues({ ...values, published: e.target.checked })} /><span>Publish the public event guide</span></label>
+    {error && <ErrorState message={error} />}
+    <div className="dialog-actions"><button className="button button-red" type="submit" disabled={busy}>{busy ? <Busy /> : "Save event details"}</button></div>
+  </form>;
 }
 
 type Row = Record<string, unknown>;

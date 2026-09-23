@@ -4,13 +4,15 @@ This document distinguishes implemented behavior from verified operation. A succ
 
 ## Confirmed local qualification result
 
-On September 22, 2026, the final local qualification run completed with typecheck passing, lint passing, 35 automated tests passing, the Next.js production build passing, and the Playwright browser suite passing seven desktop/mobile/offline checks with one intentional desktop skip for the mobile-only navigation assertion.
+On September 22, 2026, the current release-candidate qualification completed with typecheck passing, lint passing, **54 automated database/domain tests passing**, the Next.js 16.3.6 production build passing, and the expanded Playwright suite passing **37 checks with 3 intentional project-specific skips and 0 failures** across desktop and mobile Chromium. Playwright also successfully started and stopped its own production Next.js server on port 3100, which is the same lifecycle used by CI.
 
 The PostgreSQL tests use PGlite with real PostgreSQL roles, RLS and RPC execution. They cover eligibility, verified-email claims, private profiles, conversation ownership, durable message idempotency, receipts, blocks, reports, organizer access, agenda operations, sponsor-placement constraints, imports and private storage paths. Domain tests also cover CSV parsing, event-timezone conversion, redirect boundaries, reconnect deduplication and constrained organizer schemas.
 
-The browser suite verifies the main attendee experience, organizer demo controls, mobile bottom navigation and the public-only offline cache contract in a production Next.js build. Review screenshots were captured for mobile Home, Agenda, People and desktop Organizer Overview and visually inspected during this session.
+The browser suite verifies the main attendee experience, organizer demo controls, mobile bottom navigation, agenda day switching/search/saves, directory search/privacy/saves, attendee CSV preview and duplicate validation, guided onboarding, demo mutation refusal, the Launch Center, responsive phone width, the public-only offline cache contract, and durable two-browser messaging behavior. The messaging fixture applies the actual migrations/RLS through PGlite and covers lost-response retry with one durable row, reconnect catch-up, the cursor regression where a newer local send must not skip an older unseen peer message, reload history and blocking.
 
-The dedicated Cuantico AI Vercel project was created and its first deployment completed successfully. The public alias is https://event-beast.vercel.app. The full Playwright browser suite was rerun against that hosted alias and passed the same seven desktop/mobile/offline checks with the mobile-only desktop skip. It is intentionally configured as a labeled demo preview until the dedicated Supabase environment is approved, created and qualified.
+Accessibility checks use `@axe-core/playwright` against Home, Agenda, People, Inbox, Help, Organizer Overview, Launch Center and Auth in both desktop and mobile projects with WCAG A/AA tags. The current built application reports **0 axe violations across those 16 route/profile combinations**. Updated screenshots for mobile Home, Agenda, People, Inbox and Launch Center plus desktop Organizer Overview and Launch Center were captured and visually reviewed; no unintended horizontal overflow, overlapping layout or broken navigation was observed.
+
+The dedicated Cuantico AI Vercel project already exists at https://event-beast.vercel.app and is intentionally configured as a labeled demo preview until the dedicated Supabase environment is approved, created and qualified. The previously deployed committed baseline was hosted-qualified successfully. The current Launch Center/reliability/accessibility increment must be committed, deployed from a clean revision and rerun against the hosted alias before this record treats the new revision as hosted-qualified.
 
 The managed Supabase Auth, Storage and Realtime interfaces are represented by small database shims in the local PostgreSQL suite. Local qualification therefore does not establish successful hosted email delivery, WebSocket transport, production storage upload behavior or the required two-real-account messaging check.
 
@@ -26,11 +28,12 @@ npm run lint
 npm run typecheck
 npm test
 npm run build
+npm run test:e2e
 ```
 
 Review every failing command. Do not suppress auth/RLS test failures or switch to a permissive policy to make a demonstration work. Run the production server on port 3100 to qualify service-worker behavior; development does not register the worker automatically.
 
-Then run the Playwright browser suite and the screenshot review helper.
+Then run `node scripts/capture-review.mjs` and visually inspect the generated review images. GitHub Actions repeats lint, typecheck, unit/database/domain tests, build, Chromium installation and the full Playwright suite on every pull request and push to `main`.
 
 ## Browser checks
 
@@ -54,4 +57,4 @@ Exercise concurrent sign-in and first-load traffic at a representative level for
 
 ## Launch prerequisites still requiring external configuration
 
-Dedicated Cuantico Supabase project cost approval and creation; migration application; organizer bootstrap; production email sender and callback allowlist; confirmed event content; real attendee import; dedicated Vercel project and production domain/environment configuration; two-account live browser checks; hosted Auth/Realtime/Storage verification; deployment verification.
+The dedicated Vercel project is already created. Remaining live gates are: explicit approval for the quoted **$10/month dedicated Event Beast Supabase project**, project creation, migration application, organizer bootstrap, production email sender and callback allowlist, confirmed organizer event content, real attendee import, Vercel environment connection to that dedicated backend, two independent real-account messaging/recovery checks, hosted Auth/Realtime/Storage verification, representative shared-network/burst testing and physical iPhone/Android install/offline checks. Do not switch the public alias out of demo mode until those checks are complete.
