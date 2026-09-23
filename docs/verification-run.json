@@ -1,29 +1,33 @@
 {
-  "timestamp": "2026-09-22T21:40:31.6631123-05:00",
+  "timestamp": "2026-09-22T22:16:33.2130254-05:00",
   "branch": "feat/event-beast-launch",
-  "baseCommit": "44eed531861b53326f91a81276e9ebbf06642926",
+  "qualifiedRevision": "commit-containing-this-record",
   "pullRequest": "https://github.com/jzferrell26/event-beast/pull/1",
   "results": [
     { "command": "npm run typecheck", "exitCode": 0 },
     { "command": "npm run lint", "exitCode": 0 },
-    { "command": "npm test", "exitCode": 0, "detail": "35 tests passed" },
-    { "command": "npm run build", "exitCode": 0, "detail": "Next.js 16.3.6 production build completed" },
-    { "command": "playwright test", "exitCode": 0, "detail": "7 passed, 1 intentional desktop skip" },
-    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People and desktop Organizer Overview screenshots captured and reviewed" },
-    { "command": "PLAYWRIGHT_BASE_URL=https://event-beast.vercel.app playwright test", "exitCode": 0, "detail": "Hosted Vercel deployment: 7 passed, 1 intentional desktop skip" }
+    { "command": "npm test", "exitCode": 0, "detail": "54 tests passed across 6 files" },
+    { "command": "npm run build", "exitCode": 0, "detail": "Next.js 16.3.6 production build completed; 23 app routes/pages generated" },
+    { "command": "npm run test:e2e", "exitCode": 0, "detail": "37 passed, 3 intentional project-specific skips, 0 failed across desktop/mobile Chromium; Playwright self-managed production server lifecycle verified" },
+    { "command": "@axe-core/playwright accessibility matrix", "exitCode": 0, "detail": "0 WCAG A/AA axe violations across 8 routes in desktop and mobile projects (16 route/profile combinations)" },
+    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People/Inbox/Launch Center and desktop Organizer Overview/Launch Center captured and visually reviewed" },
+    { "command": "git diff --check", "exitCode": 0 },
+    { "command": "source mojibake scan", "exitCode": 0, "detail": "No suspicious encoding sequences found outside ignored/generated files" }
   ],
   "automatedChecksPassed": true,
   "browserQualificationPassed": true,
   "productionBuildVerified": true,
-  "pushVerified": true,
-  "deploymentVerified": true,
+  "visualReviewPassed": true,
+  "pushVerified": false,
+  "deploymentVerifiedForThisRevision": false,
   "deployment": {
     "provider": "Vercel",
     "team": "Cuantico AI",
     "project": "event-beast",
     "url": "https://event-beast.vercel.app",
-    "mode": "demo preview"
+    "mode": "demo preview",
+    "note": "Dedicated project exists; this release-candidate revision still requires a clean committed deployment and hosted Playwright rerun."
   },
   "liveInfrastructureQualified": false,
-  "remainingExternalGate": "Dedicated Supabase project is not created because its quoted recurring cost requires owner approval."
+  "remainingExternalGate": "Dedicated Event Beast Supabase project is not created because its quoted $10/month recurring cost requires explicit owner approval. Hosted Auth, email, Storage, Realtime, two-real-account, physical-device and arrival-load checks remain pending."
 }
