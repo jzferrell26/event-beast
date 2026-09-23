@@ -1,0 +1,45 @@
+project_id = "event-beast"
+
+[api]
+enabled = true
+port = 54361
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54362
+shadow_port = 54360
+major_version = 17
+
+[db.seed]
+enabled = false
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+port = 54363
+
+[inbucket]
+enabled = true
+port = 54364
+
+[storage]
+enabled = true
+file_size_limit = "8MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:3100"
+additional_redirect_urls = ["http://localhost:3100/auth/callback", "http://localhost:3100/auth/confirm"]
+jwt_expiry = 3600
+enable_signup = true
+minimum_password_length = 12
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = true
+
+[realtime]
+enabled = true
