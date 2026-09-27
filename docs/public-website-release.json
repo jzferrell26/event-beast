@@ -1,14 +1,27 @@
 {
-  "checkedAt": "2026-09-23T11:50:39.059Z",
-  "appRevision": "7ffc599f5b6281ee43c1307e3d405d93835144ab",
-  "deployment": "https://event-beast-51bxm7po9-cuantico-ai.vercel.app",
+  "checkedAt": "2026-09-27T03:32:03.556Z",
+  "appRevision": "c9d00ae994c4502198642ff69dbaccd7fb9d91eb",
+  "expectedRevision": "c9d00ae994c4502198642ff69dbaccd7fb9d91eb",
+  "deployment": "https://event-beast-juk5ye23b-cuantico-ai.vercel.app",
   "alias": "https://event-beast.vercel.app",
   "mode": "live",
   "emailSignupOpen": false,
+  "realInboxDeliveryVerified": false,
+  "physicalDevicesVerified": false,
+  "contentCounts": {
+    "days": 3,
+    "sessions": 33,
+    "speakers": 41,
+    "headshots": 38
+  },
   "passed": true,
   "checks": [
     {
-      "name": "Published guide uses the dedicated real event and omits private contact fields",
+      "name": "The live deployment identifies the expected Git revision without exposing private configuration",
+      "passed": true
+    },
+    {
+      "name": "Published guide contains real public event content and omits private contacts and organizer review notes",
       "passed": true
     },
     {
@@ -16,31 +29,39 @@
       "passed": true
     },
     {
-      "name": "Live mobile route /: readable, fits viewport and no automated accessibility violations",
+      "name": "Live mobile route /: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Live mobile route /agenda: readable, fits viewport and no automated accessibility violations",
+      "name": "Live mobile route /agenda: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Live mobile route /more/speakers: readable, fits viewport and no automated accessibility violations",
+      "name": "Live mobile route /more/speakers: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Live mobile route /more/speakers/339d684f-d2c4-557c-94ce-c6ca249f8517: readable, fits viewport and no automated accessibility violations",
+      "name": "Live mobile route /more/speakers/339d684f-d2c4-557c-94ce-c6ca249f8517: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Live mobile route /join: readable, fits viewport and no automated accessibility violations",
+      "name": "Live mobile route /more/sponsors: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Email-ready gate rejects new signup before Auth/email operation",
+      "name": "Live mobile route /more/help: fits viewport and no automated accessibility violations",
       "passed": true
     },
     {
-      "name": "Published public event essentials remain readable offline",
+      "name": "Live mobile route /join: fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Public browser routes produce no uncaught page errors",
+      "passed": true
+    },
+    {
+      "name": "Public event essentials work offline while private responses and release metadata stay out of Cache Storage",
       "passed": true
     }
   ]
