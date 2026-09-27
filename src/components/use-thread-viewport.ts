@@ -20,7 +20,7 @@ export function useThreadViewport(ref: RefObject<HTMLElement | null>) {
     };
     const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(update); };
     const observer = new ResizeObserver(schedule);
-    for (const node of document.querySelectorAll('.topbar,.bottom-nav,.demo-strip,.offline-banner')) observer.observe(node);
+    for (const node of document.querySelectorAll('.topbar,.bottom-nav,.demo-strip,.offline-banner')) observer.observe(node, { box: 'border-box' });
     const keyboard = new MutationObserver(schedule);
     keyboard.observe(document.body, { attributes: true, attributeFilter: ['data-keyboard'] });
     viewport?.addEventListener('resize', schedule); viewport?.addEventListener('scroll', schedule);

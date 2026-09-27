@@ -29,4 +29,14 @@ Reference standards: the 44px target is the chosen enhanced touch-size design ta
 
 ## Release record
 
-Implementation and exact results will be recorded after qualification. Browser emulation does not replace a final physical iPhone/Android and venue-Wi-Fi rehearsal. Existing email, roster and organizer-content launch gates are separate from this pass.
+The full mobile implementation is qualified locally: lint, TypeScript, production build and **142 unit/domain/asset tests** pass. Chromium reports **109 browser passes and three intentional project-specific skips**; the focused WebKit phone suite reports **20 passes and no skips**. The matrix includes 320, 375, 390, 430 and 768 CSS-pixel layouts, unchanged desktop controls, long unbroken labels, full portraits/biographies, independent bookmark taps, day-key navigation, clipboard denial, keyboard/rotation/reconnect draft preservation, zoom discrimination, safe-area offsets and editable modal bounds.
+
+All eight 1440px desktop routes matched the original `b71f994` baseline **pixel-for-pixel, with zero changed color channels**: Home, Agenda, People, Inbox, a conversation, Speakers, Venue and Join. The 390px synthetic Home hero decreased from 368.97px to 237.89px (about 36%), putting the current/next session immediately beneath it rather than below the promotional grid. The source-backed mobile views reuse the already downloaded public guide; new shortcut links do not speculate navigation requests.
+
+The header measurement uses border-box ResizeObserver data, including safe-area padding, and detects streamed/replaced shell elements. Losing connectivity does not replace the viewport observer. Long speaker names and venue labels wrap rather than widening the phone viewport.
+
+WebKit 1.63 offline emulation rejects service-worker responses before the worker can supply them ([upstream issue 42775](https://github.com/microsoft/playwright/issues/42775)). The WebKit regression therefore stops an isolated local origin after caching the actual shipped worker, reader and logo; it verifies that the guide still renders and that a fresh uncached browser cannot reach that origin. Chromium retains normal offline-emulation coverage. No production service is stopped for this test.
+
+`docs/mobile-first-qualification.json` records the local results. After merge, `scripts/verify-mobile-release.mjs` checks the exact production revision, original logo bytes, closed email gate and real public layouts on both browser engines when `EVENT_BEAST_VERIFY_WEBKIT=true`. It writes fresh evidence under `test-results/mobile-release`; `scripts/verify-public-website.mjs` separately checks the deployed public-only offline guide and private-API denial. These read-only scripts do not create attendees, send mail/messages or change event settings.
+
+Browser and geometry emulation do not replace a final physical iPhone/Android and venue-Wi-Fi rehearsal. Existing email, roster and organizer-content launch gates are separate from this pass.

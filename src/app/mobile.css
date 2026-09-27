@@ -114,7 +114,7 @@
   .session-card .session-title h3,.session-card.compact .session-title h3{font-size:16px;line-height:1.4;overflow-wrap:anywhere}
   .session-card .session-title:after{content:'';position:absolute;inset:0;border-radius:12px}
   .session-card .bookmark-button{position:relative;z-index:2;min-width:44px;height:44px;background:#f7f7f9;border-radius:10px}
-  .session-card .session-speakers{font-size:13px;line-height:1.6}
+  .session-card .session-speakers{font-size:13px;line-height:1.6;overflow-wrap:anywhere;min-width:0}
   .session-card .session-location,.session-card .session-duration{font-size:13px;line-height:1.55;align-items:flex-start;overflow-wrap:anywhere}
   .session-card .session-location>svg{width:15px;height:17px}
   .session-card .session-end{display:block;flex-basis:100%;border:0;padding:0;margin:4px 0 0 20px;font-size:12px}
@@ -213,9 +213,9 @@
   .mobile-venue-tools>a{flex:1;min-height:48px;font-size:13px;background:#fff;border:1px solid #dcdce3;border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px}
   .practical-grid{grid-template-columns:1fr;gap:14px}
   .practical-card-content{padding:20px;display:flex;flex-direction:column;align-items:stretch}
-  .practical-card-content>h2{font-size:32px;line-height:1.1;order:0}
+  .practical-card-content>h2{font-size:32px;line-height:1.1;order:0;overflow-wrap:anywhere}
   .practical-card-content>.practical-facts{order:1;margin:14px 0 0;gap:10px}
-  .practical-facts p{font-size:15px;line-height:1.6;align-items:flex-start}
+  .practical-facts p{font-size:15px;line-height:1.6;align-items:flex-start;overflow-wrap:anywhere;min-width:0}
   .practical-facts p>svg{margin-top:4px}
   .practical-card-content>.button{order:2;width:100%;min-height:48px;margin:14px 0 0}
   .practical-card-content>.mobile-copy-address{display:inline-flex;order:2;width:100%;min-height:44px;margin-top:6px}

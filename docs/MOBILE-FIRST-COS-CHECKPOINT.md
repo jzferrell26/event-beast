@@ -1,5 +1,7 @@
 # Mobile-first work — COS update checkpoint
 
+**Historical checkpoint — resumed September 27.** The paused implementation below was completed and locally qualified after the COS update. See `MOBILE-FIRST-IMPLEMENTATION.md`, `mobile-first-qualification.json` and the newest entry in `QUALIFICATION.md` for current results. Do not restart the old work sequence or treat the historical pending checks below as the present release state.
+
 ## Resume here
 
 Jonathan is installing a Chat On Steroids update. Work is paused intentionally after saving this checkpoint, not because the mobile pass is complete. Resume the existing implementation; do not recreate the branch, reimport speakers, change the logo, or restart the event project.

@@ -107,7 +107,9 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
       navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then((registration) => registration.active?.postMessage({ type: "REFRESH_PUBLIC_GUIDE" })).catch(() => { /* Install is optional. */ });
     }
   }, []);
-  useEffect(() => observeMobileViewport(), [online]);
+  // The observer discovers inserted/removed offline banners itself. Keep one
+  // subscription so losing Wi-Fi while typing preserves the keyboard baseline.
+  useEffect(() => observeMobileViewport(), []);
 
   const toggleSave = useCallback(async (kind: "session" | "attendee", id: string) => {
     const key = `${kind}:${id}`;

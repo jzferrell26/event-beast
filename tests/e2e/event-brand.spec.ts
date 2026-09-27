@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
+import { verifyWebKitOfflineOrigin } from './helpers/offline-origin';
 
 const eventBrand: { asset_path: string; sha256: string } = JSON.parse(readFileSync(new URL("../../data/event-brand.json", import.meta.url), "utf8"));
 
@@ -36,7 +37,11 @@ test("the official logo replaces the placeholder in every shared app header", as
   await expect(page).toHaveURL(/\/$/);
 });
 
-test("the original logo remains available in the offline public guide", async ({ page, context }) => {
+test("the original logo remains available in the offline public guide", async ({ page, context, browser, browserName }) => {
+  if (browserName === 'webkit') {
+    await verifyWebKitOfflineOrigin(page, browser);
+    return;
+  }
   await page.goto("/");
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await expect.poll(() => page.evaluate(async (assetPath) => Boolean(await (await caches.open("event-beast-public-v1")).match(assetPath)), eventBrand.asset_path)).toBe(true);

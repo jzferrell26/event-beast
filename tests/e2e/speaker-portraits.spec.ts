@@ -33,7 +33,12 @@ test('speaker cards preserve the full portrait and published biography', async (
   await expect(img).toHaveCSS('object-fit', 'contain');
   await expect(img).toHaveCSS('border-radius', '0px');
   const bounds = await img.boundingBox();
-  expect(bounds?.width).toBeGreaterThan(200);
+  // Phone cards deliberately use a smaller editorial canvas; desktop keeps
+  // its approved large portrait. Neither device may crop the source image.
+  if (page.viewportSize()!.width <= 900) {
+    expect(bounds!.width).toBeGreaterThanOrEqual(80);
+    expect(bounds!.width).toBeLessThanOrEqual(112);
+  } else expect(bounds?.width).toBeGreaterThan(200);
   expect(bounds!.height).toBeGreaterThan(bounds!.width);
   expect(bounds!.height).toBeCloseTo(bounds!.width * 5 / 4, 0);
   await expect(card.locator('.speaker-card-bio')).toHaveText(guide.speakers[0].bio);

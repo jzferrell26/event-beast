@@ -32,7 +32,8 @@ export interface ViewportMetrics {
 
 /** Zoom is not a keyboard. Address-bar movement alone is not a keyboard. */
 export function mobileKeyboardOpen(metrics: ViewportMetrics): boolean {
-  return metrics.editing && Math.abs(metrics.scale - 1) < 0.05
+  return [metrics.layoutHeight, metrics.visualHeight, metrics.baselineHeight, metrics.scale].every(Number.isFinite)
+    && metrics.visualHeight > 0 && metrics.editing && Math.abs(metrics.scale - 1) < 0.05
     && Math.max(metrics.layoutHeight, metrics.baselineHeight) - metrics.visualHeight > 120;
 }
 
