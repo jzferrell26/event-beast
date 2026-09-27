@@ -1,7 +1,7 @@
 /* Event Beast: cache only the explicitly public guide and its offline reader.
  * Never cache navigated app HTML, RSC, auth, private API data or admin pages. */
 const CACHE = "event-beast-public-v1";
-const CORE = ["/offline.html", "/offline.js", "/offline-base.css", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png"];
+const CORE = ["/offline.html", "/offline.js", "/offline-base.css", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png", "/branding/momentum-builder-live-2026.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE)).then(() => self.skipWaiting()));
