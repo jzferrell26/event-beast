@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-09-27T11:41:50.950Z",
+  "description_policy": "Factual professional summaries sourced from the speakers’ own published websites. Photos paired by the company/author page, not face recognition.",
+  "speakers": [
+    {
+      "name": "Jay Jones",
+      "source_url": "https://cuantico.us/about",
+      "image_source_page": "https://cuantico.us/about",
+      "image_source_url": "https://cuantico.us/lovable-uploads/cc78f746-af4d-47d9-8405-12d7c24a8e72.png",
+      "bio": "Jay Jones is the Founder and CEO of Cuantico AI. His background spans telecommunications and business coaching, and his work focuses on applying AI-powered voice technology to lead qualification, follow-up, and more effective client conversations.",
+      "previous_import_bio": "",
+      "headshot_path": "/speakers/jay-jones.webp",
+      "image_width": 730,
+      "image_height": 730,
+      "image_sha256": "151aa9761cfb99a64cfeb07103e1715e6088c616dae7228071d8724c9b9ae9ec"
+    },
+    {
+      "name": "Eric Post",
+      "source_url": "https://ericpost-thoughts.huzihalo.com/about/",
+      "image_source_page": "https://www.huzilaunch.com/",
+      "image_source_url": "https://static.wixstatic.com/media/94eb8f_e4c91d908f5f4549a0c4593d1c18c821~mv2.jpg",
+      "bio": "Eric Post is the Founder and CEO of Huzi.ai, a speaker, strategist, and investor focused on practical, human-centered AI. He has built and operated businesses across real estate, mortgage, health, wellness, and technology, and advises leaders on AI strategy, business judgment, and customer trust.",
+      "previous_import_bio": "",
+      "headshot_path": "/speakers/eric-post.webp",
+      "image_width": 742,
+      "image_height": 1094,
+      "image_sha256": "71f018538e24bff07ae5de9f7a0a2adeaa6802069e621733778d78a2ed90f8d4"
+    }
+  ]
+}

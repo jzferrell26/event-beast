@@ -2,6 +2,12 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 27 speaker portrait and biography correction
+
+The speaker-specific layout passes lint, TypeScript, the production build, **124 SQL/domain/asset tests**, and **75 desktop/mobile browser checks with three intentional skips and no failures**. Tests cover uncropped 4:5 portraits, complete biographies, source links, biography search, existing session links, and stable missing-image/replacement behavior. Accessibility coverage includes the speaker directory and detail views. The attendee directory's shared avatars were not changed.
+
+The source-backed content sync completed with **44 speakers, 44 biographies and 44 portraits**: 42 profiles from the official event site and two previously linked speakers supplemented from their own published company/author pages. All 41 existing speaker IDs and 30 session links were preserved. See `docs/SPEAKER-REFRESH.md` for sources and repeatable verification and `docs/speaker-content-sync.json` for the database-sync result. The deployed browser verifier writes fresh release-specific evidence under `test-results/speaker-release`; these source tests alone do not assert a production deployment.
+
 ## September 26 event-day readiness increment (September 27 UTC)
 
 The release candidate passes **121 SQL/domain tests**, lint, TypeScript and the production build. The complete browser suite passes **67 checks with 3 intentional project-specific skips and no failures**, including 24 route/device accessibility scans with no axe violations. The new inbox regression was first reproduced against the prior build: a 60-conversation window became 59 after an older thread moved to the top. It now preserves all loaded pages and refreshes older metadata and access removals on desktop and mobile. Deployed public-route verification also identified insufficient sponsor-tier text contrast; it was corrected, and both sponsors-page device profiles are now included in the accessibility suite.

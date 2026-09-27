@@ -1,7 +1,27 @@
-.speaker-profile-hero{display:flex;gap:24px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px}
-.speaker-profile-hero .avatar{width:112px;height:112px;flex-shrink:0;font-size:32px}
-.speaker-profile-hero h1{font:700 46px/1.05 var(--display);margin-top:12px}
-.speaker-profile-hero p{font-size:13px;color:#62626d;line-height:1.8;margin-top:12px}
+.speakers-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;align-items:stretch}
+.speaker-card{display:flex;flex-direction:column;min-width:0;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease}
+.speaker-card:focus-visible{outline:3px solid #d71024;outline-offset:4px}
+.speaker-card:hover{box-shadow:0 8px 24px #1111130a}
+.speaker-portrait{position:relative;aspect-ratio:4/5;width:100%;min-width:0;flex-shrink:0;background:#ececef;isolation:isolate}
+.speaker-portrait>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center center;border-radius:0}
+.speaker-portrait-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#e9e9ed;color:#565663}
+.speaker-portrait-placeholder>span{font:700 78px/1 var(--display);letter-spacing:2px}
+.speaker-portrait-placeholder>small{font-size:12px}
+.speaker-card-copy{display:flex;flex:1;flex-direction:column;gap:13px;padding:24px;min-width:0}
+.speaker-card-copy h2{font-size:19px;line-height:1.35;letter-spacing:-.3px;overflow-wrap:anywhere}
+.speaker-card-bio{font-size:14px;line-height:1.75;color:#565663;white-space:pre-line;overflow-wrap:anywhere;padding-bottom:7px}
+.speaker-card-link{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:16px;margin-top:auto;min-height:44px;font-size:12px;font-weight:650;color:#50505d}
+.speaker-card-link>svg{flex-shrink:0;color:#d71024}
+.speaker-profile-hero{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:36px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:32px}
+.speaker-profile-hero .speaker-portrait{border-radius:10px;overflow:hidden}
+.speaker-profile-copy{padding:14px 0;min-width:0}
+.speaker-profile-hero h1{font:700 clamp(36px,4vw,56px)/1.05 var(--display);margin-top:14px;overflow-wrap:anywhere}
+.speaker-profile-title{font-size:15px;color:#565663;line-height:1.8;margin-top:12px}
+.speaker-biography{margin-top:28px}
+.speaker-biography h2{font-size:16px;line-height:1.4;margin-bottom:12px}
+.speaker-biography p{font-size:16px;line-height:1.85;color:#50505d;white-space:pre-line;overflow-wrap:anywhere}
+.speaker-source-link{font-size:12px;line-height:1.6;min-height:44px;margin-top:18px}
+@media(max-width:1050px){.speakers-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.speaker-profile-hero{grid-template-columns:minmax(190px,250px) minmax(0,1fr);gap:25px}}
 .agenda-working-notice{font-size:12px;line-height:1.8;padding:15px 18px;background:#fff3d4;border:1px solid #e5cd8b;border-radius:9px;margin-bottom:20px;color:#675226}
 .admin-record-copy .admin-import-note{font-size:10px;background:#fff3d4;color:#675226;padding:9px 12px;border-radius:6px;margin-top:10px;display:block;-webkit-line-clamp:unset;white-space:normal}
 .speaker-card:hover{border-color:#b5b5c1}
@@ -12,4 +32,4 @@
 .access-card form .button{margin-top:15px}
 .private-contact-editor{border-top:1px solid var(--line);margin-top:28px;padding-top:22px}
 .private-contact-editor h2{font:700 26px/1.1 var(--display)}
-@media(max-width:600px){.speaker-profile-hero{padding:25px 20px;gap:16px;align-items:flex-start}.speaker-profile-hero .avatar{width:78px;height:78px;font-size:25px}.speaker-profile-hero h1{font-size:34px}.speaker-profile-hero .eyebrow{font-size:7px}.speaker-profile-hero p{font-size:11px}.agenda-working-notice{font-size:10px;padding:13px 15px}}
+@media(max-width:600px){.speakers-grid{grid-template-columns:1fr;gap:22px}.speaker-card-copy{padding:22px;gap:12px}.speaker-card-copy h2{font-size:21px}.speaker-card-bio{font-size:14px}.speaker-profile-hero{grid-template-columns:minmax(0,1fr);padding:20px;gap:10px}.speaker-profile-hero .speaker-portrait{max-width:360px;justify-self:center}.speaker-profile-copy{padding:14px 0 0}.speaker-profile-hero h1{font-size:40px}.speaker-profile-hero .eyebrow{font-size:10px;line-height:1.8}.speaker-biography{margin-top:22px}.speaker-biography p{font-size:15px}.agenda-working-notice{font-size:10px;padding:13px 15px}}

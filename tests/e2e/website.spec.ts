@@ -27,8 +27,8 @@ test('speaker directory links to a biography and related sessions', async ({ pag
   await page.goto('/more/speakers');
   await expect(page.getByRole('heading', { name: 'Meet your speakers.' })).toBeVisible();
   await page.getByRole('textbox', { name: 'Search speakers' }).fill(demoGuide.speakers[0].full_name);
-  await expect(page.locator('.people-grid > a')).toHaveCount(1);
-  await page.locator('.people-grid > a').click();
+  await expect(page.locator('.speakers-grid > a')).toHaveCount(1);
+  await page.locator('.speakers-grid > a').click();
   await expect(page.getByRole('heading', { name: demoGuide.speakers[0].full_name, exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Catch them on the agenda' })).toBeVisible();
 });
