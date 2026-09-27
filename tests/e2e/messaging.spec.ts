@@ -80,12 +80,15 @@ test("two browser sessions reconcile durable sends, lost responses and blocking"
     const a = await alice.newPage();
     const b = await bob.newPage();
     await a.goto(`/inbox/${threadId}`); await b.goto(`/inbox/${threadId}`);
-    // Replace the intentionally static demo bootstrap with the live-shaped
-    // guide fixture through the same refresh path as the production app.
-    await a.evaluate(() => window.dispatchEvent(new Event("focus")));
-    await b.evaluate(() => window.dispatchEvent(new Event("focus")));
-    await expect(a.getByLabel("Your message", { exact: true })).toBeEnabled();
-    await expect(b.getByLabel("Your message", { exact: true })).toBeEnabled();
+    // Replace the sample SSR bootstrap via the application's real refresh
+    // path. Navigation can finish before React installs its focus listeners;
+    // wait for the fixture transition rather than racing a single event.
+    for (const page of [a, b]) {
+      await expect.poll(async () => {
+        await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+        return page.getByLabel("Your message", { exact: true }).isEnabled();
+      }).toBe(true);
+    }
 
     await a.getByLabel("Your message", { exact: true }).fill("Hello from the phone browser");
     await a.getByRole("button", { name: "Send message", exact: true }).click();
