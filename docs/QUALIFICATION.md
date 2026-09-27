@@ -2,6 +2,18 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 27 mobile-first event-day release
+
+The resumed mobile pass implements the approved black mobile header, compact now/next Home, priority notices, sticky agenda/search/day controls and jump action, readable attendee/speaker browsing, full uncropped portraits and biographies, larger touch targets, keyboard-aware conversations, and venue/help/offline shortcuts. All changes to visual presentation are scoped to the existing mobile breakpoint. The official logo and speaker source assets are unchanged; no database migration, content import, email/DNS/billing change or signup activation is part of this release.
+
+**Source qualification:** lint, TypeScript, production build, **142 unit/domain/asset tests**, **109 Chromium browser passes with three intentional skips**, and **20 focused WebKit passes with no skips**. The regression matrix exercises five phone/tablet widths, real browser hit testing, date/time boundaries, unpublished content, long text, clipboard failure, viewport resize/panning/zoom, rotation, connectivity changes, modal bounds and private-data boundaries. Existing paired messaging/database retry/read/blocking tests remain green.
+
+**Desktop parity:** eight fixed-clock synthetic routes at 1440px match the pre-change baseline pixel-for-pixel (zero changed color channels). Mobile screenshots were visually inspected. The 390px Home hero is 237.89px tall versus 368.97px before the pass. This is a layout measurement, not a network-speed or arrival-capacity benchmark.
+
+**Offline WebKit qualification:** an upstream Playwright 1.63 offline-emulation defect ([42775](https://github.com/microsoft/playwright/issues/42775)) also rejects literal service-worker responses. The test instead shuts down an isolated local origin after caching the actual application worker/reader/logo, verifies the public guide remains usable, and checks that a fresh uncached browser fails against the stopped origin. Chromium uses the existing offline flag tests. Neither method claims physical-device or venue-network testing.
+
+Local evidence is in `docs/mobile-first-qualification.json`. Release-specific production checks are performed after deployment by `scripts/verify-mobile-release.mjs` and `scripts/verify-public-website.mjs`, with fresh results under `test-results/mobile-release`. The operational email, complete roster, organizer-content and physical-device launch checks remain separate.
+
 ## September 27 official app-logo replacement
 
 The placeholder MB mark and CSS wordmark were replaced by the exact organizer-provided PNG linked in `docs/OFFICIAL-EVENT-LOGO.md`. SHA-256 and original 1000 × 359 dimensions are tested. The shared sidebar, mobile, authentication, Admin and Sponsor headers preserve the complete logo; the standalone offline reader caches the same public image. No generated artwork, event settings, account configuration or database records are involved.

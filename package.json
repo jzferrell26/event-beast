@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:mobile:webkit": "playwright test --config playwright.mobile-webkit.config.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
     "icons": "node scripts/generate-icons.mjs"
   },

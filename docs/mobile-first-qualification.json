@@ -1,0 +1,149 @@
+{
+  "checkedAt": "2026-09-27T18:38:17.374Z",
+  "comparisonBase": "b71f9942087a0011d2b7ba30c337d7a3a0838060",
+  "lintPassed": true,
+  "typecheckPassed": true,
+  "buildPassed": true,
+  "unitTestsPassed": 142,
+  "chromium": {
+    "startTime": "2026-09-27T18:32:27.245Z",
+    "duration": 122758.874,
+    "expected": 109,
+    "skipped": 3,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "webkit": {
+    "startTime": "2026-09-27T18:34:31.022Z",
+    "duration": 79519.307,
+    "expected": 20,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "comparisons": [
+    {
+      "width": 1440,
+      "route": "/",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": 353.859375,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/agenda",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/people",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/inbox",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/inbox/70000000-0000-4000-8000-000000000101",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/more/speakers",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/more/venue",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 1440,
+      "route": "/join",
+      "viewport": 1440,
+      "scroll": 1440,
+      "heroHeight": null,
+      "desktopChangedChannels": 0
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": 237.890625
+    },
+    {
+      "width": 390,
+      "route": "/agenda",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/people",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/inbox",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/inbox/70000000-0000-4000-8000-000000000101",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/more/speakers",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/more/venue",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    },
+    {
+      "width": 390,
+      "route": "/join",
+      "viewport": 390,
+      "scroll": 390,
+      "heroHeight": null
+    }
+  ],
+  "physicalDevicesTested": false,
+  "venueNetworkTested": false,
+  "productionVerification": "Separate exact-revision checks are required after deployment"
+}

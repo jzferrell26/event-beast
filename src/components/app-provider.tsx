@@ -6,6 +6,7 @@ import type { Guide, Me, SavedItems } from "@/lib/types";
 import { demoMe } from "@/lib/demo";
 import { errorMessage, mutate, request } from "@/lib/client";
 import { browserSupabase } from "@/lib/supabase/browser";
+import { observeMobileViewport } from "@/lib/mobile-viewport";
 
 function subscribeOnline(callback: () => void) { window.addEventListener("online", callback); window.addEventListener("offline", callback); return () => { window.removeEventListener("online", callback); window.removeEventListener("offline", callback); }; }
 const onlineSnapshot = () => navigator.onLine;
@@ -105,14 +106,10 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
     if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").then(() => navigator.serviceWorker.ready).then((registration) => registration.active?.postMessage({ type: "REFRESH_PUBLIC_GUIDE" })).catch(() => { /* Install is optional. */ });
     }
-    const viewport = window.visualViewport;
-    const syncViewport = () => {
-      document.documentElement.style.setProperty("--visual-height", `${viewport?.height ?? window.innerHeight}px`);
-      document.body.dataset.keyboard = String(window.innerHeight - (viewport?.height ?? window.innerHeight) > 120);
-    };
-    syncViewport(); viewport?.addEventListener("resize", syncViewport);
-    return () => viewport?.removeEventListener("resize", syncViewport);
   }, []);
+  // The observer discovers inserted/removed offline banners itself. Keep one
+  // subscription so losing Wi-Fi while typing preserves the keyboard baseline.
+  useEffect(() => observeMobileViewport(), []);
 
   const toggleSave = useCallback(async (kind: "session" | "attendee", id: string) => {
     const key = `${kind}:${id}`;

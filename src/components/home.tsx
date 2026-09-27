@@ -6,6 +6,7 @@ import { useApp, useNow } from "./app-provider";
 import { SectionTitle } from "./ui";
 import { SessionCard } from "./session-card";
 import { Onboarding } from "./onboarding";
+import { MobileEventAlerts, MobileEventMoment } from "./mobile-event";
 
 export function HomeScreen() {
   const { guide, saved, me } = useApp();
@@ -20,7 +21,9 @@ export function HomeScreen() {
     { href: "/more/lunch", label: "Lunch", icon: Utensils, caption: "Take a breather" },
   ];
   return <div className="home-screen">
+    <MobileEventAlerts />
     <section className="home-hero"><div className="hero-copy"><div className="hero-kicker"><span className="live-dot" />THE LIVE EXPERIENCE<span className="hero-year">2026</span></div><h1>{guide.settings.welcome_title}</h1><p>{guide.settings.welcome_body}</p><Link className="button button-red" href="/agenda">Find your next session<ArrowUpRight size={18} /></Link></div><div className="hero-emblem" aria-hidden="true"><span>BUILD</span><span>WHAT’S</span><span>NEXT<span className="red-period">.</span></span></div><div className="hero-bottom"><span>{guide.mode === "demo" ? "SAMPLE PROGRAM" : "YOUR EVENT, IN YOUR POCKET"}</span><span>{guide.event.start_date ? `${eventDay(guide.event.start_date)}${guide.event.end_date ? ` — ${eventDay(guide.event.end_date)}` : ""}` : "DATES COMING SOON"}<ArrowUpRight size={14} /></span></div></section>
+    <MobileEventMoment />
     <div className="quick-links">{quickLinks.map(({ href, label, icon: Icon, caption }) => <Link href={href} key={href}><span className="quick-icon"><Icon size={22} strokeWidth={1.8} /></span><div><strong>{label}</strong><span>{caption}</span></div><ArrowUpRight size={17} className="quick-arrow" /></Link>)}</div>
     <Onboarding />
     {guide.mode === 'live' && !me?.eligible && <Link className="small-feature" href={me?.authenticated ? '/access' : '/join'}><Users size={23} /><div><strong>{me?.authenticated ? 'Check your event access' : 'Join your event community'}</strong><span>Use your registration email. Stay signed in on your own browser.</span></div><ArrowRight size={18} /></Link>}
