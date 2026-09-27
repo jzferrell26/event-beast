@@ -1,0 +1,60 @@
+/* The organizer's original dark-background PNG, never a recreated wordmark.
+   Light surfaces receive a dark backing; the image itself is not modified. */
+.brand.brand-official {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 220px;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  background: #111113;
+  line-height: 0;
+}
+.brand-official .brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: none;
+  transform: none;
+}
+.brand.brand-official:focus-visible {
+  outline: 3px solid #e12632;
+  outline-offset: 4px;
+}
+.desktop-sidebar > .brand-official {
+  width: 100%;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.auth-story > .brand-official {
+  width: 300px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.admin-topbar > .brand-official,
+.sponsor-workspace-topbar > .brand-official {
+  width: 190px;
+  padding: 0;
+  background: transparent;
+}
+.brand.brand-official.brand-compact { width: 150px; }
+@media (max-width: 900px) {
+  .mobile-brand { min-width: 0; }
+  .mobile-brand > .brand-official { width: 176px; padding: 4px 10px; }
+  .topbar-actions { flex-shrink: 0; }
+}
+@media (max-width: 760px) {
+  .admin-topbar { gap: 12px; }
+  .admin-topbar > .brand-official { width: 150px; max-width: calc(100% - 128px); }
+  .sponsor-workspace-topbar > .brand-official { width: 160px; }
+}
+@media (max-width: 360px) {
+  .mobile-brand > .brand-official { width: 158px; }
+}

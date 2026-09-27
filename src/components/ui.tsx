@@ -4,9 +4,12 @@ import { useState, type ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { ArrowRight, X, AlertCircle, LoaderCircle, Compass } from "lucide-react";
 import { initials } from "@/lib/format";
+import eventBrand from "../../data/event-brand.json";
 
 export function Brand({ compact = false }: { compact?: boolean }) {
-  return <Link href="/" className="brand" aria-label="Momentum Builder home"><span className="brand-mark" aria-hidden="true">M<span>B</span></span>{!compact && <span className="brand-type">MOMENTUM<span>BUILDER <b>LIVE</b></span></span>}</Link>;
+  return <Link href="/" className={`brand brand-official${compact ? " brand-compact" : ""}`} aria-label="Momentum Builder home">
+    <img className="brand-logo" src={eventBrand.asset_path} width={eventBrand.width} height={eventBrand.height} alt="Momentum Builder LIVE 2026" fetchPriority="high" decoding="async" />
+  </Link>;
 }
 export function Avatar({ name, src, large = false }: { name: string; src?: string | null; large?: boolean }) {
   const [failed, setFailed] = useState("");

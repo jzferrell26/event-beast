@@ -2,6 +2,12 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 27 official app-logo replacement
+
+The placeholder MB mark and CSS wordmark were replaced by the exact organizer-provided PNG linked in `docs/OFFICIAL-EVENT-LOGO.md`. SHA-256 and original 1000 × 359 dimensions are tested. The shared sidebar, mobile, authentication, Admin and Sponsor headers preserve the complete logo; the standalone offline reader caches the same public image. No generated artwork, event settings, account configuration or database records are involved.
+
+Lint, TypeScript, production build and **126 SQL/domain/asset tests passed**. The full browser suite reports **83 passes, three intentional skips, and no failures**, including all shared logo placements, 320-pixel phone layouts, unchanged home-link navigation and the offline original image. Desktop/mobile screenshots were visually inspected. Live release-specific verification is performed by `scripts/verify-event-brand.mjs` and recorded under `test-results/brand-release/`; local results alone do not certify a deployment.
+
 ## September 27 speaker portrait and biography correction
 
 The speaker-specific layout passes lint, TypeScript, the production build, **124 SQL/domain/asset tests**, and **77 desktop/mobile browser checks with three intentional skips and no failures**. Tests cover uncropped 4:5 portraits, complete biographies, source links, biography search, existing session links, and stable missing-image/replacement behavior. Agenda session speaker previews use the same uncropped image component while retaining their compact horizontal layout; directory styles are isolated from those previews. Accessibility coverage includes the speaker directory and detail views. The attendee directory's shared avatars were not changed.
