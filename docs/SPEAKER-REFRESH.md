@@ -6,7 +6,7 @@ Speaker pages previously reused the attendee directory's small circular Avatar c
 
 Speaker directory and detail pages now use a dedicated `SpeakerPortrait` component. Each portrait is shown in a stable 4:5 frame with `object-fit: contain`, retaining the full source photograph. The image is absolutely positioned inside its reserved frame so a missing, loaded or replaced image does not change the frame height. The attendee avatar component is unchanged.
 
-The directory uses three columns on desktop, two on medium screens and one on phones. Cards show the complete published introduction without a line clamp. Detail pages pair a larger portrait with the full biography, a public source link and the existing session links. Search continues to match speaker names, titles and biography text.
+The directory uses three columns on desktop, two on medium screens and one on phones. Cards show the complete published introduction without a line clamp. Detail pages pair a larger portrait with the full biography, a public source link and the existing session links. Search continues to match speaker names, titles and biography text. Agenda session previews also show uncropped portraits in their compact horizontal cards. The directory's CSS is independently scoped so it cannot change the layout of those session previews.
 
 ## Source-backed content
 

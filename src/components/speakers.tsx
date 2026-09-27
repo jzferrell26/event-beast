@@ -15,7 +15,7 @@ export function SpeakersScreen() {
   return <><PageTitle eyebrow="THE VOICES IN THE ROOM" title="Meet your speakers." description="Explore the people bringing ideas and perspective to Momentum Builder." />
     <label className="search-field"><Search size={19} /><input value={query} aria-label="Search speakers" placeholder="Find a speaker or topic" onChange={event => setQuery(event.target.value)} />{query && <button type="button" aria-label="Clear speaker search" onClick={() => setQuery('')}><X size={18} /></button>}</label>
     <p className="results-caption">{speakers.length} speakers{guide.mode === 'demo' ? ' · Sample profiles' : ''}</p>
-    <div className="speakers-grid">{speakers.map((speaker, index) => <Link className="speaker-card" href={`/more/speakers/${speaker.id}`} key={speaker.id} aria-label={`View speaker profile for ${speaker.full_name}`}>
+    <div className="speakers-grid">{speakers.map((speaker, index) => <Link className="speaker-directory-card" href={`/more/speakers/${speaker.id}`} key={speaker.id} aria-label={`View speaker profile for ${speaker.full_name}`}>
       <SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} priority={index < 3} />
       <div className="speaker-card-copy"><h2>{speaker.full_name}</h2>
         <p className="speaker-card-bio">{speaker.bio || speaker.title || 'The event team is preparing this speaker’s biography.'}</p>

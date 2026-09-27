@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ArrowLeft, Bookmark, CalendarDays, Clock3, MapPin, Search, X } from "lucide-react";
 import { currentAgendaDay, eventDay, eventTime, eventZoneLabel, sessionSpeakers } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
-import { Avatar, EmptyState, PageTitle } from "./ui";
+import { EmptyState, PageTitle } from "./ui";
+import { SpeakerPortrait } from "./speaker-portrait";
 import { SessionCard, AgendaPlacement } from "./session-card";
 
 export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
@@ -32,5 +33,20 @@ export function SessionDetail({ id }: { id: string }) {
   const speakers = sessionSpeakers(guide, session.id);
   const sponsor = guide.sponsors.find((s) => s.id === session.sponsor_id);
   const isSaved = saved.sessions.includes(session.id);
-  return <div className="detail-page"><Link href="/agenda" className="back-link"><ArrowLeft size={17} />Back to agenda</Link><div className="detail-hero"><span className="type-pill">{session.session_type}</span><h1>{session.title}</h1><div className="detail-facts"><span><CalendarDays size={18} />{day ? `${day.label} · ${eventDay(day.date)}` : "Event session"}</span><span><Clock3 size={18} />{eventTime(session.starts_at, guide.event.timezone)} – {eventTime(session.ends_at, guide.event.timezone)}</span><span><MapPin size={18} />{session.room || "Location to be announced"}</span></div>{session.is_demo && <span className="sample-note">Sample session · final details will be supplied by the organizer</span>}</div><button type="button" className={`button ${isSaved ? "button-outline" : "button-red"}`} onClick={() => void toggleSave("session", id)} aria-pressed={isSaved}><Bookmark size={19} fill={isSaved ? "currentColor" : "none"} />{isSaved ? "Saved to your agenda" : "Save this session"}</button><section className="detail-section"><h2>In this session</h2><p>{session.description || "Session details will be added by the event team."}</p></section>{speakers.length > 0 && <section className="detail-section"><h2>In the room with you</h2>{speakers.map((speaker) => <Link className="speaker-card" href={`/more/speakers/${speaker.id}`} key={speaker.id}><Avatar name={speaker.full_name} src={speaker.headshot_url} large /><div><h3>{speaker.full_name}</h3><span className="muted">{speaker.title}</span><p>{speaker.bio}</p></div></Link>)}</section>}{sponsor && <section className="detail-section"><span className="eyebrow">SESSION PARTNER</span><Link href={`/more/sponsors/${sponsor.id}`} className="text-button">{sponsor.name}</Link></section>}<p className="fine-print">Times are shown in {guide.event.timezone.replaceAll("_", " ")}. Check the agenda for organizer updates.</p></div>;
+  return <div className="detail-page">
+    <Link href="/agenda" className="back-link"><ArrowLeft size={17} />Back to agenda</Link>
+    <div className="detail-hero"><span className="type-pill">{session.session_type}</span><h1>{session.title}</h1>
+      <div className="detail-facts"><span><CalendarDays size={18} />{day ? `${day.label} · ${eventDay(day.date)}` : "Event session"}</span><span><Clock3 size={18} />{eventTime(session.starts_at, guide.event.timezone)} – {eventTime(session.ends_at, guide.event.timezone)}</span><span><MapPin size={18} />{session.room || "Location to be announced"}</span></div>
+      {session.is_demo && <span className="sample-note">Sample session · final details will be supplied by the organizer</span>}
+    </div>
+    <button type="button" className={`button ${isSaved ? "button-outline" : "button-red"}`} onClick={() => void toggleSave("session", id)} aria-pressed={isSaved}><Bookmark size={19} fill={isSaved ? "currentColor" : "none"} />{isSaved ? "Saved to your agenda" : "Save this session"}</button>
+    <section className="detail-section"><h2>In this session</h2><p>{session.description || "Session details will be added by the event team."}</p></section>
+    {speakers.length > 0 && <section className="detail-section"><h2>In the room with you</h2>{speakers.map((speaker) =>
+      <Link className="speaker-card session-speaker-card" href={`/more/speakers/${speaker.id}`} key={speaker.id}>
+        <SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} />
+        <div className="session-speaker-copy"><h3>{speaker.full_name}</h3>{speaker.title && <span className="muted">{speaker.title}</span>}<p>{speaker.bio}</p></div>
+      </Link>)}</section>}
+    {sponsor && <section className="detail-section"><span className="eyebrow">SESSION PARTNER</span><Link href={`/more/sponsors/${sponsor.id}`} className="text-button">{sponsor.name}</Link></section>}
+    <p className="fine-print">Times are shown in {guide.event.timezone.replaceAll("_", " ")}. Check the agenda for organizer updates.</p>
+  </div>;
 }

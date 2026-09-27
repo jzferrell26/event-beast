@@ -39,7 +39,8 @@ test('speaker cards preserve the full portrait and published biography', async (
   await expect(card.locator('.speaker-card-bio')).toHaveText(guide.speakers[0].bio);
   expect(await card.locator('.speaker-card-bio').evaluate(node => node.scrollHeight <= node.clientHeight + 1)).toBe(true);
   await page.getByRole('textbox', { name: 'Search speakers' }).fill('financial education');
-  await expect(page.locator('.speaker-card')).toHaveCount(1);
+  await expect(page.locator('.speaker-directory-card')).toHaveCount(1);
+  await expect(card.locator('.speaker-card-bio')).toHaveCSS('font-size', '14px');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
   expect(result.violations).toEqual([]);
@@ -80,4 +81,20 @@ test('a failed speaker image falls back without collapsing, and a replacement re
   await expect(card.getByRole('img', { name: 'Portrait Test Speaker portrait', exact: true })).toBeVisible();
   const after = await card.locator('.speaker-portrait').boundingBox();
   expect(after?.height).toBeCloseTo(before!.height, 0);
+});
+
+test('agenda session speaker previews keep their compact layout and uncropped portraits', async ({ page }) => {
+  const guide = fixture();
+  await page.route('**/api/guide', route => route.fulfill({ json: guide }));
+  await page.goto(`/agenda/${guide.sessions[0].id}`);
+  await refresh(page);
+  const card = page.locator('.session-speaker-card:visible');
+  await expect(card).toHaveCount(1);
+  await expect(card).toHaveCSS('flex-direction', 'row');
+  await expect(card.locator('img')).toHaveCSS('object-fit', 'contain');
+  await expect(card.locator('.session-speaker-copy p')).toHaveText(guide.speakers[0].bio);
+  const portrait = await card.locator('.speaker-portrait').boundingBox();
+  expect(portrait!.width).toBeLessThanOrEqual(112);
+  expect(portrait!.height).toBeCloseTo(portrait!.width * 5 / 4, 0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
 });

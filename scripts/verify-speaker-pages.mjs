@@ -49,7 +49,7 @@ try {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(`${origin}/more/speakers`, { waitUntil: 'networkidle' });
-    await expect(page.locator('.speaker-card')).toHaveCount(expected.length);
+    await expect(page.locator('.speaker-directory-card')).toHaveCount(expected.length);
     await page.evaluate(() => document.fonts.ready);
     for (const row of expected) {
       const card = page.getByRole('link', { name: `View speaker profile for ${row.name}`, exact: true });
@@ -79,6 +79,19 @@ try {
       await page.screenshot({ path: `${output}/${device}-${slug}.png` });
       report.views.push({ device, view: name, accessibilityViolations: 0 });
     }
+    const linkedSpeaker = guide.speakers.find(s => s.full_name === 'Jay Jones');
+    const binding = guide.sessionSpeakers.find(link => link.speaker_id === linkedSpeaker.id && guide.sessions.some(session => session.id === link.session_id));
+    expect(binding).toBeTruthy();
+    await page.goto(`${origin}/agenda/${binding.session_id}`, { waitUntil: 'networkidle' });
+    const sessionCard = page.locator('.session-speaker-card').filter({ has: page.getByRole('heading', { name: 'Jay Jones', exact: true }) });
+    await expect(sessionCard).toHaveCSS('flex-direction', 'row');
+    await expect(sessionCard.locator('img')).toHaveCSS('object-fit', 'contain');
+    await expect(sessionCard.locator('.session-speaker-copy p')).toHaveText(linkedSpeaker.bio);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+    const sessionScan = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
+    expect(sessionScan.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) }))).toEqual([]);
+    await page.screenshot({ path: `${output}/${device}-agenda-speakers.png` });
+    report.views.push({ device, view: 'agenda speaker previews', accessibilityViolations: 0 });
     expect(errors).toEqual([]);
     await context.close();
   }
