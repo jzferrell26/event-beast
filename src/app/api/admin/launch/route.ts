@@ -1,7 +1,8 @@
 import { z } from "zod";
 import type { Guide } from "@/lib/types";
 import { demoGuide, demoProfiles } from "@/lib/demo";
-import { evaluateContent, launchCheckDefinitions, type LaunchCheck, type LaunchCheckKey } from "@/lib/launch-readiness";
+import { evaluateContent, evaluateProgramReview, launchCheckDefinitions, type LaunchCheck, type LaunchCheckKey, type ProgramReview } from "@/lib/launch-readiness";
+import { evaluateEnvironment } from "@/lib/launch-environment";
 import { requireAdmin } from "@/lib/server/auth";
 import { isDemo } from "@/lib/server/guide";
 import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/http";
@@ -9,30 +10,55 @@ import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/h
 export const GET = () => handle(async () => {
   let guide: Guide = demoGuide;
   let approvedAttendees = demoProfiles.length;
+  let approvedMembers = demoProfiles.length;
+  let claimedAttendees = 0;
+  let pendingRequests = 0;
+  let activeAdmins = 0;
+  let programReview: ProgramReview[] = [];
   let checks: LaunchCheck[] = [];
   if (!isDemo()) {
     const { db, event } = await requireAdmin();
     const tables = ["agenda_days", "agenda_sessions", "speakers", "session_speakers", "sponsors", "sponsor_tiers", "agenda_sponsor_placements", "lunch_locations", "venue_locations", "announcements"];
-    const [eventResult, settings, roster, checkResult, ...content] = await Promise.all([
+    const [eventResult, settings, roster, members, claimed, pending, admins, reviewResult, checkResult, ...content] = await Promise.all([
       db.from("events").select("*").eq("id", event.id).single(),
       db.from("event_settings").select("*").eq("event_id", event.id).single(),
       db.from("attendees").select("id", { head: true, count: "exact" }).eq("event_id", event.id).eq("status", "approved"),
+      db.from("attendees").select("id", { head: true, count: "exact" }).eq("event_id", event.id).eq("status", "approved").neq("access_role", "admin"),
+      db.from("attendees").select("id", { head: true, count: "exact" }).eq("event_id", event.id).eq("status", "approved").not("user_id", "is", null),
+      db.from("attendees").select("id", { head: true, count: "exact" }).eq("event_id", event.id).eq("status", "pending"),
+      db.from("attendees").select("id", { head: true, count: "exact" }).eq("event_id", event.id).eq("status", "approved").eq("access_role", "admin").not("user_id", "is", null),
+      db.from("agenda_import_notes").select("session_id,source_sheet,source_row,issue,review_status,resolution_notes,review_version,reviewed_at").eq("event_id", event.id).neq("issue", "").order("source_sheet").order("source_row").limit(1000),
       db.from("launch_checks").select("check_key,verified,notes,verified_at,verified_by,version,updated_at").eq("event_id", event.id),
       ...tables.map((table) => db.from(table).select("*").eq("event_id", event.id).limit(1000)),
     ]);
-    [eventResult, settings, roster, checkResult, ...content].forEach((result) => databaseError(result.error));
+    [eventResult, settings, roster, members, claimed, pending, admins, reviewResult, checkResult, ...content].forEach((result) => databaseError(result.error));
     // This event is much smaller than the limit. Refuse incomplete readiness
     // instead of silently certifying a partial dataset if it grows beyond it.
-    if (content.some((result) => (result.data?.length ?? 0) >= 1000)) throw new ApiError(409, "This event exceeds the launch review page limit. Review all content before marking launch checks complete.");
+    if ([...content, reviewResult].some((result) => (result.data?.length ?? 0) >= 1000)) throw new ApiError(409, "This event exceeds the launch review page limit. Review all content before marking launch checks complete.");
     const [days, sessions, speakers, sessionSpeakers, sponsors, tiers, placements, lunches, venues, announcements] = content.map((result) => result.data ?? []);
     guide = { mode: "live", event: eventResult.data, settings: settings.data, days, sessions, speakers, sessionSpeakers, sponsors, tiers, placements, lunches, venues, announcements, fetchedAt: new Date().toISOString() } as Guide;
     approvedAttendees = roster.count ?? 0;
+    approvedMembers = members.count ?? 0;
+    claimedAttendees = claimed.count ?? 0;
+    pendingRequests = pending.count ?? 0;
+    activeAdmins = admins.count ?? 0;
+    programReview = (reviewResult.data ?? []).map((review) => {
+      const session = guide.sessions.find((item) => item.id === review.session_id);
+      return { ...review, title: session?.title ?? "Session unavailable", published: session?.published ?? false } as ProgramReview;
+    });
     checks = (checkResult.data ?? []) as LaunchCheck[];
   }
-  const items = evaluateContent(guide, approvedAttendees);
+  const items = [...evaluateContent(guide, approvedMembers), ...evaluateProgramReview(guide, programReview)];
+  const runtime = evaluateEnvironment({ demo: isDemo(), backendUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    backendKeyConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
+    siteUrl: process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL,
+    emailReady: process.env.EVENT_BEAST_EMAIL_READY === "true", activeAdmins });
+  const contentReady = items.every((item) => item.status === "ready");
+  const runtimeReady = runtime.every((item) => item.status === "ready");
+  const organizerChecksRecorded = launchCheckDefinitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified));
   return json({ mode: guide.mode, eventName: guide.event.name, generatedAt: new Date().toISOString(), content: items, checks, approvedAttendees,
-    contentReady: items.every((item) => item.status === "ready"),
-    organizerChecksRecorded: launchCheckDefinitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified)),
+    contentReady, runtime, runtimeReady, organizerChecksRecorded, approvedMembers, claimedAttendees, pendingRequests, programReview,
+    eventReady: contentReady && runtimeReady && organizerChecksRecorded,
   });
 });
 

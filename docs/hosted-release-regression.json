@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-09-27T03:20:37.242Z",
+  "project": "nyhzmazbfctuttizwnxp",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Hosted password sign-in and verified registration claims",
+      "passed": true
+    },
+    {
+      "name": "Anonymous private RPC denial and default-private attendee profiles",
+      "passed": true
+    },
+    {
+      "name": "Private Realtime delivery, durable sends, duplicate retry and read state",
+      "passed": true
+    },
+    {
+      "name": "Blocking rejects new messages at the hosted database boundary",
+      "passed": true
+    },
+    {
+      "name": "Admin-only audited program decisions and automatic reopening",
+      "passed": true
+    },
+    {
+      "name": "Private storage uploads and outsider denial",
+      "passed": true
+    },
+    {
+      "name": "Refresh-token renewal and revoked event access despite a retained login",
+      "passed": true
+    }
+  ],
+  "syntheticAccounts": 4,
+  "cleanedUp": true,
+  "realSupabaseServices": true,
+  "publicSignupTested": false,
+  "emailDeliveryTested": false,
+  "browserFlowsTested": false,
+  "domainConfigurationChanged": false
+}

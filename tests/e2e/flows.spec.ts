@@ -55,7 +55,10 @@ test("launch center identifies sample content and never invents completed live t
   await page.goto("/admin/launch");
   await expect(page.getByRole("heading", { name: "Ready for the room." })).toBeVisible();
   await expect(page.getByText("0 of 6 live checks recorded.", { exact: false })).toBeVisible();
-  await expect(page.locator(".launch-content-item")).toHaveCount(8);
+  await expect(page.locator(".launch-content-item")).toHaveCount(11);
+  await expect(page.locator(".launch-runtime-item")).toHaveCount(5);
+  await expect(page.getByText("Account creation, resend and password-recovery email remain paused.", { exact: false })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Registration readiness" })).toBeVisible();
   await expect(page.locator(".launch-content-item").first()).toContainText("Needs attention");
   await expect(page.getByText("Awaiting verification", { exact: true })).toHaveCount(6);
   await page.getByRole("button", { name: "Record verification", exact: false }).first().click();

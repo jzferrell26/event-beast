@@ -4,7 +4,7 @@ import path from "node:path";
 
 // Real PostgreSQL execution, with only Supabase-managed auth/storage/realtime
 // schemas shimmed. This does not pretend to test the hosted Realtime transport.
-export async function createDatabase() {
+export async function createDatabase(options: { hostedFunctionGrants?: boolean } = {}) {
   const db = new PGlite();
   await db.exec(`
     create role anon nologin;
@@ -31,6 +31,11 @@ export async function createDatabase() {
     create function realtime.send(payload jsonb, event text, topic text, private boolean) returns void
       language sql as $$ insert into realtime.messages values ('broadcast', topic, payload, event, private) $$;
   `);
+  if (options.hostedFunctionGrants) {
+    // Reproduce the explicit default grants observed on hosted Supabase.
+    // REVOKE FROM PUBLIC alone must not make a permission test pass falsely.
+    await db.exec("alter default privileges in schema public grant execute on functions to anon, authenticated");
+  }
   const migrationDir = path.resolve("supabase/migrations");
   for (const file of (await readdir(migrationDir)).filter((f) => f.endsWith(".sql")).sort()) {
     await db.exec(await readFile(path.join(migrationDir, file), "utf8"));

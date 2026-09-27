@@ -1,7 +1,7 @@
 import type { Guide } from "./types";
 
 export const launchCheckDefinitions = [
-  { key: "content_review", title: "The official program and sponsor order are approved", detail: "Review the real dates, speakers, rooms, dietary details, logos and contractual sponsor placements with the event owner." },
+  { key: "content_review", title: "The program, full roster and sponsor order are approved", detail: "Reconcile imported registrations against the organizer's complete attendee list, including missing and pending access. Review dates, speakers, rooms, dietary details, logos and contractual sponsor placements with the event owner." },
   { key: "email_delivery", title: "Registration, verification and recovery emails work", detail: "Use two independent real inboxes. Confirm verification links, registration matching and a complete password reset." },
   { key: "two_account_messaging", title: "Two attendees can message, reconnect and block", detail: "Use two verified accounts in separate browsers. Test history after reload, a lost connection, duplicate-send retry, read state and blocking." },
   { key: "mobile_offline", title: "Phones, installation and the offline guide are checked", detail: "Check actual iPhone and Android devices. Open the keyboard, install the app, load the guide and then disconnect. Private data must stay out of offline caches." },
@@ -20,6 +20,30 @@ export interface LaunchReadiness {
   mode: "demo" | "live"; eventName: string; generatedAt: string;
   content: ReadinessItem[]; checks: LaunchCheck[]; approvedAttendees: number;
   contentReady: boolean; organizerChecksRecorded: boolean;
+  runtime: ReadinessItem[]; runtimeReady: boolean; eventReady: boolean;
+  approvedMembers: number; claimedAttendees: number; pendingRequests: number;
+  programReview: ProgramReview[];
+}
+
+export interface ProgramReview {
+  session_id: string; title: string; published: boolean;
+  source_sheet: string; source_row: number; issue: string;
+  review_status: "pending" | "confirmed" | "excluded";
+  resolution_notes: string; review_version: number;
+  reviewed_at: string | null;
+}
+
+export function evaluateProgramReview(guide: Guide, reviews: ProgramReview[]): ReadinessItem[] {
+  const pending = reviews.filter((review) => review.review_status === "pending");
+  const missingAssets = guide.speakers.filter((speaker) => speaker.published && (!speaker.bio.trim() || !speaker.headshot_url.trim()));
+  return [
+    { key: "program_review", title: "Imported schedule questions are resolved", status: pending.length ? "needs_attention" : "ready",
+      detail: pending.length ? `${pending.length} imported session(s) still need an organizer decision. Review the source questions below; publishing alone does not resolve them.` : "No imported schedule questions are awaiting a decision. Repeat content approval after changes.", href: "/admin/launch#program-review" },
+    { key: "speaker_assets", title: "Published speakers have biographies and headshots", status: missingAssets.length ? "needs_attention" : "ready",
+      detail: missingAssets.length ? `${missingAssets.length} published speaker(s) still need an approved biography or headshot. Do not substitute guessed content.` : "Published speaker introductions and headshots are filled in.", href: "/admin/speakers" },
+    { key: "venue_map", title: "A venue map is available to attendees", status: guide.venues.some((venue) => venue.published && venue.map_url.trim()) ? "ready" : "needs_attention",
+      detail: guide.venues.some((venue) => venue.published && venue.map_url.trim()) ? "A venue map is linked. Verify it on a phone and in the offline guide." : "Upload the organizer-approved event map. A street address is not an event floor plan.", href: "/admin/venue_locations" },
+  ];
 }
 
 /** Deterministic content checks; these never claim a hosted operational test passed. */
@@ -73,6 +97,6 @@ export function evaluateContent(guide: Guide, approvedAttendees: number): Readin
   add("venue", "Attendees can find their way", venues.length > 0 && !incompleteVenues.length,
     !venues.length ? "Publish the venue locations and where to get help." : incompleteVenues.length ? `${incompleteVenues.length} location(s) need an address/room or helpful directions.` : `${venues.length} venue location(s) published. Check the actual map on a phone before launch.`, "/admin/venue_locations");
   add("roster", "The registration roster is loaded", approvedAttendees > 0,
-    approvedAttendees ? `${approvedAttendees} approved registration(s). Importing does not publish profiles or send invitations.` : "Import approved registrations, then verify that attendees can claim the matching email address.", "/admin/attendees");
+    approvedAttendees ? `${approvedAttendees} approved Member/Sponsor registration(s), excluding Admins. Reconcile this count with the organizer's complete roster. Importing does not publish profiles or send invitations.` : "Only Admins or no approved attendees are loaded. Import the Member/Sponsor roster, then verify matching email access.", "/admin/attendees");
   return items;
 }

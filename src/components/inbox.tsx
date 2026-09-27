@@ -6,6 +6,7 @@ import type { ConversationSummary, Message, PendingMessage } from "@/lib/types";
 import { errorMessage, mutate, request, RequestError } from "@/lib/client";
 import { eventTime } from "@/lib/format";
 import { ingestMessageBatch, unconfirmedMessages, type MessageTimeline } from "@/lib/message-state";
+import { loadInboxWindow, MAX_INBOX_PAGES, type InboxPage } from "@/lib/inbox-window";
 import { useApp } from "./app-provider";
 import { Avatar, Busy, EmptyState, ErrorState, LoadingCards, PageTitle } from "./ui";
 import { useInboxSignal } from "./realtime";
@@ -17,25 +18,31 @@ export function InboxScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hasMore, setHasMore] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const busy = useRef(false);
+  const loadedPages = useRef(1);
+  const rerun = useRef(false);
   const mounted = useRef(true);
-  const load = useCallback(async (offset = 0) => {
-    if (busy.current) return;
-    busy.current = true;
+  const load = useCallback(async function refreshInbox(extend = false) {
+    if (busy.current) { if (!extend) rerun.current = true; return; }
+    busy.current = true; setRefreshing(true);
     try {
-      const data = await request<{ conversations: ConversationSummary[]; hasMore: boolean }>(`/api/inbox?offset=${offset}`);
+      const data = await loadInboxWindow((offset) => request<InboxPage>(`/api/inbox?offset=${offset}`), loadedPages.current + (extend ? 1 : 0));
       if (!mounted.current) return;
-      setConversations((previous) => {
-        if (offset > 0) return [...previous, ...data.conversations.filter((c) => !previous.some((p) => p.id === c.id))];
-        const ids = new Set(data.conversations.map((c) => c.id));
-        return [...data.conversations, ...previous.slice(30).filter((c) => !ids.has(c.id))];
-      });
-      setHasMore(data.hasMore); setError("");
+      loadedPages.current = data.pages;
+      setConversations(data.conversations);
+      setHasMore(data.hasMore && data.pages < MAX_INBOX_PAGES); setError("");
     } catch (error) {
       if (!mounted.current) return;
       setError(errorMessage(error));
-      if (error instanceof RequestError && [401, 403].includes(error.status)) setConversations([]);
-    } finally { busy.current = false; if (mounted.current) setLoading(false); }
+      if (error instanceof RequestError && [401, 403].includes(error.status)) { setConversations([]); setHasMore(false); loadedPages.current = 1; }
+    } finally {
+      busy.current = false;
+      if (mounted.current) {
+        setLoading(false); setRefreshing(false);
+        if (rerun.current) { rerun.current = false; window.setTimeout(() => { if (mounted.current) void refreshInbox(); }, 150); }
+      }
+    }
   }, []);
   useEffect(() => { mounted.current = true; void load(); return () => { mounted.current = false; }; }, [load]);
   const connection = useInboxSignal(() => void load());
@@ -43,7 +50,7 @@ export function InboxScreen() {
     {guide.mode === "demo" && <p className="demo-notice">These conversations are examples. No messages are sent to real attendees.</p>}
     {error && <ErrorState message={error} retry={() => void load()} />}
     {loading ? <LoadingCards count={3} /> : conversations.length ? <div className="conversation-list">{conversations.map((conversation) => <Link href={`/inbox/${conversation.id}`} key={conversation.id} className={`conversation-row${Number(conversation.unread_count) > 0 ? " unread" : ""}`}><Avatar name={conversation.peer_name} src={conversation.avatar_url} /><div className="conversation-copy"><div><h2>{conversation.peer_name}</h2><time dateTime={conversation.updated_at}>{eventTime(conversation.updated_at, guide.event.timezone)}</time></div><p>{conversation.blocked_by_me ? "You blocked this attendee" : conversation.last_message ?? "Say hello and start the conversation."}</p><span>{conversation.peer_company || "Event attendee"}</span></div>{Number(conversation.unread_count) > 0 && <span className="unread-badge" aria-label={`${conversation.unread_count} unread messages`}>{Number(conversation.unread_count) > 99 ? "99+" : conversation.unread_count}</span>}</Link>)}</div> : !error && <EmptyState title="Every connection starts with hello." icon={<MessageCircle size={30} />} action={<Link href="/people" className="button button-dark">Find your people<ArrowUpRight size={17} /></Link>}>Visit the directory to start a private conversation with another attendee.</EmptyState>}
-    {hasMore && <button type="button" className="button button-outline load-more" onClick={() => void load(conversations.length)}>Older conversations</button>}
+    {hasMore && <button type="button" className="button button-outline load-more" disabled={refreshing} onClick={() => void load(true)}>{refreshing ? "Refreshing conversations…" : "Older conversations"}</button>}
   </>;
 }
 
