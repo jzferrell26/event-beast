@@ -15,7 +15,8 @@ const output = 'test-results/mobile-release';
 mkdirSync(output, { recursive: true });
 const engines = process.env.EVENT_BEAST_VERIFY_WEBKIT === 'true' ? [chromium, webkit] : [chromium];
 const checks = [];
-const report = { checkedAt: new Date().toISOString(), revision, origin, passed: false, physicalDevicesTested: false, privateProductionDataUsed: false, checks };
+const knownDesktopFindings = [];
+const report = { checkedAt: new Date().toISOString(), revision, origin, passed: false, physicalDevicesTested: false, privateProductionDataUsed: false, desktopAccessibilityCertified: false, knownDesktopFindings, checks };
 try {
   for (const engine of engines) {
     const browser = await engine.launch();
@@ -56,14 +57,24 @@ try {
             }
             // Representative full-page scans at phone and approved desktop sizes;
             // all six widths still have explicit reflow and header checks.
+            let accessibilityViolations = null;
             if ([390, 1440].includes(width)) {
               const scan = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze();
-              expect(scan.violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target) })), `${engine.name()} ${width}px ${route}`).toEqual([]);
+              accessibilityViolations = scan.violations.length;
+              // The approved desktop baseline contains pale decorative venue
+              // ordinals (#d4d4da on white, 1.47:1). Jonathan explicitly asked
+              // to preserve desktop appearance. Record that exact pre-existing
+              // finding rather than recoloring desktop or claiming a clean AA
+              // audit. All mobile findings and other desktop findings fail.
+              const baseline = width === 1440 && route === '/more/venue'
+                ? scan.violations.filter(item => item.id === 'color-contrast' && item.nodes.every(node => node.target.length === 1 && node.target[0] === '.venue-number')) : [];
+              expect(scan.violations, `${engine.name()} ${width}px ${route}: unexpected accessibility regression`).toEqual(baseline);
+              for (const item of baseline) knownDesktopFindings.push({ engine: engine.name(), width, route, rule: item.id, nodes: item.nodes.map(node => ({ target: node.target, summary: node.failureSummary })), baselineRevision: 'b71f9942087a0011d2b7ba30c337d7a3a0838060', disposition: 'Pre-existing desktop appearance preserved; not an accessibility conformance sign-off.' });
             }
             if ([390, 1440].includes(width) && ['/', '/agenda', '/more/speakers', '/inbox'].includes(route)) {
               await page.screenshot({ path: `${output}/${engine.name()}-${width}-${route === '/' ? 'home' : route.replaceAll('/', '-')}.png` });
             }
-            checks.push({ engine: engine.name(), width, route, passed: true, accessibilityScanned: [390, 1440].includes(width) });
+            checks.push({ engine: engine.name(), width, route, passed: true, accessibilityScanned: [390, 1440].includes(width), accessibilityViolations });
           }
           expect(errors).toEqual([]);
         } finally { await context.close(); }
@@ -71,7 +82,7 @@ try {
     } finally { await browser.close(); }
   }
   report.passed = true;
-  console.log(JSON.stringify({ passed: true, revision, views: checks.length, engines: engines.map(engine => engine.name()), screenshots: output }));
+  console.log(JSON.stringify({ passed: true, revision, views: checks.length, engines: engines.map(engine => engine.name()), knownDesktopFindings: knownDesktopFindings.length, screenshots: output }));
 } catch (error) {
   writeFileSync(`${output}/failure.log`, String(error.stack || error));
   console.error(JSON.stringify({ passed: false, completedChecks: checks.length, details: `${output}/failure.log` }));

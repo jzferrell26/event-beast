@@ -14,6 +14,8 @@ The resumed mobile pass implements the approved black mobile header, compact now
 
 Local evidence is in `docs/mobile-first-qualification.json`. Release-specific production checks are performed after deployment by `scripts/verify-mobile-release.mjs` and `scripts/verify-public-website.mjs`, with fresh results under `test-results/mobile-release`. The operational email, complete roster, organizer-content and physical-device launch checks remain separate.
 
+The deployed desktop venue scan exposed one pre-existing contrast item outside the mobile redesign: the pale decorative `.venue-number` has about 1.47:1 contrast on white. Its original color and appearance are retained in accordance with the explicit desktop-preservation requirement. The deployed verifier records this exact baseline finding separately, while continuing to fail all mobile accessibility findings and other desktop findings. This release does not claim a clean full-desktop accessibility audit; see `MOBILE-FIRST-IMPLEMENTATION.md` for the disposition.
+
 ## September 27 official app-logo replacement
 
 The placeholder MB mark and CSS wordmark were replaced by the exact organizer-provided PNG linked in `docs/OFFICIAL-EVENT-LOGO.md`. SHA-256 and original 1000 × 359 dimensions are tested. The shared sidebar, mobile, authentication, Admin and Sponsor headers preserve the complete logo; the standalone offline reader caches the same public image. No generated artwork, event settings, account configuration or database records are involved.
