@@ -1,0 +1,274 @@
+/* Mobile-only event-day layer. Keep desktop declarations in existing sheets.
+   The shared DOM stays available without duplicating interactive IDs. */
+.mobile-only{display:none}
+.agenda-controls{display:contents}
+
+@media(max-width:900px){
+  :root{--topbar:76px;--mobile-gutter:16px}
+  html{scroll-padding-top:calc(var(--app-header-offset,76px) + 16px)}
+  .mobile-only{display:block}
+  .app-shell .topbar{background:#111113;color:#fff;border-bottom:1px solid #2d2d33;backdrop-filter:none;top:var(--offline-banner-height,0px);height:calc(76px + env(safe-area-inset-top));padding:env(safe-area-inset-top) max(var(--mobile-gutter),env(safe-area-inset-right)) 0 max(var(--mobile-gutter),env(safe-area-inset-left));gap:8px}
+  .app-shell .mobile-brand>.brand-official{width:180px;max-width:100%;padding:0;background:transparent;border-radius:0}
+  .app-shell .topbar-actions{gap:4px;flex-shrink:0}
+  .app-shell .topbar-actions .icon-button{color:#f7f7fa;width:44px;height:44px;min-width:44px}
+  .app-shell .topbar-actions .icon-button:hover{background:#29292f}
+  .app-shell .topbar-actions .avatar{width:36px;height:36px;font-size:12px;border-color:#47474f;background:#303038;color:#fff}
+  .app-shell .topbar a:focus-visible{outline-color:#ff6974;outline-offset:2px}
+  .app-shell .main-content{padding:20px max(var(--mobile-gutter),env(safe-area-inset-right)) 28px max(var(--mobile-gutter),env(safe-area-inset-left));min-width:0}
+  .app-shell .app-footer{padding-bottom:calc(var(--nav-height) + env(safe-area-inset-bottom) + 28px)}
+  .app-shell .bottom-nav{padding-left:max(4px,env(safe-area-inset-left));padding-right:max(4px,env(safe-area-inset-right));box-shadow:0 -3px 14px #0000000d}
+  .app-shell .bottom-nav>a{flex:1;min-width:0;min-height:56px;font-size:11px;gap:5px;padding:5px 3px;color:#b9b9c3}
+  .app-shell .bottom-nav>a.active{color:#fff}
+  .app-shell .bottom-nav>a svg{width:24px;height:24px}
+  .app-shell .bottom-nav>a.active:before{top:-8px}
+  .app-shell a,.app-shell button,.modal-content button{touch-action:manipulation}
+  .app-shell .icon-button,.modal-content .icon-button{min-width:44px;min-height:44px;width:44px;height:44px;margin:0}
+  .app-shell .button,.app-shell .text-button,.modal-content .text-button{min-height:44px;font-size:14px}
+  .app-shell .button{padding:12px 16px}
+  .app-shell .text-button{min-width:44px}
+  .app-shell .search-field{min-height:48px;padding:0 12px;gap:8px}
+  .app-shell .search-field input{font-size:16px;min-height:48px;padding:12px 0}
+  .app-shell .search-field input::placeholder{font-size:14px}
+  .app-shell .search-field button{width:44px;min-width:44px;height:44px;justify-content:center;padding:0;margin-right:-10px}
+  .app-shell .filter-button{min-height:48px;min-width:48px;font-size:13px;padding:10px 12px}
+  .app-shell .page-title{margin-bottom:20px;gap:12px}
+  .app-shell .page-title h1{font-size:36px;line-height:1.06;margin-top:7px}
+  .app-shell .page-title .eyebrow{font-size:10px;letter-spacing:1.1px}
+  .app-shell .page-description{font-size:14px;line-height:1.55;margin-top:10px;max-width:100%}
+  .app-shell .section-title{margin:22px 0 12px}
+  .app-shell .section-title h2{font-size:27px;line-height:1.12}
+  .app-shell .section-title>a{min-height:44px;font-size:13px;align-items:center}
+  .app-shell .fine-print,.app-shell .results-caption{font-size:12px;line-height:1.6}
+  .app-shell .load-more{width:100%;min-height:48px}
+  .app-shell .empty-state{min-height:220px;padding:28px 20px}
+  .app-shell .empty-state p,.app-shell .error-state{font-size:14px;line-height:1.65}
+  .app-shell .empty-state h2{font-size:30px;line-height:1.15}
+  .app-shell .back-link{font-size:14px;min-height:44px;margin-bottom:12px}
+
+  /* Keep the welcome, but put the next real action within one phone screen. */
+  .home-hero{grid-template-columns:1fr;border-radius:16px}
+  .home-hero .hero-copy{padding:20px}
+  .home-hero .hero-kicker{font-size:10px;margin-bottom:12px;letter-spacing:1px}
+  .home-hero .hero-year{display:block;margin-left:auto;font-size:11px}
+  .home-hero h1{font-size:34px;line-height:1.02;max-width:none;text-wrap:balance}
+  .home-hero .hero-copy>p,.home-hero .hero-emblem{display:none}
+  .home-hero .button{margin-top:17px;min-height:46px;font-size:14px;width:100%;justify-content:space-between}
+  .home-hero .hero-bottom{padding:10px 20px;gap:12px;font-size:10px;letter-spacing:.5px}
+  .home-hero .hero-bottom>span:first-child{display:none}
+  .home-hero .hero-bottom>span:last-child{margin-left:auto}
+  .mobile-event-alerts{margin:0 0 14px}
+  .mobile-event-alerts .home-announcement{margin-top:8px;padding:14px;gap:10px}
+  .mobile-event-alerts .home-announcement>div{min-width:0}
+  .mobile-event-alerts .home-announcement>svg{display:block;margin:0;color:#af1f2b}
+  .mobile-event-alerts strong{font-size:15px;line-height:1.4;display:block;margin:4px 0}
+  .mobile-event-alerts p{font-size:14px;line-height:1.55;overflow-wrap:anywhere}
+  .home-screen>.home-announcement.announcement-urgent,.home-screen>.home-announcement.announcement-important{display:none}
+  .mobile-event-moment{margin-top:14px}
+  .mobile-next-session{display:flex;flex-direction:column;gap:7px;padding:17px 18px;background:white;border:1px solid #dcdce3;border-radius:13px}
+  .mobile-next-session.is-live{border-left:4px solid #e12632}
+  .mobile-moment-label{font-size:11px;font-weight:750;letter-spacing:.6px;text-transform:uppercase;color:#656572}
+  .is-live .mobile-moment-label{color:#ad1827}
+  .mobile-next-session>strong{font-size:17px;line-height:1.4;overflow-wrap:anywhere}
+  .mobile-moment-time{font-size:13px;line-height:1.6;color:#555562}
+  .mobile-moment-room{display:flex;align-items:center;gap:6px;font-size:13px;line-height:1.5;color:#565663}
+  .mobile-moment-room>svg:last-child{margin-left:auto;color:#b31d2b}
+  .mobile-following-session{display:grid;grid-template-columns:minmax(0,1fr) 20px;gap:4px 10px;border:1px solid #e1e1e6;border-radius:11px;background:#fff;padding:12px 16px;margin-top:9px}
+  .mobile-following-session>span{font-size:12px;color:#62626e}
+  .mobile-following-session>strong{font-size:14px;line-height:1.5;grid-column:1;overflow-wrap:anywhere}
+  .mobile-following-session>svg{grid-column:2;grid-row:1/3;align-self:center}
+  .mobile-day-shortcuts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+  .mobile-day-shortcuts>a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:62px;background:#eaeaee;border:1px solid #dedee4;border-radius:10px;padding:9px 5px;text-align:center;color:#454551;font-size:12px;font-weight:650}
+  .quick-links{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+  .quick-links>a{min-height:76px;padding:14px 12px;gap:10px}
+  .quick-links strong{font-size:14px;line-height:1.35}
+  .quick-links div>span{font-size:12px;line-height:1.45;margin-top:3px}
+  .quick-icon{width:32px;height:36px}
+  .quick-arrow{display:none}
+  .home-screen .home-grid{display:none}
+  .home-screen>.home-announcement strong,.home-screen>.small-feature strong{font-size:14px;line-height:1.45}
+  .home-screen>.home-announcement p,.home-screen>.small-feature div>span{font-size:13px;line-height:1.6}
+  .app-shell .onboarding-card{padding:14px;gap:11px}
+  .app-shell .onboarding-card strong{font-size:14px;line-height:1.4}
+  .app-shell .onboarding-card>span>span{font-size:12px;line-height:1.5}
+
+  /* Day/search stay in reach without taking over a short phone screen. */
+  .agenda-controls{display:block;position:sticky;top:var(--app-header-offset,76px);z-index:20;background:#f4f4f3;padding:8px 0 10px;border-bottom:1px solid #e1e1e6;margin-bottom:14px}
+  .agenda-controls .day-tabs{max-width:none;gap:8px;margin:0 0 10px;overflow-x:auto;padding:3px 2px 5px;scrollbar-width:thin;scroll-snap-type:x proximity}
+  .agenda-controls .day-tabs>button{min-width:100px;min-height:60px;padding:12px;gap:5px;flex:1;scroll-snap-align:start}
+  .agenda-controls .day-tabs strong{font-size:22px;line-height:1.1}
+  .agenda-controls .day-tabs span{font-size:12px;white-space:nowrap}
+  .agenda-controls .day-tabs>button.active:after{left:12px}
+  .agenda-working-notice{font-size:12px;line-height:1.6;padding:12px 14px;margin-bottom:10px}
+  .mobile-agenda-actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 6px}
+  .mobile-agenda-actions>span{font-size:12px;color:#565663;line-height:1.5}
+  .mobile-agenda-actions .text-button{padding:8px 10px;min-height:44px;white-space:nowrap;background:#e9e9ee;border-radius:8px;font-size:13px}
+  .agenda-caption{font-size:12px;margin:12px 0 16px;line-height:1.6;flex-wrap:wrap}
+  .agenda-caption>span:last-child{max-width:none}
+  .agenda-session-anchor{scroll-margin-top:calc(var(--app-header-offset,76px) + 174px)}
+  .agenda-session-anchor:focus{outline:2px solid #c32b3a;outline-offset:3px;border-radius:12px}
+  .app-shell .session-card{gap:12px;padding:16px 12px;border-radius:12px;margin-bottom:10px}
+  .session-card .session-time{min-width:48px;gap:3px;padding-top:6px;flex-direction:column}
+  .session-card .session-time strong{font-size:21px;letter-spacing:-.5px}
+  .session-card .session-time>span:not(.time-line){font-size:11px;margin-top:0}
+  .session-card .session-title{min-height:44px;display:flex;align-items:center;width:auto}
+  .session-card .session-title h3,.session-card.compact .session-title h3{font-size:16px;line-height:1.4;overflow-wrap:anywhere}
+  .session-card .session-title:after{content:'';position:absolute;inset:0;border-radius:12px}
+  .session-card .bookmark-button{position:relative;z-index:2;min-width:44px;height:44px;background:#f7f7f9;border-radius:10px}
+  .session-card .session-speakers{font-size:13px;line-height:1.6}
+  .session-card .session-location,.session-card .session-duration{font-size:13px;line-height:1.55;align-items:flex-start;overflow-wrap:anywhere}
+  .session-card .session-location>svg{width:15px;height:17px}
+  .session-card .session-end{display:block;flex-basis:100%;border:0;padding:0;margin:4px 0 0 20px;font-size:12px}
+  .session-card .type-pill{font-size:10px;letter-spacing:.4px}
+  .session-card .live-label{font-size:10px}
+  .agenda-ad{margin:12px 0 18px;padding:20px;gap:14px}
+  .agenda-ad p,.agenda-ad strong{font-size:13px;line-height:1.6}
+  .agenda-ad .eyebrow{font-size:10px}
+  .detail-hero{padding:22px}
+  .detail-hero h1{font-size:35px;line-height:1.1;overflow-wrap:anywhere}
+  .detail-facts{gap:12px;flex-direction:column}
+  .detail-facts>span{font-size:14px;line-height:1.5}
+  .detail-section>p{font-size:15px;line-height:1.75}
+
+  /* Readable people lists; never shrink a two-column desktop card to fit. */
+  .directory-note{padding:12px;gap:8px;font-size:12px;line-height:1.5;flex-wrap:wrap}
+  .directory-note>a{font-size:12px;min-height:44px;min-width:44px}
+  .interest-filters{padding:12px 2px 16px;gap:8px}
+  .interest-filters>button{min-height:44px;font-size:13px;padding:10px 14px}
+  .people-grid{grid-template-columns:1fr;gap:12px}
+  .people-grid .person-card{display:grid;grid-template-columns:56px minmax(0,1fr) 44px;gap:4px 12px;padding:16px 16px 0;border-radius:13px}
+  .people-grid .person-top{display:contents}
+  .people-grid .person-top>a{grid-column:1;grid-row:1/4;align-self:start}
+  .people-grid .person-top .avatar-large{width:56px;height:56px;font-size:18px}
+  .people-grid .person-top .bookmark-button{grid-column:3;grid-row:1;margin:0;background:#f5f5f7;border-radius:9px}
+  .people-grid .person-name{grid-column:2;grid-row:1;display:flex;align-items:center;min-height:44px}
+  .people-grid .person-name h2{font-size:17px;line-height:1.35;overflow-wrap:anywhere}
+  .people-grid .person-role,.people-grid .person-company,.people-grid .person-city,.people-grid .person-interests{grid-column:2/4;min-height:0;margin:0;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+  .people-grid .person-city{font-size:12px;margin-top:3px}
+  .people-grid .person-city>svg{width:13px;height:16px}
+  .people-grid .person-interests{gap:6px;padding:7px 0 12px}
+  .people-grid .person-interests>span{font-size:11px;line-height:1.5;padding:4px 7px}
+  .people-grid .person-link{grid-column:1/-1;min-height:48px;padding:12px 0;font-size:13px;line-height:1.5}
+  .profile-summary h1{font-size:36px;line-height:1.1;overflow-wrap:anywhere}
+  .profile-summary>p,.profile-summary>.person-city{font-size:14px;line-height:1.6}
+  .profile-actions{gap:10px}
+  .profile-actions>.button{min-height:48px;font-size:14px}
+  .form-field input,.form-field textarea,.form-field select{font-size:16px;min-height:48px}
+  .app-shell .form-description,.app-shell .privacy-option small,.app-shell .form-field small{font-size:13px;line-height:1.65}
+  .app-shell .privacy-option strong{font-size:14px;line-height:1.5}
+
+  /* Full portraits, faster browsing: smaller canvas, not cropped source art. */
+  .speakers-grid{grid-template-columns:1fr;gap:14px}
+  .speaker-directory-card{display:grid;grid-template-columns:112px minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:0;border-radius:13px}
+  .speaker-directory-card>.speaker-portrait{grid-column:1;grid-row:1/3;width:96px;margin:16px 0 0 16px;align-self:start;overflow:hidden;border-radius:7px}
+  .speaker-directory-card .speaker-card-copy{display:contents}
+  .speaker-directory-card h2{grid-column:2;grid-row:1;font-size:18px;line-height:1.35;margin:0;padding:16px 16px 8px;overflow-wrap:anywhere}
+  .speaker-directory-card .speaker-card-bio{grid-column:2;grid-row:2;font-size:14px;line-height:1.65;padding:0 16px 16px;white-space:pre-line}
+  .speaker-directory-card .speaker-card-link{grid-column:1/-1;grid-row:3;margin:0 16px;padding:12px 0;min-height:48px;font-size:13px}
+  .speaker-directory-card .speaker-portrait-placeholder>span{font-size:36px}
+  .speaker-directory-card .speaker-portrait-placeholder>small{font-size:10px;text-align:center}
+  .speaker-profile-hero{grid-template-columns:1fr;padding:20px;gap:12px}
+  .speaker-profile-hero .speaker-portrait{max-width:220px;justify-self:center}
+  .speaker-profile-copy{padding-top:6px}
+  .speaker-profile-hero h1{font-size:36px}
+  .speaker-biography p{font-size:15px;line-height:1.75}
+  .session-speaker-card{gap:14px;padding:16px}
+  .session-speaker-card .session-speaker-copy>p{font-size:14px;line-height:1.65}
+
+  .conversation-list{border-radius:12px}
+  .conversation-row{padding:17px 14px;gap:12px;min-height:96px}
+  .conversation-row>.avatar{width:46px;height:46px;font-size:15px}
+  .conversation-copy h2{font-size:16px;line-height:1.4;max-width:none;overflow-wrap:anywhere}
+  .conversation-copy>div{align-items:flex-start;gap:8px}
+  .conversation-copy time{font-size:11px;padding-top:3px}
+  .conversation-copy>p{font-size:14px;line-height:1.6}
+  .conversation-copy>span{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+  .conversation-row .unread-badge{min-width:23px;height:23px;font-size:11px}
+  .inbox-caption{font-size:12px;line-height:1.5;align-items:flex-start;flex-wrap:wrap}
+  .inbox-caption .connection-state{font-size:12px}
+  .app-shell .main-thread{padding:0!important;min-height:0}
+  .main-thread+.app-footer{display:none}
+  .app-shell .thread-screen{height:var(--thread-available-height,calc(100dvh - var(--app-header-offset,76px) - 80px));min-height:0;border:0;border-radius:0}
+  .thread-header{padding:10px 12px;gap:8px;min-height:66px}
+  .thread-person h1{font-size:16px;max-width:none;line-height:1.4}
+  .thread-person>span{font-size:12px;line-height:1.4}
+  .thread-messages{padding:16px;overscroll-behavior:contain}
+  .thread-privacy{font-size:12px;line-height:1.55;margin-bottom:16px}
+  .message-bubble{font-size:15px;line-height:1.65;padding:12px 14px;max-width:88%}
+  .message-meta,.message-date{font-size:11px}
+  .message-meta>button,.message-failed .message-meta>button{font-size:12px;min-width:44px;min-height:44px;padding:8px}
+  .message-error{font-size:12px;line-height:1.55;max-width:90%}
+  .thread-tools{padding:8px 12px;gap:10px;max-height:35%;overflow:auto}
+  .thread-tools .moderation-actions{gap:12px;flex-wrap:wrap}
+  .thread-tools .moderation-actions button{font-size:13px;min-height:44px;min-width:44px}
+  .composer{padding:10px 12px;gap:8px}
+  .composer textarea{font-size:16px;min-height:48px;padding:10px 12px;line-height:1.5}
+  .composer textarea::placeholder{font-size:14px}
+  .composer .send-button{width:48px;height:48px}
+  .composer-caption{font-size:11px;line-height:1.45}
+  .new-messages-button{min-height:44px;font-size:12px;bottom:110px}
+  body[data-keyboard='true'] .app-shell .thread-screen{height:var(--thread-available-height,calc(var(--visual-height,100dvh) - var(--app-header-offset,76px)))}
+  body[data-keyboard='true'] .composer{padding-bottom:max(10px,env(safe-area-inset-bottom))}
+
+  .mobile-venue-tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+  .mobile-venue-tools>a{flex:1;min-height:48px;font-size:13px;background:#fff;border:1px solid #dcdce3;border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .practical-grid{grid-template-columns:1fr;gap:14px}
+  .practical-card-content{padding:20px;display:flex;flex-direction:column;align-items:stretch}
+  .practical-card-content>h2{font-size:32px;line-height:1.1;order:0}
+  .practical-card-content>.practical-facts{order:1;margin:14px 0 0;gap:10px}
+  .practical-facts p{font-size:15px;line-height:1.6;align-items:flex-start}
+  .practical-facts p>svg{margin-top:4px}
+  .practical-card-content>.button{order:2;width:100%;min-height:48px;margin:14px 0 0}
+  .practical-card-content>.mobile-copy-address{display:inline-flex;order:2;width:100%;min-height:44px;margin-top:6px}
+  .practical-card-content>.venue-map{order:3;margin-top:16px}
+  .practical-card-content>.practical-description{order:4;font-size:14px;line-height:1.7;margin-top:18px}
+  .practical-card-content>.dietary-note{order:5;font-size:14px}
+  .dietary-note strong{font-size:13px}.dietary-note p{font-size:14px;line-height:1.7}
+  .practical-card-content>.venue-number{display:none}
+  .practical-card .practical-icon{width:42px;height:42px;margin-bottom:14px}
+  .venue-map span{font-size:13px;min-height:44px}
+  .help-callout{padding:22px 18px;gap:12px}
+  .help-callout p,.help-callout a{font-size:14px;line-height:1.65}
+  .help-callout a{min-height:44px;overflow-wrap:anywhere}
+  .help-grid{grid-template-columns:1fr;gap:14px}
+  .help-topic{padding:22px}
+  .help-topic>svg{margin-bottom:16px}
+  .help-topic p{font-size:14px;line-height:1.7}
+  .more-menu>a{min-height:80px;padding:16px;gap:12px}
+  .more-menu h2{font-size:16px;line-height:1.4}
+  .more-menu p{font-size:13px;line-height:1.55}
+  .announcement-detail p{font-size:14px;line-height:1.75}
+  .announcement-detail h2{font-size:17px;line-height:1.4}
+  .announcement-detail-meta{flex-wrap:wrap}
+  .announcement-detail-meta time,.announcement-detail-meta .eyebrow{font-size:11px}
+
+  .modal-content{top:calc(var(--visual-top,0px) + var(--visual-height,100dvh)/2);max-height:calc(var(--visual-height,100dvh) - 24px);padding:20px}
+  .modal-content input,.modal-content select,.modal-content textarea{font-size:16px}
+  .tour-step{padding:18px 0}
+  .tour-step p{font-size:14px;line-height:1.65}
+  .tour-icon{width:52px;height:52px;margin-bottom:14px}
+  .tour-actions{gap:10px;flex-wrap:wrap}
+  .toast{font-size:13px;line-height:1.5;padding:10px 12px;gap:8px;bottom:calc(var(--nav-height) + env(safe-area-inset-bottom) + 12px)}
+  .toast button{min-width:44px;min-height:44px;align-items:center;justify-content:center}
+  .offline-banner{font-size:12px;line-height:1.45;padding:9px 12px;gap:8px}
+  .offline-banner a{display:flex;align-items:center;min-width:44px;min-height:44px}
+}
+@media(max-width:360px){
+  .app-shell .mobile-brand>.brand-official{width:164px}
+  .home-hero h1{font-size:30px}
+  .mobile-day-shortcuts>a{font-size:11px}
+  .speaker-directory-card{grid-template-columns:96px minmax(0,1fr)}
+  .speaker-directory-card>.speaker-portrait{width:80px}
+  .speaker-directory-card h2{font-size:16px}
+  .conversation-copy>div{flex-direction:column;gap:1px}
+}
+@media(min-width:601px) and (max-width:900px){
+  .home-hero h1{font-size:38px;max-width:640px}
+  .home-hero .button{width:auto;min-width:240px}
+  .speakers-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:900px) and (max-height:500px){
+  .agenda-controls{position:static}
+  .app-shell .main-thread .thread-privacy{display:none}
+  .thread-header{padding:4px 10px;min-height:52px}
+  .composer-caption{display:none}
+}

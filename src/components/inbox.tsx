@@ -11,6 +11,7 @@ import { useApp } from "./app-provider";
 import { Avatar, Busy, EmptyState, ErrorState, LoadingCards, PageTitle } from "./ui";
 import { useInboxSignal } from "./realtime";
 import { ModerationActions } from "./moderation";
+import { useThreadViewport } from "./use-thread-viewport";
 
 export function InboxScreen() {
   const { guide } = useApp();
@@ -84,6 +85,8 @@ export function ThreadScreen({ id }: { id: string }) {
   const lastRead = useRef(0);
   const marking = useRef(false);
   const sendingKeys = useRef(new Set<string>());
+  const thread = useRef<HTMLElement>(null);
+  useThreadViewport(thread);
 
   const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => { if (scroll.current) { scroll.current.scrollTop = scroll.current.scrollHeight; atBottom.current = true; setNewBelow(false); } });
@@ -177,7 +180,7 @@ export function ThreadScreen({ id }: { id: string }) {
     void deliver(item);
   };
   const disabled = guide.mode === "demo" || blocked || !online || !peer || Boolean(error && messages.length === 0);
-  return <section className="thread-screen"><header className="thread-header"><Link href="/inbox" className="icon-button" aria-label="Back to inbox"><ArrowLeft size={21} /></Link>{peer && <Avatar name={peer.name} />}<div className="thread-person"><h1>{peer?.name ?? "Your conversation"}</h1><span>{connection === "demo" ? "Sample conversation · read-only" : blocked ? "Attendee blocked" : connection === "offline" ? "Offline · messages are not being sent" : connection === "connected" ? "Private conversation" : "Reconnecting · history is saved"}</span></div>{peer && <button type="button" className="icon-button" aria-label="Conversation options" aria-expanded={showTools} onClick={() => setShowTools((value) => !value)}>{showTools ? <X size={20} /> : <MoreHorizontal size={21} />}</button>}</header>
+  return <section className="thread-screen" ref={thread}><header className="thread-header"><Link href="/inbox" className="icon-button" aria-label="Back to inbox"><ArrowLeft size={21} /></Link>{peer && <Avatar name={peer.name} />}<div className="thread-person"><h1>{peer?.name ?? "Your conversation"}</h1><span>{connection === "demo" ? "Sample conversation · read-only" : blocked ? "Attendee blocked" : connection === "offline" ? "Offline · messages are not being sent" : connection === "connected" ? "Private conversation" : "Reconnecting · history is saved"}</span></div>{peer && <button type="button" className="icon-button" aria-label="Conversation options" aria-expanded={showTools} onClick={() => setShowTools((value) => !value)}>{showTools ? <X size={20} /> : <MoreHorizontal size={21} />}</button>}</header>
     {showTools && peer && <div className="thread-tools"><Link href={`/people/${peer.id}`} className="text-button">View attendee<ArrowUpRight size={14} /></Link><ModerationActions target={peer.id} blocked={blocked} messageId={reportMessageId} onChange={() => { setShowTools(false); setReportMessageId(undefined); void reconcile(); }} /></div>}
     <div className="thread-messages" ref={scroll} onScroll={() => { const el = scroll.current; if (!el) return; atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 70; if (atBottom.current) { setNewBelow(false); void markRead(); } }}>
       <p className="thread-privacy"><ShieldCheck size={13} />Only you and this attendee can read this conversation. Reported messages can be reviewed by the event team.</p>
