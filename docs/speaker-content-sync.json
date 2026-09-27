@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-09-27T11:47:03.872Z",
+  "source_url": "https://www.momentumbuilderevent.com/",
+  "project": "nyhzmazbfctuttizwnxp",
+  "event": "a9bdf080-f47f-538e-94f7-38e4ff996116",
+  "speakers": 44,
+  "eventWebsiteBiographies": 42,
+  "supplementalBiographies": 2,
+  "headshots": 44,
+  "newSpeakers": [
+    "Eric Levin",
+    "Dustin Owen",
+    "Brody Lee"
+  ],
+  "missingSource": [],
+  "preservedSessionLinks": 30,
+  "preservedExistingIds": true,
+  "policy": "Only source-backed speaker biographies and portraits updated. Existing IDs, roles, publications, agenda links, event settings and attendee data preserved.",
+  "passed": true
+}
