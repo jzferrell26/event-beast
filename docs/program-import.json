@@ -1,0 +1,82 @@
+{
+  "timestamp": "2026-09-23T11:02:08.753Z",
+  "source": "https://docs.google.com/spreadsheets/d/1vmUWPH40NrHoOh6C4DkqjvjXMGwesN4hqr7na_Dvw_Y/edit",
+  "website": "https://www.momentumbuilderevent.com/",
+  "project": "nyhzmazbfctuttizwnxp",
+  "event": "a9bdf080-f47f-538e-94f7-38e4ff996116",
+  "days": 3,
+  "scheduledRecords": 42,
+  "publishedWorkingSessions": 33,
+  "heldForReview": [
+    {
+      "sheet": "Day 2",
+      "row": 27,
+      "title": "Mastermind and membership session",
+      "issue": "Title and participants are not final."
+    },
+    {
+      "sheet": "Day 2",
+      "row": 28,
+      "title": "Session to be confirmed",
+      "issue": "The run of show lists an unconfirmed sales-team segment."
+    },
+    {
+      "sheet": "Day 2",
+      "row": 37,
+      "title": "Break before the Inner Circle dinner",
+      "issue": "Dinner and break timing need confirmation."
+    },
+    {
+      "sheet": "Day 2",
+      "row": 38,
+      "title": "Inner Circle dinner",
+      "issue": "For Inner Circle ticket holders. Dinner timing and location need confirmation."
+    },
+    {
+      "sheet": "Day 3",
+      "row": 3,
+      "title": "Doors open",
+      "issue": "The timed row and breakfast/doors note give different opening times."
+    },
+    {
+      "sheet": "Day 3",
+      "row": 12,
+      "title": "Membership session",
+      "issue": "The listed participants and the session note disagree."
+    },
+    {
+      "sheet": "Day 3",
+      "row": 20,
+      "title": "Lunch",
+      "issue": "The timed row and lunch note differ. Lunch location and dietary information also need confirmation."
+    },
+    {
+      "sheet": "Day 3",
+      "row": 30,
+      "title": "Session to be confirmed",
+      "issue": "Only the presenter’s first name is provided."
+    },
+    {
+      "sheet": "Day 3",
+      "row": 37,
+      "title": "Cornhole tournament",
+      "issue": "The title says 5:30 PM while the timed row begins at 5:05 PM."
+    }
+  ],
+  "officialHeadshots": 38,
+  "uploaded": 38,
+  "speakers": 41,
+  "missingOfficialHeadshots": [
+    "Eric Post",
+    "Garin Heslop",
+    "Jay Jones"
+  ],
+  "privateSourceExcluded": [
+    "Contact details",
+    "Travel arrangements",
+    "Backstage and sales instructions",
+    "Audio/lighting/video cues",
+    "Playlist links"
+  ],
+  "importPolicy": "Create-only stable IDs. Existing organizer edits are preserved on repeat imports. No auth accounts or email invitations are created."
+}

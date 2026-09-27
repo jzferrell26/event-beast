@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-09-23T11:50:39.059Z",
+  "appRevision": "7ffc599f5b6281ee43c1307e3d405d93835144ab",
+  "deployment": "https://event-beast-51bxm7po9-cuantico-ai.vercel.app",
+  "alias": "https://event-beast.vercel.app",
+  "mode": "live",
+  "emailSignupOpen": false,
+  "passed": true,
+  "checks": [
+    {
+      "name": "Published guide uses the dedicated real event and omits private contact fields",
+      "passed": true
+    },
+    {
+      "name": "Anonymous private API requests are denied and not cached",
+      "passed": true
+    },
+    {
+      "name": "Live mobile route /: readable, fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Live mobile route /agenda: readable, fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Live mobile route /more/speakers: readable, fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Live mobile route /more/speakers/339d684f-d2c4-557c-94ce-c6ca249f8517: readable, fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Live mobile route /join: readable, fits viewport and no automated accessibility violations",
+      "passed": true
+    },
+    {
+      "name": "Email-ready gate rejects new signup before Auth/email operation",
+      "passed": true
+    },
+    {
+      "name": "Published public event essentials remain readable offline",
+      "passed": true
+    }
+  ]
+}

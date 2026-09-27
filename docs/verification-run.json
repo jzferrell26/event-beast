@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-09-22T22:36:20.5044527-05:00",
+  "branch": "feat/event-beast-launch",
+  "qualifiedRevision": "commit-containing-this-record",
+  "pullRequest": "https://github.com/jzferrell26/event-beast/pull/1",
+  "results": [
+    { "command": "npm run typecheck", "exitCode": 0 },
+    { "command": "npm run lint", "exitCode": 0 },
+    { "command": "npm test", "exitCode": 0, "detail": "54 tests passed across 6 files" },
+    { "command": "npm run build", "exitCode": 0, "detail": "Next.js 16.3.6 production build completed; 23 app routes/pages generated" },
+    { "command": "npm run test:e2e", "exitCode": 0, "detail": "37 passed, 3 intentional project-specific skips, 0 failed across desktop/mobile Chromium; Playwright self-managed production server lifecycle verified" },
+    { "command": "@axe-core/playwright accessibility matrix", "exitCode": 0, "detail": "0 WCAG A/AA axe violations across 8 routes in desktop and mobile projects (16 route/profile combinations)" },
+    { "command": "node scripts/capture-review.mjs", "exitCode": 0, "detail": "Mobile Home/Agenda/People/Inbox/Launch Center and desktop Organizer Overview/Launch Center captured and visually reviewed" },
+    { "command": "PLAYWRIGHT_BASE_URL=https://event-beast.vercel.app npm run test:e2e", "exitCode": 0, "detail": "Hosted Vercel demo: 37 passed, 3 intentional project-specific skips, 0 failed" },
+    { "command": "GitHub Actions Event Beast quality", "exitCode": 0, "detail": "Workflow run 35814790173 completed successfully for application revision 961b8fecc88fd5cb5802f73457d2b364bf22913c" },
+    { "command": "git diff --check", "exitCode": 0 },
+    { "command": "source mojibake scan", "exitCode": 0, "detail": "No suspicious encoding sequences found outside ignored/generated files" }
+  ],
+  "automatedChecksPassed": true,
+  "browserQualificationPassed": true,
+  "productionBuildVerified": true,
+  "visualReviewPassed": true,
+  "pushVerified": true,
+  "deploymentVerifiedForThisRevision": true,
+  "deployment": {
+    "provider": "Vercel",
+    "team": "Cuantico AI",
+    "project": "event-beast",
+    "url": "https://event-beast.vercel.app",
+    "mode": "demo preview",
+    "applicationRevision": "961b8fecc88fd5cb5802f73457d2b364bf22913c",
+    "deploymentUrl": "https://event-beast-ae7kgoc17-cuantico-ai.vercel.app",
+    "note": "Clean application revision deployed successfully and the full hosted Playwright suite passed. This qualification-record update changes documentation only."
+  },
+  "liveInfrastructureQualified": false,
+  "remainingExternalGate": "Dedicated Event Beast Supabase project is not created because its quoted $10/month recurring cost requires explicit owner approval. Hosted Auth, email, Storage, Realtime, two-real-account, physical-device and arrival-load checks remain pending."
+}

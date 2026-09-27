@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-09-23T11:18:10.664Z",
+  "project": "nyhzmazbfctuttizwnxp",
+  "cohort": 500,
+  "arrivalPattern": "500 requests started together from one client IP in each measured phase; explicit HTTP 429 responses retried with the website retry policy.",
+  "accountPreparation": "Admin-generated signup verification links for synthetic accounts, prepared in batches of 8. This is not a public-signup throughput test.",
+  "publicSignupBurstQualified": false,
+  "emailDeliveryQualified": false,
+  "emailDelivery": "Real inbox/provider delivery is NOT qualified. The public signup smoke encountered the built-in 2-email/hour project limit; a production sender is still required.",
+  "passed": true,
+  "phases": [
+    {
+      "phase": "verification",
+      "requested": 500,
+      "completed": 500,
+      "failures": 0,
+      "elapsedSeconds": 31.08,
+      "p50Seconds": 15.51,
+      "p95Seconds": 28.78,
+      "retries": 1077,
+      "statusCounts": {
+        "200": 500,
+        "429": 1077
+      },
+      "errors": []
+    },
+    {
+      "phase": "password_sign_in",
+      "requested": 500,
+      "completed": 500,
+      "failures": 0,
+      "elapsedSeconds": 31.02,
+      "p50Seconds": 16.18,
+      "p95Seconds": 29.37,
+      "retries": 998,
+      "statusCounts": {
+        "200": 500,
+        "429": 998
+      },
+      "errors": []
+    },
+    {
+      "phase": "registration_claim",
+      "requested": 500,
+      "completed": 500,
+      "failures": 0,
+      "elapsedSeconds": 11.69
+    }
+  ]
+}

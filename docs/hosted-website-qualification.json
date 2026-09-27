@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-09-23T11:37:58.172Z",
+  "project": "nyhzmazbfctuttizwnxp",
+  "syntheticEvent": "d2555879-8c29-49ab-97a5-406720f82c66",
+  "appOrigin": "http://127.0.0.1:3101",
+  "actualSupabaseServices": true,
+  "browser": "Chromium",
+  "passed": true,
+  "realInboxDeliveryVerified": false,
+  "actualPhysicalDevicesVerified": false,
+  "checks": [
+    {
+      "name": "Website password sign-in and verified roster matching",
+      "passed": true,
+      "seconds": 1.64
+    },
+    {
+      "name": "Persistent cookie survives browser-context reopen without credentials",
+      "passed": true,
+      "seconds": 0.79
+    },
+    {
+      "name": "Real private Realtime delivers a durable message between two browsers",
+      "passed": true,
+      "seconds": 3.55
+    },
+    {
+      "name": "Identical send retries return the same durable row",
+      "passed": true,
+      "seconds": 3.5
+    },
+    {
+      "name": "Offline recipient catches up and blocking rejects a new send",
+      "passed": true,
+      "seconds": 1.94
+    },
+    {
+      "name": "Real Storage headshot upload is confirmed and private profile projection stays clean",
+      "passed": true,
+      "seconds": 3.49
+    },
+    {
+      "name": "Sponsor can update only assigned page and cannot read attendee contacts",
+      "passed": true,
+      "seconds": 1.42
+    },
+    {
+      "name": "Admin can read private contact data; unrelated inbox history remains private",
+      "passed": true,
+      "seconds": 0.89
+    },
+    {
+      "name": "Password recovery link changes the password without exposing another account",
+      "passed": true,
+      "seconds": 1.27
+    },
+    {
+      "name": "Refresh-token session renewal works against hosted Auth",
+      "passed": true,
+      "seconds": 0.29
+    },
+    {
+      "name": "Disabled membership denies private routes despite a retained login",
+      "passed": true,
+      "seconds": 6.67
+    }
+  ]
+}
