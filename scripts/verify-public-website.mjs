@@ -10,6 +10,9 @@ if (!origin.startsWith('https://')) throw new Error('Use an HTTPS deployed websi
 const expectedRevision = process.env.EVENT_BEAST_EXPECTED_REVISION || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', windowsHide: true }).trim();
 if (!/^[a-f0-9]{40}$/i.test(expectedRevision)) throw new Error('Supply a complete expected Git commit.');
 const destination = 'test-results/website-release';
+// A documentation-only release can be rechecked without rewriting the tracked
+// evidence again and creating an endless sequence of report-only deployments.
+const reportPath = process.env.EVENT_BEAST_REPORT_PATH || 'docs/public-website-release.json';
 mkdirSync(destination, { recursive: true });
 const checks = [];
 let release;
@@ -96,7 +99,7 @@ try {
   const report = { checkedAt: new Date().toISOString(), appRevision: release.revision, expectedRevision, deployment: process.env.EVENT_BEAST_DEPLOYMENT_URL || origin, alias: origin,
     mode: release.mode, emailSignupOpen: release.emailSignupOpen, realInboxDeliveryVerified: false, physicalDevicesVerified: false,
     contentCounts: { days: guide.days.length, sessions: guide.sessions.length, speakers: guide.speakers.length, headshots: guide.speakers.filter(speaker => speaker.headshot_url).length }, passed: true, checks };
-  writeFileSync('docs/public-website-release.json', JSON.stringify(report, null, 2) + '\n');
+  writeFileSync(reportPath, JSON.stringify(report, null, 2) + '\n');
   console.log(JSON.stringify({ publicWebsitePassed: true, checks: checks.length, revision: release.revision, emailSignupOpen: release.emailSignupOpen, screenshots: destination }));
 } catch (error) {
   writeFileSync(`${destination}/failure.log`, String(error.stack || error));

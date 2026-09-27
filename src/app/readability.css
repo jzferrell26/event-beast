@@ -18,6 +18,7 @@
 .message-date,.composer-caption,.thread-older,.thread-welcome,.thread-welcome p{color:var(--secondary)}
 .interest-filters>button.active{color:#fff}
 .person-interests>span{background:#ededf1}
+.tier-heading{color:var(--secondary)}
 .thread-messages .message-failed .message-meta,.thread-messages .message-error{color:#963244}
 .admin-sidebar nav>a,.organizer-help,.admin-demo,.admin-stats>a>span,
 .admin-stats small,.event-publication p,.admin-work-grid p,.organizer-launch-note,
