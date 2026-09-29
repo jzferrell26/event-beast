@@ -31,6 +31,27 @@ export const adminResources: Record<string, AdminResource> = {
 };
 
 export function getAdminResource(key: string): AdminResource | null { return Object.hasOwn(adminResources, key) ? adminResources[key] : null; }
+
+/** List-row upload targets. Venue maps stay inside their edit form. */
+export function adminImageField(resource: AdminResource): AdminField | null {
+  return resource.fields.find((field) => field.kind === "url" && (field.key === "headshot_url" || field.key === "logo_url")) ?? null;
+}
+
+export function adminImageLabel(field: AdminField): string {
+  return field.key === "logo_url" ? "Upload logo" : "Upload photo";
+}
+
+/** Full resource payload for an immediate image save. Other columns are copied, not cleared. */
+export function adminSaveValues(resource: AdminResource, row: Record<string, unknown>, overrides: Record<string, unknown> = {}): Record<string, unknown> {
+  return Object.fromEntries(resource.fields.map((field) => {
+    const raw = Object.hasOwn(overrides, field.key) ? overrides[field.key] : row[field.key];
+    if (field.kind === "boolean") return [field.key, Boolean(raw)];
+    if (field.kind === "number") return [field.key, raw == null || raw === "" ? Number(field.initial ?? 100) : Number(raw)];
+    if (field.nullable && (raw == null || raw === "")) return [field.key, null];
+    if (raw == null) return [field.key, ""];
+    return [field.key, raw];
+  }));
+}
 export function resourceSchema(resource: AdminResource) {
   const shape: Record<string, z.ZodType> = {};
   for (const field of resource.fields) {
