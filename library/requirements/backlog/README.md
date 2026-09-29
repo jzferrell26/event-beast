@@ -16,4 +16,4 @@ Current plans:
 
 | PRD | Module |
 |---|---|
-| [prd-001-event-operator-console](./prd-001-event-operator-console/prd-001-event-operator-console-index.md) | Event-day admin access for Momentum Builder Live |
+| None | PRD-001 moved to [in-work](../in-work/prd-001-event-operator-console/prd-001-event-operator-console-index.md) on 2026-09-29 |

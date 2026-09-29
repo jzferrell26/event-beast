@@ -41,6 +41,18 @@ export function adminImageLabel(field: AdminField): string {
   return field.key === "logo_url" ? "Upload logo" : "Upload photo";
 }
 
+/** List uploads change only the image, never an older snapshot of the row. */
+export const adminImagePatchSchema = z.object({ id: uuid, url: secureUrl.refine((value) => value.startsWith("https://"), "Use the uploaded HTTPS image URL.") }).strict();
+
+export const sessionSpeakerIdsSchema = z.array(uuid).max(100, "Choose no more than 100 speakers per session.").transform((ids) => [...new Set(ids)]);
+
+/** Give immediate feedback before sending a file; the server still verifies bytes. */
+export function adminImageUploadError(file: { size: number; type: string }): string | null {
+  return !file.size || file.size > 3 * 1024 * 1024 || !["image/jpeg", "image/png", "image/webp"].includes(file.type)
+    ? "Choose a JPG, PNG or WebP under 3 MB."
+    : null;
+}
+
 /** Full resource payload for an immediate image save. Other columns are copied, not cleared. */
 export function adminSaveValues(resource: AdminResource, row: Record<string, unknown>, overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return Object.fromEntries(resource.fields.map((field) => {
