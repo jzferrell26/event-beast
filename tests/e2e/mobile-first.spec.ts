@@ -68,13 +68,17 @@ test('urgent updates precede the welcome and the moment never promotes held sess
   await page.setViewportSize({ width: 390, height: 844 });
   await page.clock.setFixedTime(start);
   await page.goto('/');
-  await refreshUntil(page, () => page.locator('.mobile-next-session').innerText().then(text => text.includes('The next confirmed session')));
-  await expect(page.locator('.mobile-next-session')).toContainText('Coming up');
+  // A guide refresh can briefly retain the previous render's DOM. Wait for
+  // exactly one visible, updated summary rather than throwing on that overlap.
+  const moment = page.locator('.mobile-next-session:visible');
+  await refreshUntil(page, () => moment.allTextContents().then(texts => texts.length === 1 && texts[0].includes('The next confirmed session')));
+  await expect(moment).toHaveCount(1);
+  await expect(moment).toContainText('Coming up');
   const alert = (await page.locator('.mobile-event-alerts').boundingBox())!;
   const hero = (await page.locator('.home-hero').boundingBox())!;
   expect(alert.y + alert.height).toBeLessThanOrEqual(hero.y);
   await expect(page.getByText('Important room update', { exact: true }).filter({ visible: true })).toHaveCount(1);
-  await expect(page.locator('.mobile-next-session')).not.toContainText(guide.sessions[0].title);
+  await expect(moment).not.toContainText(guide.sessions[0].title);
 });
 
 test('agenda jump, day-key navigation and bookmark hit areas cooperate with sticky controls', async ({ page }) => {

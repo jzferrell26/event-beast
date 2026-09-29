@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-09-29T16:07:32.683Z",
+  "scope": "PRD-001 local source qualification",
+  "branch": "feat/event-operator-console",
+  "baseCommit": "96fb04c",
+  "checks": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "unitApiSqlImage": {
+      "passed": 174,
+      "files": 22
+    },
+    "chromium": {
+      "startTime": "2026-09-29T16:01:16.424Z",
+      "duration": 157591.865,
+      "expected": 121,
+      "skipped": 3,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "webkit": {
+      "startTime": "2026-09-29T15:53:33.086Z",
+      "duration": 280443.493,
+      "expected": 26,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "environment": "Windows; local production Next.js server in read-only demo mode; browser route fixtures; actual PGlite migrations/RLS and Sharp decoding",
+  "production": {
+    "migrationAppliedByThisWork": false,
+    "adminRoleAssignedByThisWork": false,
+    "releaseVerified": false,
+    "hostedIntegrationTested": false
+  },
+  "sourceHashesLF": {
+    "src/app/api/admin/content/[resource]/route.ts": "a0f4868969d54444d2f50ebdcb87485788a0fb3cd66ea5c05694aacbfe9f5385",
+    "src/app/api/admin/lookups/route.ts": "da6109c6c72a9026adb7ef289df6d2ec0110f5839bb62b81f134de9b3d4a823c",
+    "src/app/organizer.css": "167b5fea7da773bd2c10cbce7d75f7b50f7b83f8a13f4818c27ac700e57353fe",
+    "src/components/admin.tsx": "5cd0ef440022e50b5aef226397691468d53af31416272d2da6f2feea8b6977bb",
+    "src/components/admin-session-speakers.tsx": "f954d0f72eb33b45ad2146716666bd3e6fae0bdcc4083be6dd37036a4f87773d",
+    "src/lib/admin-resources.ts": "88427a9112467fbc69b5b3566236074270d7ec1ed9d7f72ae8924b8de59df824",
+    "src/lib/server/admin.ts": "71c8f81c4a304b5eecb607536baef712fd39c9bb6d49b62d7e35bc381bc99b7b",
+    "supabase/migrations/20260929154113_event_operator_session_save.sql": "1400e9b4aa1b080d81b5dea77da846e0b5a711c71c8ddca9f2b9e5a6ec53036f"
+  }
+}

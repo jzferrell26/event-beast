@@ -1,6 +1,6 @@
 # PRD-001: Event operator console
 
-> **Status:** Backlog
+> **Status:** In work — implementation locally qualified; release and production handoff pending
 > **Priority:** P0
 > **Effort:** XL (> 3d)
 > **Schema changes:** Additive
@@ -12,7 +12,7 @@
 
 Momentum Builder Live is already a Next.js app on Vercel with content in Supabase. An organizer console exists at `/admin`. An assigned Admin can already change the event name, welcome copy, announcements, agenda days, session times, speaker name/title/bio, sponsor pages, lunch, venue, and the registration roster. Those writes stay inside the event, pass through existing row-level security, and refresh the public guide within about 15 seconds.
 
-The gap is not "there is no backend." The gap is that a non-developer assigned for this event still cannot run the day from that console. Speaker photos are a pasted HTTPS URL. Speakers attach to sessions on a separate screen. There is no door check-in. Help-page instructions and the logo still live in source files. This plan closes those operator gaps without changing the attendee app's routes, layout, or public guide contract.
+The gap is not "there is no backend." The approved work makes speaker/sponsor uploads and session-speaker assignment usable from the existing organizer console. The September 29 decisions below supersede the earlier door-list and editable-help/logo proposals: those two sub-features remain deferred. The attendee app's routes, layout, and public guide contract stay unchanged.
 
 Inspection date: 2026-09-29, branch `main` at the time of writing.
 
@@ -59,7 +59,7 @@ Public pages are `force-dynamic`. The guide cache is `unstable_cache` with `reva
 | Sub-PRD | Scope | Status |
 |---|---|---|
 | [`prd-001a-event-operator-console-assignment`](./prd-001a-event-operator-console-assignment.md) | Grant `team@momentumbuilder.com` as event Admin | Decided, not yet applied in production |
-| [`prd-001b-event-operator-console-program`](./prd-001b-event-operator-console-program.md) | Upload buttons on the speaker list and the sponsor (vendor) list | In progress |
+| [`prd-001b-event-operator-console-program`](./prd-001b-event-operator-console-program.md) | Speaker/sponsor list and form uploads; speakers and times on the session form | Implemented and locally qualified; release pending |
 | [`prd-001c-event-operator-console-check-in`](./prd-001c-event-operator-console-check-in.md) | Door list | Deferred. Welcome and venue text already cover this |
 | [`prd-001d-event-operator-console-locked-copy`](./prd-001d-event-operator-console-locked-copy.md) | Help copy and logo | Deferred. Logo stays the Momentum Builder mark. No live-facing edits |
 
@@ -84,10 +84,11 @@ Additive only. No renames, no drops, no change to the public guide's required fi
 
 | Change | Why | Public guide |
 |---|---|---|
-| `speakers.sort_order integer not null default 100` | Optional display order. Alphabetical name remains the fallback | Client may sort by it later. Until 001b ships, omit it from any required field |
-| `event_checkins` | Door attendance, admin-only | Not selected by `guide.ts` |
+| `admin_save_agenda_session(uuid,uuid,jsonb,uuid[])` | Additive SECURITY INVOKER RPC commits session fields and existing join-table links together under event RLS | No change |
+| `speakers.sort_order` | Optional and not implemented; no consuming client requires it | Existing order is unchanged |
+| `event_checkins` | Deferred with 001c; no table or migration is created | No change |
 
-Check-in columns are specified in 001c. Existing tables `events`, `event_settings`, `speakers`, `agenda_days`, `agenda_sessions`, `session_speakers`, `attendees`, and `venue_locations` stay the source of truth.
+The proposed check-in columns remain documented in deferred 001c only. Existing tables `events`, `event_settings`, `speakers`, `agenda_days`, `agenda_sessions`, `session_speakers`, `attendees`, and `venue_locations` stay the source of truth. The additive RPC migration must be applied before the new session form is released.
 
 ---
 
@@ -95,8 +96,8 @@ Check-in columns are specified in 001c. Existing tables `events`, `event_setting
 
 | Surface | Change |
 |---|---|
-| `/api/admin/content/[resource]` | Keep the current resource allowlist in `src/lib/admin-resources.ts`. Extend speaker fields only as 001b specifies |
-| `/api/admin/check-in` | New. Admin-only. Specified in 001c |
+| `/api/admin/content/[resource]` | Keep the allowlist. Add image-only PATCH for speakers/sponsors, and optional `speaker_ids` on session POST. Session GET includes current link IDs and private review status for the form only |
+| `/api/admin/check-in` | Deferred; no route is added |
 | `/api/guide` | No required-field changes. Do not add check-in counts or arrival status |
 | `/api/uploads` | Reuse `kind=asset` for speaker photos. Do not store speaker portraits in the private `event-headshots` bucket |
 
@@ -128,6 +129,8 @@ Operator work is confined to `/admin` and `/api/admin/*`. A save that is not pub
 
 ## Related
 
+- [Operator handoff](../../../../docs/OPERATOR-CONSOLE.md): image/program workflow and separate production access assignment
+- [Qualification evidence](./qa/implementation.md): acceptance mapping and release boundaries
 - `docs/ROLES.md`: Admin, Sponsor, and Member capabilities already enforced
 - `docs/EVENT-DAY-HANDOFF.md`: attendee arrival is email claim, not a door scan
 - `src/lib/admin-resources.ts`: fields the console can save today

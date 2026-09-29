@@ -2,6 +2,18 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 29 event operator console (PRD-001)
+
+The approved increment completes speaker/sponsor list and form uploads plus session-speaker editing in the existing organizer console. List uploads now save only the image field instead of overwriting newer row content. The session form searches/selects speakers and atomically commits its fields and existing join-table links through the additive `admin_save_agenda_session` RPC. Missing link data blocks saving. The existing event timezone, RLS, composite foreign keys, audit trail, review-reopen trigger and guide invalidation are preserved.
+
+**Source qualification:** lint, TypeScript, production build, **174 automated tests in 22 files**, **121 Chromium browser passes with three intentional skips**, and **26 mobile WebKit passes with no skips**. New tests cover actual image decoding/re-encoding, the exact 3 MB boundary, image-only HTTP mutations, wrong-event and role refusal, approved roster Admin access and immediate disabled-account denial, anonymous RPC grants, draft visibility, link identity/idempotency, full transactional rollback, and desktop/mobile edit/retry/reload workflows. Scoped axe scans of the session and speaker dialogs passed, as did the existing fixture-based accessibility suite.
+
+The first full Chromium run exposed an existing guide-refresh test reading transient duplicate DOM. Its assertion now waits for one visible updated summary without changing the attendee implementation. The full suite was rerun clean. Browser session persistence uses the actual PostgreSQL migrations/RLS via PGlite with synthetic data; upload transport/storage are fixtures while Sharp decoding is real. This does **not** claim hosted Auth/PostgREST/storage or physical-device verification. Historical production-only findings below are not cleared by these local results.
+
+Evidence, exact browser run statistics, source fingerprints, and visually reviewed desktop/mobile screenshots are in [`library/requirements/in-work/prd-001-event-operator-console/qa`](../library/requirements/in-work/prd-001-event-operator-console/qa/implementation.md). The operator guide is [`OPERATOR-CONSOLE.md`](./OPERATOR-CONSOLE.md).
+
+**Production boundary:** this work does not apply the migration, deploy to production, or assign `team@momentumbuilder.com`. Apply `20260929154113_event_operator_session_save.sql` to the existing dedicated Event Beast project before releasing the new editor, then verify real organizer saves/uploads, role denial and attendee refresh. Production Admin assignment/verification is the separate `/admin/users` operator step defined by the PRD. Door check-in, attendee layouts, official logo, help copy, public contact privacy, messaging, SMS, domains and email-launch settings are unchanged. The PRD remains `in-work` until release and the actual handoff are recorded.
+
 ## September 27 mobile-first event-day release
 
 The resumed mobile pass implements the approved black mobile header, compact now/next Home, priority notices, sticky agenda/search/day controls and jump action, readable attendee/speaker browsing, full uncropped portraits and biographies, larger touch targets, keyboard-aware conversations, and venue/help/offline shortcuts. All changes to visual presentation are scoped to the existing mobile breakpoint. The official logo and speaker source assets are unchanged; no database migration, content import, email/DNS/billing change or signup activation is part of this release.

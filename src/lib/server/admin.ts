@@ -8,7 +8,7 @@ import { isDemo } from "./guide";
 export function demoResourceRows(resource: string): Record<string, unknown>[] {
   const map: Record<string, unknown[]> = {
     event_settings: [demoGuide.settings], announcements: demoGuide.announcements, agenda_days: demoGuide.days,
-    agenda_sessions: demoGuide.sessions, speakers: demoGuide.speakers, session_speakers: demoGuide.sessionSpeakers.map((link, index) => ({ ...link, id: `a0000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}` })),
+    agenda_sessions: demoGuide.sessions.map((session) => ({ ...session, speaker_ids: demoGuide.sessionSpeakers.filter((link) => link.session_id === session.id).map((link) => link.speaker_id) })), speakers: demoGuide.speakers, session_speakers: demoGuide.sessionSpeakers.map((link, index) => ({ ...link, id: `a0000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}` })),
     sponsors: demoGuide.sponsors, sponsor_tiers: demoGuide.tiers, agenda_sponsor_placements: demoGuide.placements,
     sponsor_representatives: [], lunch_locations: demoGuide.lunches, venue_locations: demoGuide.venues,
     attendees: demoProfiles.map((p, index) => ({ id: p.attendee_id, event_id: p.event_id, registration_name: p.full_name, registration_email: `attendee${index + 1}@example.test`, status: "approved", directory_allowed: true, user_id: null })),
