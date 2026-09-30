@@ -87,3 +87,16 @@ test('email confirmation GET is a safe landing with no passive token consumption
  await expect(page).toHaveURL(/\/auth\/confirm\?/);
  await expect(page.getByText('Opening this page does not use your link.',{exact:false})).toBeVisible();
 });
+
+test('confirmation form preserves its Origin without leaking the token in Referer',async({page},info)=>{
+ const origin=new URL(String(info.project.use.baseURL)).origin;
+ await page.goto('/auth/confirm?token_hash='+'b'.repeat(64)+'&type=invite');
+ const submitted=page.waitForRequest(request=>request.method()==='POST'&&new URL(request.url()).pathname==='/auth/confirm');
+ await page.getByRole('button',{name:'Continue securely',exact:true}).click();
+ const request=await submitted;
+ const headers=await request.allHeaders();
+ expect(headers.origin).toBe(origin);
+ expect(headers.referer).toBe(origin+'/');
+ expect(headers.referer).not.toContain('token_hash');
+ expect((await request.response())?.status()).not.toBe(403);
+});
