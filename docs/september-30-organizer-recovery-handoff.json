@@ -1,0 +1,23 @@
+{
+  "recordedAt": "2026-09-30T19:29:19.765Z",
+  "testedProductionRevision": "6208bf01d9aae557160f5b251a5d1cbb770a599c",
+  "sender": "jonathan@cuantico.us",
+  "deliveryMethod": "Connected Outlook mailbox; Sent Items copies verified",
+  "recipients": [
+    {
+      "email": "team@momentumbuilder.com",
+      "name": "Sonia Le",
+      "sent": true,
+      "sentCopyVerified": true
+    },
+    {
+      "email": "don@momentumbuilder.com",
+      "name": "Don Goettling",
+      "sent": true,
+      "sentCopyVerified": true
+    }
+  ],
+  "privateTokensCommitted": false,
+  "realRecipientLoginConfirmed": false,
+  "automatedAccountEmailEnabled": false
+}

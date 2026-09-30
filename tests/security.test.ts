@@ -151,7 +151,7 @@ describe("organizer controls and event isolation", () => {
   it("validates imports atomically, preserves disabled access and never publishes profiles", async () => {
     await asUser(db, ids.alice, async () => await expect(db.query("select public.import_attendees($1,$2)", [ids.event, JSON.stringify([{ email: "new@example.test", name: "New" }])])).rejects.toThrow(/Organizer/));
     await asUser(db, ids.admin, async () => {
-      await expect(db.query("select public.import_attendees($1,$2)", [ids.event, JSON.stringify([{ email: "new@example.test", name: "New" }, { email: "NEW@example.test", name: "Duplicate" }])])).rejects.toThrow(/duplicate/);
+      await expect(db.query("select public.import_attendees($1,$2)", [ids.event, JSON.stringify([{ email: "new@example.test", name: "New" }, { email: "NEW@example.test", name: "Duplicate" }])])).rejects.toThrow(/duplicate/i);
       expect((await db.query("select id from public.attendees where registration_email='new@example.test'")).rows).toHaveLength(0);
       await db.query("update public.attendees set status='disabled' where id=$1", [ids.bobAttendee]);
       await db.query("select public.import_attendees($1,$2)", [ids.event, JSON.stringify([{ email: "new@example.test", name: "New" }, { email: "bob@example.test", name: "Bob Sample" }])]);

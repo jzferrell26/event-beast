@@ -1,0 +1,286 @@
+{
+  "source": "Sonia Le · September 30 agenda + corrected Oct 7 lunch + Oct 8 lunch",
+  "sourceReceivedUtc": [
+    "2026-09-30T06:02:05Z",
+    "2026-09-30T06:24:40Z",
+    "2026-09-30T06:26:03Z"
+  ],
+  "project": "nyhzmazbfctuttizwnxp",
+  "event": "a9bdf080-f47f-538e-94f7-38e4ff996116",
+  "programRows": 49,
+  "lunchRows": 16,
+  "preservedSessionIds": 37,
+  "supersededPublishedSessions": [
+    {
+      "id": "49c160d1-495d-5541-b4fc-f13fe0061535",
+      "title": "Sponsor spotlight: Cuantico AI and Auto Appointment Engine"
+    }
+  ],
+  "remappedAdAnchors": [
+    {
+      "id": "b7f2ca9c-d471-5ed2-a506-d8863bd37f3f",
+      "after_session_id": "0f7949a0-c4b7-5abe-878b-8952ca9c97c3"
+    }
+  ],
+  "unconfirmedEndTimesHidden": 42,
+  "speakerNamesWithoutInventedProfiles": [
+    "Steven Petrov",
+    "Dan Catinella"
+  ],
+  "funStuff": "No content invented; the organizer is preparing this page.",
+  "committed": true,
+  "committedAt": "2026-09-30T16:57:54.907Z",
+  "verify": {
+    "ads": 6,
+    "fun_stuff": 0,
+    "lunches": 16,
+    "sessions": 49
+  },
+  "sessionIds": [
+    {
+      "id": "3811b54b-0bf7-5301-a382-75669961ce01",
+      "title": "Registration & Impact Arena open",
+      "starts_at": "2026-10-06T18:00:00.000Z"
+    },
+    {
+      "id": "d6744e47-6f49-5410-b623-9253baabe3e1",
+      "title": "Ballroom doors open",
+      "starts_at": "2026-10-06T21:00:00.000Z"
+    },
+    {
+      "id": "19401f41-a3df-5ef1-b40d-821c1da0766f",
+      "title": "Kickoff session begins",
+      "starts_at": "2026-10-06T21:30:00.000Z"
+    },
+    {
+      "id": "dc2a51a7-a0b4-5991-ad2a-c47e19700183",
+      "title": "Eric Post",
+      "starts_at": "2026-10-06T21:50:00.000Z"
+    },
+    {
+      "id": "0f7949a0-c4b7-5abe-878b-8952ca9c97c3",
+      "title": "The Value of Community & Taking Action When Others Aren’t",
+      "starts_at": "2026-10-06T22:10:00.000Z"
+    },
+    {
+      "id": "21c05ec0-01fc-59ff-958f-f5171014788b",
+      "title": "Breakthrough",
+      "starts_at": "2026-10-06T22:40:00.000Z"
+    },
+    {
+      "id": "ec0ce689-cbec-56ba-8150-895290e69fc5",
+      "title": "“Paint the Town Red” Kickoff Party",
+      "starts_at": "2026-10-07T00:00:00.000Z"
+    },
+    {
+      "id": "e13b191c-284f-5cb4-ae83-0e238bc271c4",
+      "title": "Morning activities",
+      "starts_at": "2026-10-07T11:30:00.000Z"
+    },
+    {
+      "id": "957e384c-2c9c-541c-a3f1-d607ef291e94",
+      "title": "Registration and breakfast open",
+      "starts_at": "2026-10-07T12:30:00.000Z"
+    },
+    {
+      "id": "16da2eea-08b7-55b9-8412-c9acc7ea4b8a",
+      "title": "Ballroom doors open",
+      "starts_at": "2026-10-07T13:00:00.000Z"
+    },
+    {
+      "id": "2c2c3a6a-ddf0-5514-a116-f34bf7222b29",
+      "title": "Day 2 kickoff",
+      "starts_at": "2026-10-07T13:30:00.000Z"
+    },
+    {
+      "id": "e572423d-16dc-539c-8eb8-5712689baaff",
+      "title": "Simon Thomsen",
+      "starts_at": "2026-10-07T13:40:00.000Z"
+    },
+    {
+      "id": "3d9a0a53-e44f-5b00-a4ea-70a2323d8f7c",
+      "title": "Person of Interest",
+      "starts_at": "2026-10-07T14:00:00.000Z"
+    },
+    {
+      "id": "f5aeaeff-e917-5007-9c84-9ce90fd3e055",
+      "title": "Leadership Panel",
+      "starts_at": "2026-10-07T15:00:00.000Z"
+    },
+    {
+      "id": "b485cb92-c8fa-5e05-9876-cb9d2b84c2e6",
+      "title": "Break",
+      "starts_at": "2026-10-07T15:50:00.000Z"
+    },
+    {
+      "id": "ad892d86-aab2-5075-94a0-70d49eebba31",
+      "title": "How to Get Out of the Commodity Trap",
+      "starts_at": "2026-10-07T16:05:00.000Z"
+    },
+    {
+      "id": "6d776b6f-cbca-5035-af2e-1aed51534042",
+      "title": "Rory Vaden",
+      "starts_at": "2026-10-07T16:30:00.000Z"
+    },
+    {
+      "id": "ec8c33a3-c746-5c7f-9a82-ee456660c16a",
+      "title": "Lunch",
+      "starts_at": "2026-10-07T17:30:00.000Z"
+    },
+    {
+      "id": "a8c3b5e8-3d1c-509b-ada9-bf32658ef8ec",
+      "title": "Fun raffle",
+      "starts_at": "2026-10-07T19:00:00.000Z"
+    },
+    {
+      "id": "9f5f063c-6a55-5d9c-9014-7b4ab2f0b0f0",
+      "title": "Top Producer Panel",
+      "starts_at": "2026-10-07T19:05:00.000Z"
+    },
+    {
+      "id": "395daf37-4874-5988-8457-ccc31d5f93ed",
+      "title": "How to Keep Your Momentum Going Year-Round",
+      "starts_at": "2026-10-07T20:00:00.000Z"
+    },
+    {
+      "id": "4c8fb159-3733-5139-9120-67ed99ee114a",
+      "title": "Extended break",
+      "starts_at": "2026-10-07T20:30:00.000Z"
+    },
+    {
+      "id": "3e67af84-3678-5095-b119-6fc09125e6b7",
+      "title": "Deborah Byrd",
+      "starts_at": "2026-10-07T21:00:00.000Z"
+    },
+    {
+      "id": "70898329-fccc-50a2-b316-937547704535",
+      "title": "AI Panel",
+      "starts_at": "2026-10-07T21:20:00.000Z"
+    },
+    {
+      "id": "098b723c-cda3-58dc-a0c5-bbc98ab537d3",
+      "title": "Adversity is the Assignment",
+      "starts_at": "2026-10-07T21:55:00.000Z"
+    },
+    {
+      "id": "b4772d49-9150-5ad7-a0fc-05a0c5d667b7",
+      "title": "Day 2 concludes · Chris Welton book signing",
+      "starts_at": "2026-10-07T22:30:00.000Z"
+    },
+    {
+      "id": "53fb563e-45fc-5a77-a682-627c4dc9f0a4",
+      "title": "Morning activities",
+      "starts_at": "2026-10-08T11:30:00.000Z"
+    },
+    {
+      "id": "a85afa19-3ffc-5dc8-a5b3-8ccdd9b187e7",
+      "title": "Registration and breakfast open",
+      "starts_at": "2026-10-08T12:30:00.000Z"
+    },
+    {
+      "id": "18a0a090-faa6-5c6b-9403-6fc4c07b70e8",
+      "title": "Ballroom doors open",
+      "starts_at": "2026-10-08T13:00:00.000Z"
+    },
+    {
+      "id": "95841103-fac7-595a-ae59-5bdce14f4b4a",
+      "title": "Day 3 kickoff",
+      "starts_at": "2026-10-08T13:30:00.000Z"
+    },
+    {
+      "id": "5993796f-8e7d-5df6-837e-563dabeab853",
+      "title": "Angelica Ventrice",
+      "starts_at": "2026-10-08T13:40:00.000Z"
+    },
+    {
+      "id": "59252056-c8fb-5114-8f65-c8185c7b0b90",
+      "title": "The Champion’s Code",
+      "starts_at": "2026-10-08T14:00:00.000Z"
+    },
+    {
+      "id": "2527d577-ca8d-5423-a388-b329bdf725d0",
+      "title": "AI Myths vs Execution",
+      "starts_at": "2026-10-08T14:45:00.000Z"
+    },
+    {
+      "id": "0c254da7-d8e2-524a-a57c-6eafe9bb2a2f",
+      "title": "Angie Noack & Rachel Lambert",
+      "starts_at": "2026-10-08T15:05:00.000Z"
+    },
+    {
+      "id": "76036b63-0790-5af4-af0b-74b74109cabc",
+      "title": "Break",
+      "starts_at": "2026-10-08T16:00:00.000Z"
+    },
+    {
+      "id": "c4993ad6-d9b0-5eb7-b6cf-6a448ce496bc",
+      "title": "Neel Dhingra",
+      "starts_at": "2026-10-08T16:15:00.000Z"
+    },
+    {
+      "id": "3191877a-45a4-5a17-99da-461d52123220",
+      "title": "How to Keep Your Momentum Going Year-Round",
+      "starts_at": "2026-10-08T17:10:00.000Z"
+    },
+    {
+      "id": "57e4fe81-b108-503b-9e53-2b0d883646c1",
+      "title": "Lunch",
+      "starts_at": "2026-10-08T17:30:00.000Z"
+    },
+    {
+      "id": "6ac748aa-264f-5ddd-a205-faba53c7c4fc",
+      "title": "Fun raffle",
+      "starts_at": "2026-10-08T19:00:00.000Z"
+    },
+    {
+      "id": "c366a4ef-c610-56cb-9366-865a459312a2",
+      "title": "Money being left on the table: AI Follow up systems",
+      "starts_at": "2026-10-08T19:05:00.000Z"
+    },
+    {
+      "id": "26d3716b-67af-5567-8de1-02c7352f0530",
+      "title": "Break",
+      "starts_at": "2026-10-08T19:40:00.000Z"
+    },
+    {
+      "id": "0f4546cf-0c74-53d9-a8b7-962fd64b1439",
+      "title": "Cabo prize giveaway",
+      "starts_at": "2026-10-08T20:00:00.000Z"
+    },
+    {
+      "id": "29edae6a-4b58-54d8-99c1-96f0b159d6b3",
+      "title": "The Big Reveal",
+      "starts_at": "2026-10-08T20:05:00.000Z"
+    },
+    {
+      "id": "e0a016c4-b491-559e-807a-c54121c9617c",
+      "title": "Dustin Owen",
+      "starts_at": "2026-10-08T20:50:00.000Z"
+    },
+    {
+      "id": "2b82d93e-61ab-5c13-a6ec-531c38341dbf",
+      "title": "Josh Pitts",
+      "starts_at": "2026-10-08T21:10:00.000Z"
+    },
+    {
+      "id": "53b4495f-9deb-5e2f-91b1-65de8ba60c63",
+      "title": "Ken Perry & Bill Hart",
+      "starts_at": "2026-10-08T21:30:00.000Z"
+    },
+    {
+      "id": "88557167-5d89-5c75-af9b-824242a0884b",
+      "title": "Closing",
+      "starts_at": "2026-10-08T22:00:00.000Z"
+    },
+    {
+      "id": "78de428b-2f34-5bd5-ad63-f84b6216d25b",
+      "title": "Sessions conclude",
+      "starts_at": "2026-10-08T22:15:00.000Z"
+    },
+    {
+      "id": "c21b0442-e431-5104-824a-03336e5deca1",
+      "title": "Closing party & cornhole tournament",
+      "starts_at": "2026-10-08T22:30:00.000Z"
+    }
+  ]
+}

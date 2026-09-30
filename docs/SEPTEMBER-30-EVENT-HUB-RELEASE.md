@@ -1,5 +1,17 @@
 # September 30: social wall, private messages, and authoritative event content
 
+## Verified live handoff
+
+PR #12 and the real-browser activation follow-up PR #13 are merged. Production revision `6208bf01d9aae557160f5b251a5d1cbb770a599c` is live. The approved event has community, feed, directory and messaging enabled; announcements are disabled and the automatic account-email gate remains closed.
+
+The final hosted qualification passed all eight workflows on that exact revision with `diagnosticHeaderOverride=false`: fresh organizer/member activation, profile consent/contact privacy, two-browser social-wall persistence and idempotent retries, Admin-only moderation, durable private messages and blocks, recovery from a different-account session, unpublished organizer lunch editing, and actual public content. All synthetic identities and records were removed. This does not assert that Don or Sonia personally completed their first successful login.
+
+Validation also includes 210 unit/database tests, 63 event-hub browser checks, 125 legacy browser checks (three intentional project skips), and 28 focused mobile-WebKit checks. The final independent CI workflow passed before PR #13 merged. A slow dependency-mirror CI attempt was canceled and rerun; no failing quality gate was bypassed.
+
+After final qualification, new recipient-only recovery emails were sent to Sonia and Don from Jonathan's Outlook, and both Sent Items copies were verified. Each email explains the explicit Continue securely step, confirms the intended account, and distinguishes manual recovery from the still-disabled automatic email service. Private links are kept only in ignored local state, never in the committed evidence. See `september-30-organizer-recovery-handoff.json`.
+
+Evidence: `september-30-hub-deployment.json`, `september-30-hosted-qualification.json`, `september-30-content-sync.json`, and `september-30-sponsor-links.json`. The current source import has 49 agenda entries, 16 lunch options, 37 sponsor listings, six ads and 34 source-backed sponsor website links. Fun Stuff content remains pending Sonia.
+
 ## Latest organizer direction
 
 Sonia's latest **RE: event & community sites**, received September 30 at 15:10:38 UTC, requests a shared social wall and private messaging. Her preceding forwarded confirmation excludes notifications. She explicitly keeps breakouts in the Lunch pages and is preparing a separate **Fun Stuff** page. These instructions supersede the earlier separate Breakouts & Activities proposal.
@@ -14,7 +26,9 @@ The event's announcement/notification bell, navigation, public announcement data
 
 Lunch is grouped by date and category (VIP, breakout, seating, food trucks), with the organizer's capacities, descriptions and supplied menu URLs. Fun Stuff has an organizer editor and a truthful pending screen until Sonia supplies its content; no activities were invented or copied into a second breakout area.
 
-Email activation and recovery links no longer verify on GET or HEAD. The recipient first lands on a no-store, no-referrer confirmation page and presses **Continue securely**. Only that same-origin POST consumes the token. Links are redirected to the configured canonical host before cookies are created. A malformed/used link cannot sign out a valid existing session. Password setup displays the verified email and rejects an account change from another tab. The final handoff claims the event registration and routes Admins to the console and Members to their profile.
+Email activation and recovery links no longer verify on GET or HEAD. The recipient first lands on a no-store confirmation page and presses **Continue securely**. Its explicit `strict-origin` response header and HTML meta policy preserve the form's Origin for the unchanged CSRF checks, while withholding the token-bearing path/query from Referer. Only that same-origin POST consumes the token. Links are redirected to the configured canonical host before cookies are created. A malformed/used link cannot sign out a valid existing session. Password setup displays the verified email and rejects an account change from another tab. The final handoff claims the event registration and routes Admins to the console and Members to their profile.
+
+The first hosted check found that `no-referrer` could cause a navigation-mode form POST to send a null Origin and fail the CSRF guard. PR #13 corrects the policy rather than relaxing origin validation. A real-browser regression failed before that fix and passes after it. See the [Fetch standard's Origin behavior](https://fetch.spec.whatwg.org/#origin-header). Any hosted report with `diagnosticHeaderOverride=true` is diagnostic only and is not final release qualification; the final run must have that flag false.
 
 ## Source import policy
 
@@ -48,3 +62,9 @@ The two sync commands above are dry runs unless passed `--commit`. After deploym
 **Still not an attendee-rollout sign-off:** automated invitation/signup/recovery email remains gated until the exact sending address is approved and independent-inbox delivery is tested. The connected Resend account has a verified `noreply.momentumbuilder.com` sending domain, but that is not itself an approved From mailbox or configured Supabase SMTP sender. The registrant cohort is not imported or invited by this release. Sonia's Fun Stuff content, remaining profile/link questions, the final branded-domain cutover, and physical-device/venue-network acceptance remain separate tasks.
 
 The post-event commercial product plan remains parked. This release is the organizer's event scope, not a self-service SaaS conversion.
+
+## Hosted advisory review
+
+The September 30 security-advisor read returned the two existing anonymous-callable authorization helpers and 30 authenticated-callable guarded `SECURITY DEFINER` helpers, including the four new wall actions. These advisories are recorded, not represented as a zero-warning security scan; the wall RPCs have explicit verified-member/owner/Admin checks and direct table writes are revoked. Guidance: [anonymous helper exposure](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable) and [authenticated helper exposure](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable).
+
+The advisor also reports **leaked-password protection disabled** in hosted Auth. This release does not silently change that Auth setting; it remains a pre-attendee-rollout configuration review alongside automatic email delivery. See [password-strength and leaked-password protection](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). The application's 12-character password requirement and identity/role tests do not claim to replace that provider-level check.

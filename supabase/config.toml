@@ -67,12 +67,16 @@ otp_length = 8
 otp_expiry = 3600
 
 [remotes.production.auth.email.template.confirmation]
-subject = "Your Momentum Builder event verification code"
+subject = "Verify your Momentum Builder event account"
 content_path = "./supabase/templates/confirmation.html"
 
 [remotes.production.auth.email.template.recovery]
 subject = "Reset your Momentum Builder event password"
 content_path = "./supabase/templates/recovery.html"
+
+[remotes.production.auth.email.template.invite]
+subject = "Activate your Momentum Builder event account"
+content_path = "./supabase/templates/invite.html"
 
 # Keep per-email frequency controls; allow a shared venue IP to serve the room.
 # These are request rates, not a promise that 500 emails arrive instantly.

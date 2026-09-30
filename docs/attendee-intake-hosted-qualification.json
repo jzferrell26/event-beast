@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-09-30T22:45:56.766Z",
+  "project": "nyhzmazbfctuttizwnxp",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Preview does not write and 500 registrations are added only to the isolated event",
+      "passed": true
+    },
+    {
+      "name": "Repeating the cohort creates zero duplicates and no profiles or Auth users for imported attendees",
+      "passed": true
+    },
+    {
+      "name": "Members and anonymous clients cannot preview, import or read private contact details",
+      "passed": true
+    },
+    {
+      "name": "Existing registrations remain unchanged and a stale file checksum cannot commit",
+      "passed": true
+    }
+  ],
+  "syntheticCohort": 500,
+  "isolatedEvent": true,
+  "realEventRegistrationsChanged": false,
+  "emailsSent": 0,
+  "cleanedUp": true,
+  "qualifiesEmailDelivery": false
+}
