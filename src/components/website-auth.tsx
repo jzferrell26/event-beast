@@ -8,7 +8,7 @@ import { errorMessage } from '@/lib/client';
 import { Brand, Busy, ErrorState } from './ui';
 
 type Mode = 'sign-in' | 'sign-up' | 'recover' | 'update-password';
-export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, linkError = false, emailReady = false, organizerOnly = false }: { initialMode?: Mode; next?: string; demo?: boolean; linkError?: boolean; emailReady?: boolean; organizerOnly?: boolean }) {
+export function AuthScreen({ initialMode = 'sign-in', next = '/account-ready', demo = false, linkError = false, emailReady = false, organizerOnly = false, verifiedEmail, expectedUserId }: { initialMode?: Mode; next?: string; demo?: boolean; linkError?: boolean; emailReady?: boolean; organizerOnly?: boolean; verifiedEmail?: string; expectedUserId?: string }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,7 +41,7 @@ export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (['sign-up', 'update-password'].includes(mode) && password !== confirm) { setError('Your passwords do not match.'); return; }
-    const payload = mode === 'recover' ? { action: mode, email } : mode === 'update-password' ? { action: mode, password } : mode === 'sign-up' ? { action: mode, email, password } : { action: mode, email, password, next };
+    const payload = mode === 'recover' ? { action: mode, email } : mode === 'update-password' ? { action: mode, password, expectedUserId } : mode === 'sign-up' ? { action: mode, email, password } : { action: mode, email, password, next };
     void run(payload, 'submit');
   };
   const title = mode === 'sign-in' ? organizerOnly ? 'Organizer sign in.' : 'Your people are here.' : mode === 'sign-up' ? organizerOnly ? 'Activate organizer access.' : 'Make your entrance.' : mode === 'recover' ? 'Let’s get you back in.' : 'A fresh start.';
@@ -50,6 +50,8 @@ export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, 
   return <main className="auth-layout"><aside className="auth-story"><Brand /><div><span className="eyebrow">MOMENTUM BUILDER LIVE 2026</span><h2>BIG IDEAS.<br />REAL PEOPLE.<br /><span>YOUR NEXT MOVE.</span></h2><p>Your event website. Open it in Safari, Chrome or your usual browser and stay connected.</p></div><span className="auth-credit">EVENT TECHNOLOGY POWERED BY CUANTICO AI</span></aside>
     <section className="auth-panel"><div className="auth-mobile-brand"><Brand /></div><Link href="/" className="back-link"><ArrowLeft size={16} />Back to the event guide</Link><span className="eyebrow">WELCOME TO THE LIVE EXPERIENCE</span><h1>{title}</h1><p className="auth-description">{description}</p>
       {demo && <p className="demo-notice">Demo preview · no live accounts or emails.</p>}
+      {mode === 'update-password' && verifiedEmail && <p className="demo-notice" role="status">Setting the password for <strong>{verifiedEmail}</strong>. Use a separate browser to test another account.</p>}
+      {!demo && !emailReady && needsEmail && <p className="fine-print">Need an activation or replacement link? Reply to your invitation email or contact <a href="mailto:jonathan@cuantico.us">Jonathan for account help</a>. Automatic email delivery is not open yet; this form will not send an email.</p>}
       {!demo && !emailReady && needsEmail && <p className="demo-notice" role="status">Account email delivery is being prepared by the event team. You can browse the public agenda now.</p>}
       {success && mode === 'sign-up' ? <div className="auth-success"><CheckCircle2 size={30} /><h2>Check your inbox.</h2><p>{success}</p><form onSubmit={event => { event.preventDefault(); void run({ action: 'verify-email', email, token: code }, 'verify'); }}><label className="form-field"><span>Email verification code</span><input autoComplete="one-time-code" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required value={code} onChange={event => setCode(event.target.value.replace(/\D/g, ''))} /><small>Enter the code from the latest email, or use its verification link.</small></label><button type="submit" className="button button-red button-full" disabled={busy}>{busy ? <Busy label="Verifying…" /> : <>Verify and continue<ArrowRight size={17} /></>}</button></form><button type="button" className="text-button" disabled={busy || cooldown > 0} onClick={() => void run({ action: 'resend', email }, 'resend')}>{cooldown ? `Resend available in ${cooldown}s` : 'Resend verification email'}</button></div>
         : success ? <div className="auth-success" role="status"><CheckCircle2 size={32} /><h2>Check your inbox.</h2><p>{success}</p><button type="button" className="button button-dark" onClick={() => switchMode('sign-in')}>Back to sign in<ArrowRight size={17} /></button></div>

@@ -1,0 +1,13 @@
+.wall-shortcuts{display:flex;gap:12px;margin:20px 0;flex-wrap:wrap}
+.event-hub .desktop-sidebar{overflow-y:auto}.event-hub .desktop-sidebar nav{gap:3px;margin-top:20px}.event-hub .desktop-sidebar nav a{padding-top:11px;padding-bottom:11px}.event-hub .sidebar-bottom{padding-top:24px}
+.wall-shortcuts a{display:flex;align-items:center;gap:12px;min-height:48px;padding:12px 18px;background:#fff;border:1px solid var(--line);border-radius:10px;font-weight:650;font-size:14px}
+.wall-composer,.wall-post{padding:25px;background:#fff;border:1px solid var(--line);border-radius:16px;margin:20px 0;max-width:850px}
+.wall-composer textarea{font-size:16px;line-height:1.7;resize:vertical;min-height:120px}
+.wall-composer-footer{display:flex;gap:20px;justify-content:space-between;align-items:center}
+.wall-composer-footer p{font-size:13px;line-height:1.6;color:#555563;max-width:550px}
+.wall-post header{display:flex;align-items:center;gap:12px}.wall-post h2{font-size:16px;margin:0 0 5px}.wall-post time,.wall-post small{font-size:12px;color:#646473}
+.wall-body{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;line-height:1.8;margin:20px 0;color:#31313c}
+.wall-post footer,.wall-actions{display:flex;gap:18px;flex-wrap:wrap;align-items:center}.wall-post footer button,.wall-post footer a{min-height:44px}
+.lunch-day-section{margin:32px 0}.lunch-day-section>h2{font:700 34px/1.2 var(--display);margin:22px 0}.lunch-category{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#961a27;margin-bottom:12px}
+.hub-welcome{margin:22px 0;padding:24px;background:#fff;border:1px solid var(--line);border-radius:14px}.hub-welcome h2{font:700 30px/1.1 var(--display);margin-bottom:12px}.hub-welcome p{font-size:14px;line-height:1.7;margin:12px 0}.hub-welcome a{margin-right:12px}
+@media(max-width:900px){.event-hub .bottom-nav{grid-template-columns:repeat(6,minmax(0,1fr))}.event-hub .bottom-nav a{min-width:0;padding:8px 2px}.event-hub .bottom-nav span{font-size:10px}.wall-composer,.wall-post{padding:20px 17px}.wall-composer-footer{align-items:flex-start;flex-direction:column;gap:14px}.wall-shortcuts a{flex:1;font-size:12px;padding:12px}.wall-body{font-size:15px}.lunch-day-section>h2{font-size:30px}}

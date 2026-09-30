@@ -3,12 +3,11 @@ import { isDemo } from "@/lib/server/guide";
 import { safeNext } from "@/lib/format";
 import { serverSupabase } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
-import { publicSiteEnabled } from '@/lib/public-site';
 export const metadata = { title: "Sign in" };
 export default async function AuthPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const query = await searchParams;
-  const organizerOnly = publicSiteEnabled();
-  const next = safeNext(typeof query.next === 'string' ? query.next : organizerOnly ? '/admin' : null);
+  const next = safeNext(typeof query.next === 'string' ? query.next : '/account-ready');
+  const organizerOnly = next.startsWith('/admin');
   const forceAuth = query.force === '1';
   if (!isDemo() && query.mode !== 'recover' && !query.error) {
     const db = await serverSupabase();

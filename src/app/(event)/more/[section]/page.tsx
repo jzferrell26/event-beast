@@ -1,4 +1,5 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getGuide } from '@/lib/server/guide';
 import { SponsorsScreen, LunchScreen, VenueScreen, NotificationsScreen, HelpScreen } from "@/components/more";
 import { ActivitiesScreen } from "@/components/activities";
 import { AgendaScreen } from "@/components/agenda";
@@ -14,10 +15,11 @@ export default async function MoreSectionPage({ params }: { params: Promise<{ se
     case "sponsors": return <SponsorsScreen />;
     case "lunch": return <LunchScreen />;
     case "venue": return <VenueScreen />;
-    case "activities": return <ActivitiesScreen />;
+    case "activities": redirect('/more/fun-stuff');
+    case "fun-stuff": return <ActivitiesScreen />;
     case "profile": return <ProfileScreen />;
     case "saved": return <AgendaScreen savedOnly />;
-    case "notifications": return <NotificationsScreen />;
+    case "notifications": if ((await getGuide())?.settings.announcements_enabled === false) notFound(); return <NotificationsScreen />;
     case "help": return <HelpScreen />;
     default: notFound();
   }

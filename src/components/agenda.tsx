@@ -2,7 +2,7 @@
 import { useState, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { ArrowLeft, Bookmark, CalendarDays, Clock3, MapPin, Search, X } from "lucide-react";
-import { currentAgendaDay, eventDay, eventTime, eventZoneLabel, sessionSpeakers } from "@/lib/format";
+import { currentAgendaDay, eventDay, eventZoneLabel, sessionSpeakers, sessionTimeRange } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
 import { EmptyState, PageTitle } from "./ui";
 import { SpeakerPortrait } from "./speaker-portrait";
@@ -56,7 +56,7 @@ export function SessionDetail({ id }: { id: string }) {
   return <div className="detail-page">
     <Link href="/agenda" className="back-link"><ArrowLeft size={17} />Back to agenda</Link>
     <div className="detail-hero"><span className="type-pill">{session.session_type}</span><h1>{session.title}</h1>
-      <div className="detail-facts"><span><CalendarDays size={18} />{day ? `${day.label} · ${eventDay(day.date)}` : "Event session"}</span><span><Clock3 size={18} />{eventTime(session.starts_at, guide.event.timezone)} – {eventTime(session.ends_at, guide.event.timezone)}</span><span><MapPin size={18} />{session.room || "Location to be announced"}</span></div>
+      <div className="detail-facts"><span><CalendarDays size={18} />{day ? `${day.label} · ${eventDay(day.date)}` : "Event session"}</span><span><Clock3 size={18} />{sessionTimeRange(session, guide.event.timezone)}</span><span><MapPin size={18} />{session.room || "Location to be announced"}</span></div>
       {session.is_demo && <span className="sample-note">Sample session · final details will be supplied by the organizer</span>}
     </div>
     <button type="button" className={`button ${isSaved ? "button-outline" : "button-red"}`} onClick={() => void toggleSave("session", id)} aria-pressed={isSaved}><Bookmark size={19} fill={isSaved ? "currentColor" : "none"} />{isSaved ? "Saved to your agenda" : "Save this session"}</button>

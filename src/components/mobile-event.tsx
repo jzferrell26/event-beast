@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Bookmark, MapPin, UserRound, Zap } from 'lucide-react';
-import { activeAnnouncements, eventTime } from '@/lib/format';
+import { activeAnnouncements, eventTime, sessionTimeRange } from '@/lib/format';
 import { eventMoment, mobileSessionDate } from '@/lib/mobile-event';
 import type { AgendaSession } from '@/lib/types';
 import { useApp, useNow } from './app-provider';
@@ -13,7 +13,7 @@ export function MobileEventAlerts() {
   const priority = { urgent: 0, important: 1, info: 2 };
   const alerts = activeAnnouncements(guide.announcements, now)
     .filter(alert => alert.severity !== 'info').sort((a, b) => priority[a.severity] - priority[b.severity]);
-  if (!alerts.length) return null;
+  if (!alerts.length || guide.settings.announcements_enabled === false) return null;
   return <section className="mobile-only mobile-event-alerts" aria-label="Important event updates">
     {alerts.slice(0, 2).map(alert => <Link prefetch={false} className={`home-announcement announcement-${alert.severity}`} href="/more/notifications" key={alert.id}>
       <Zap size={20} aria-hidden="true" /><div><span className="eyebrow">{alert.severity === 'urgent' ? 'Event alert' : 'Important update'}</span><strong>{alert.title}</strong><p>{alert.body}</p></div><ArrowRight size={18} aria-hidden="true" />
@@ -26,7 +26,7 @@ export function MobileEventMoment() {
   const now = useNow();
   const moment = eventMoment(guide, now);
   const session = moment.current[0] ?? moment.next;
-  const summary = (item: AgendaSession) => `${mobileSessionDate(item.starts_at, now, guide.event.timezone)} · ${eventTime(item.starts_at, guide.event.timezone)}–${eventTime(item.ends_at, guide.event.timezone)}`;
+  const summary = (item: AgendaSession) => `${mobileSessionDate(item.starts_at, now, guide.event.timezone)} · ${sessionTimeRange(item, guide.event.timezone)}`;
   return <section className="mobile-only mobile-event-moment" aria-label="Your event at a glance">
     {session ? <Link prefetch={false} href={`/agenda/${session.id}`} className={`mobile-next-session${moment.phase === 'live' ? ' is-live' : ''}`}>
       <span className="mobile-moment-label">{moment.phase === 'live' ? 'Happening now' : 'Coming up'}{moment.current.length > 1 ? ` · ${moment.current.length} sessions live` : ''}</span>

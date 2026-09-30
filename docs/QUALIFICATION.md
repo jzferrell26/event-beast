@@ -2,6 +2,10 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 30 social-wall and source-content release
+
+The newest scope, guarded content import, activation-link hardening and precise remaining rollout gates are recorded in `SEPTEMBER-30-EVENT-HUB-RELEASE.md`. Associated JSON reports record the actual import, sponsor-link updates and hosted qualification when those actions complete. Older production revisions and account-delivery reports below remain historical; they do not certify this release or automatic email delivery.
+
 ## September 29 organizer scope — superseded September 30
 
 Sonia's information-only direction was implemented and qualified, but Don superseded it on September 30: Event Beast is now the principal event hub and should load registrants with profiles and attendee communication. This historical section is not the current launch scope. The current work and gates are in `SEPTEMBER-30-LAUNCH-PIVOT.md`. Mass texting remains the external event-notification channel.

@@ -16,7 +16,7 @@ concurrency:
 jobs:
   qualify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       EVENT_BEAST_DEMO_MODE: "true"
       NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3100

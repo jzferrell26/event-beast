@@ -7,16 +7,16 @@ import { publicSiteGuide } from '../../src/lib/public-site';
 // The real offline transport is exercised separately in public-offline.spec.ts.
 test.use({ serviceWorkers: 'block' });
 
-test('public navigation and essentials need no identity or community APIs', async ({ page }, info) => {
+test('public essentials stay open while community navigation is discoverable without notifications', async ({ page }, info) => {
   const privateRequests: string[] = []; const errors: string[] = [];
-  page.on('request', request => { if (/\/api\/(me|saved|people|inbox|profile)(\?|\/|$)/.test(request.url())) privateRequests.push(request.url()); });
+  page.on('request', request => { if (/\/api\/(saved|people|inbox|profile)(\?|\/|$)/.test(request.url())) privateRequests.push(request.url()); });
   page.on('pageerror', error => errors.push(error.message));
   for (const path of ['/', '/agenda', '/more/speakers', '/sponsors', '/more', '/more/lunch', '/more/venue', '/more/help']) {
     await page.goto(path); await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await page.waitForLoadState('networkidle');
     const nav = page.getByRole('navigation', { name: info.project.name === 'public-desktop' ? 'Main navigation' : 'Mobile navigation', exact: true });
-    await expect(nav.getByRole('link')).toHaveText(['Home', 'Agenda', 'Speakers', 'Sponsors', 'More']);
-    expect(await page.locator('a[href="/people"], a[href="/inbox"], a[href="/join"], a[href="/more/profile"]').count()).toBe(0);
+    await expect(nav.getByRole('link')).toHaveText(info.project.name === 'public-desktop' ? ['Home','Agenda','Feed','People','Inbox','Speakers','Sponsors','More'] : ['Home','Agenda','Feed','Inbox','Sponsors','More']);
+    expect(await page.locator('a[href="/more/notifications"]').count()).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
   expect(privateRequests).toEqual([]); expect(errors).toEqual([]);
@@ -35,20 +35,22 @@ test('anonymous session bookmarks persist across reload without an account', asy
   await expect(page).toHaveURL(/\/more\/saved$/);
 });
 
-test('old community routes cannot reopen the removed second-account experience', async ({ request }) => {
-  for (const path of ['/people', '/inbox/old-thread', '/join', '/more/profile', '/sponsor', '/more/sponsors/old-id']) {
+test('sponsor workspace remains separate and community routes expose only labeled demo data', async ({ request }) => {
+  for (const path of ['/sponsor', '/more/sponsors/old-id']) {
     const response = await request.get(path, { maxRedirects: 0 });
     expect(response.status()).toBe(307); expect(response.headers().location).toMatch(/\/(sponsors)?$/);
   }
-  for (const path of ['/api/people', '/api/inbox', '/api/saved', '/api/profile', '/api/sponsors/old-id/representatives']) {
+  for (const path of ['/api/sponsor', '/api/sponsors/old-id/representatives']) {
     const response = await request.get(path); expect(response.status()).toBe(410); expect(response.headers()['cache-control']).toContain('no-store');
   }
+  const people = await request.get('/api/people'); expect(people.status()).toBe(200); expect(people.headers()['cache-control']).toContain('no-store');
+  const feed = await request.get('/api/feed'); expect(await feed.json()).toMatchObject({ posts: [], demo: true });
 });
 
 test('sponsors are logo-and-tier only and the speaker source link is removed', async ({ page }, info) => {
   await page.goto('/sponsors');
   await expect(page.locator('.public-sponsor-logo-card')).toHaveCount(demoGuide.sponsors.length);
-  expect(await page.locator('.public-sponsor-logo-card a').count()).toBe(0);
+  for (const link of await page.locator('.public-sponsor-logo-card a').all()) expect(await link.getAttribute('href')).toMatch(/^https:\/\//);
   for (const sponsor of demoGuide.sponsors) if (sponsor.booth) await expect(page.getByText(sponsor.booth, { exact: true })).toHaveCount(0);
   await page.screenshot({ path: info.outputPath('public-sponsors.png'), fullPage: true });
   await page.goto(`/more/speakers/${demoGuide.speakers[0].id}`);
@@ -78,7 +80,7 @@ test('square and banner ads fit without cropping and do not leak into other page
 });
 
 test('organizer auth stays separate and public screens pass accessibility', async ({ page }) => {
-  await page.goto('/auth'); await expect(page.getByRole('heading', { name: 'Organizer sign in.' })).toBeVisible();
+  await page.goto('/auth?next=/admin'); await expect(page.getByRole('heading', { name: 'Organizer sign in.' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Create an account', exact: true })).toHaveCount(0);
   for (const path of ['/', '/sponsors', '/more/help']) {
     await page.goto(path); await page.evaluate(() => document.fonts.ready);

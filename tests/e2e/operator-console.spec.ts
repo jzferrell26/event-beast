@@ -11,6 +11,8 @@ const respond = (route: Route, data: unknown, status = 200) => route.fulfill({ s
 
 async function useFixtureGuide(page: Page) {
   // Exercise the real context refresh, not a production-mode code bypass.
+  // Wait for navigation/hydration requests before dispatching a synthetic focus.
+  await page.waitForLoadState('networkidle');
   await expect.poll(async () => {
     await page.evaluate(() => window.dispatchEvent(new Event("focus")));
     return page.locator(".admin-demo").count();

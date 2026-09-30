@@ -4,6 +4,7 @@ import type { Guide } from "../types";
 import { requireAdmin } from "./auth";
 import { databaseError } from "./http";
 import { isDemo } from "./guide";
+import { publicSiteEnabled, publicSiteGuide } from '../public-site';
 
 export function demoResourceRows(resource: string): Record<string, unknown>[] {
   const map: Record<string, unknown[]> = {
@@ -18,7 +19,7 @@ export function demoResourceRows(resource: string): Record<string, unknown>[] {
 export const lookupTables: Record<string, string> = { agenda_days: "label", agenda_sessions: "title", speakers: "full_name", sponsors: "name", sponsor_tiers: "name", attendees: "registration_name" };
 
 export async function consoleGuide(): Promise<Guide> {
-  if (isDemo()) return demoGuide;
+  if (isDemo()) return publicSiteGuide(demoGuide, publicSiteEnabled());
   const { db, event } = await requireAdmin();
   const [eventRow, settings] = await Promise.all([
     db.from("events").select("*").eq("id", event.id).single(), db.from("event_settings").select("*").eq("event_id", event.id).single(),

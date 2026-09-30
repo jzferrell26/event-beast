@@ -14,9 +14,13 @@ export function publicRouteDecision(path: string): { redirect?: string; disabled
 
 /** Do not ship legacy sponsor booth/profile copy or speaker source links in the public payload. */
 export function publicSiteGuide(guide: Guide, enabled: boolean): Guide {
-  if (!enabled) return { ...guide, publicSite: false };
+  // The labeled public demo previews the current approved event experience;
+  // legacy regression mode retains its independent original sample settings.
+  if (enabled && guide.mode === 'demo' && guide.settings.community_enabled === undefined) guide = { ...guide, settings: { ...guide.settings, community_enabled: true, feed_enabled: true, announcements_enabled: false } };
+  if (!enabled) return { ...guide, publicSite: false, communityEnabled: guide.settings.community_enabled !== false };
   return {
-    ...guide, publicSite: true,
+    ...guide, publicSite: true, communityEnabled: guide.settings.community_enabled === true,
+    announcements: guide.settings.announcements_enabled === false ? [] : guide.announcements,
     sponsors: guide.sponsors.map(sponsor => ({ ...sponsor, booth: '', description: '' })),
     speakers: guide.speakers.map(speaker => ({ ...speaker, source_url: '' })),
   };
@@ -29,4 +33,8 @@ export function parseDeviceBookmarks(raw: string | null): SavedItems {
     const value: unknown = JSON.parse(raw || '[]');
     return { sessions: Array.isArray(value) ? [...new Set(value.filter((id): id is string => typeof id === 'string' && /^[a-zA-Z0-9_-]{1,100}$/.test(id)))].slice(0, 1000) : [], attendees: [] };
   } catch { return { sessions: [], attendees: [] }; }
+}
+
+export function isCommunityPath(path: string): boolean {
+  return /^\/(feed|people|inbox|access)(\/|$)/.test(path) || path === '/more/profile';
 }

@@ -1,25 +1,27 @@
-import { z } from "zod";
-import { PROFILE_SELECT } from "@/lib/profile-fields";
-import type { FeedPost, Profile } from "@/lib/types";
-import { requireMember, signProfilePhotos } from "@/lib/server/auth";
-import { databaseError, handle, json, parseBody } from "@/lib/server/http";
+import { requireMember } from '@/lib/server/auth';
+import { isDemo } from '@/lib/server/guide';
+import { ApiError, databaseError, handle, json, parseBody } from '@/lib/server/http';
+import { feedCursor, feedPostInput, feedSelect } from '@/lib/feed';
 
-export const GET = () => handle(async () => {
+export const GET = (request: Request) => handle(async () => {
+  if (isDemo()) return json({ posts: [], nextCursor: null, demo: true });
   const { db, event } = await requireMember();
-  const result = await db.from("feed_posts").select("*").eq("event_id",event.id).order("created_at",{ascending:false}).limit(100);
+  const settings = await db.from('event_settings').select('community_enabled,feed_enabled').eq('event_id', event.id).single();
+  databaseError(settings.error);
+  if (!settings.data?.community_enabled || !settings.data.feed_enabled) throw new ApiError(403, 'The event social wall is paused.');
+  const raw = new URL(request.url).searchParams.get('cursor');
+  let search = db.from('feed_posts').select(feedSelect).eq('event_id', event.id).eq('status', 'visible').order('created_at', { ascending: false }).order('id', { ascending: false }).limit(31);
+  if (raw) { let parsed: unknown; try { parsed = JSON.parse(raw); } catch { throw new ApiError(400, 'Invalid feed cursor.'); } const cursor = feedCursor.parse(parsed); search = search.or(`created_at.lt.${cursor.at},and(created_at.eq.${cursor.at},id.lt.${cursor.id})`); }
+  const result = await search;
   databaseError(result.error);
-  const rows=(result.data??[]) as FeedPost[];
-  const authors=[...new Set(rows.map(r=>r.author_id))];
-  const profiles = authors.length ? await db.from("attendee_profiles").select(PROFILE_SELECT).eq("event_id",event.id).in("attendee_id",authors) : {data:[],error:null};
-  databaseError(profiles.error);
-  const signed=await signProfilePhotos(db,(profiles.data??[]) as Profile[]);
-  const map=new Map(signed.map(p=>[p.attendee_id,p]));
-  return json({posts:rows.map(row=>{const p=map.get(row.author_id);return {...row,author_name:p?.full_name??"Event attendee",author_company:p?.company??"",author_title:p?.title??"",avatar_url:p?.avatar_url};})});
+  const posts = (result.data ?? []).slice(0, 30);
+  const last = posts.at(-1);
+  return json({ posts, nextCursor: result.data?.length === 31 && last ? JSON.stringify({ at: last.created_at, id: last.id }) : null });
 });
-export const POST = (request:Request) => handle(async()=>{
-  const body=await parseBody(request,z.object({body:z.string().trim().min(1).max(2000)}).strict());
-  const {db,event}=await requireMember();
-  const result=await db.rpc("create_feed_post",{p_event:event.id,p_body:body.body});
+export const POST = (request: Request) => handle(async () => {
+  const body = await parseBody(request, feedPostInput);
+  const { db, event } = await requireMember();
+  const result = await db.rpc('publish_feed_post', { p_event: event.id, p_client: body.clientId, p_body: body.body });
   databaseError(result.error);
-  return json({post:result.data},201);
+  return json({ saved: true, id: result.data?.id }, 201);
 });
