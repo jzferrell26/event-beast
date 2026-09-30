@@ -28,10 +28,13 @@ test('social wall retains a failed draft, retries idempotently, edits and remove
  });
  await page.goto('/feed');
  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
- await page.getByLabel('Share with the event').fill('A real takeaway from the test');
+ // Next/React may retain an inactive form in a hidden Activity during refresh.
+ // Interact with the accessible, visible textbox rather than hidden labels.
+ const composer=page.getByRole('textbox',{name:'Share with the event',exact:true});
+ await composer.fill('A real takeaway from the test');
  await page.getByRole('button',{name:'Post',exact:true}).click();
  await expect(page.locator('.toast[role="alert"]')).toContainText('draft is retained');
- await expect(page.getByLabel('Share with the event')).toHaveValue('A real takeaway from the test');
+ await expect(composer).toHaveValue('A real takeaway from the test');
  await page.getByRole('button',{name:'Post',exact:true}).click();
  await expect(page.locator('.wall-post')).toHaveCount(1); expect(clients).toHaveLength(2);expect(clients[0]).toBe(clients[1]);
  await page.locator('.wall-post').getByRole('button',{name:'Edit',exact:true}).click();
@@ -86,4 +89,17 @@ test('email confirmation GET is a safe landing with no passive token consumption
  await page.goto(url);await expect(page.getByRole('button',{name:'Continue securely'})).toBeVisible();
  await expect(page).toHaveURL(/\/auth\/confirm\?/);
  await expect(page.getByText('Opening this page does not use your link.',{exact:false})).toBeVisible();
+});
+
+test('confirmation form preserves its Origin without leaking the token in Referer',async({page},info)=>{
+ const origin=new URL(String(info.project.use.baseURL)).origin;
+ await page.goto('/auth/confirm?token_hash='+'b'.repeat(64)+'&type=invite');
+ const submitted=page.waitForRequest(request=>request.method()==='POST'&&new URL(request.url()).pathname==='/auth/confirm');
+ await page.getByRole('button',{name:'Continue securely',exact:true}).click();
+ const request=await submitted;
+ const headers=await request.allHeaders();
+ expect(headers.origin).toBe(origin);
+ expect(headers.referer).toBe(origin+'/');
+ expect(headers.referer).not.toContain('token_hash');
+ expect((await request.response())?.status()).not.toBe(403);
 });

@@ -10,7 +10,7 @@ const post = (origin=site) => new Request(site+'/auth/confirm', { method:'POST',
 describe('recipient-confirmed email activation', () => {
  beforeEach(() => { vi.clearAllMocks(); process.env.NEXT_PUBLIC_SITE_URL=site; delete process.env.EVENT_BEAST_SITE_URL; mocks.verify.mockResolvedValue({error:null}); mocks.server.mockResolvedValue({auth:{verifyOtp:mocks.verify,signOut:mocks.signOut}}); });
  it('a scanner can GET the link repeatedly without consuming it or ending a current session',async()=>{
-  for(let count=0;count<3;count++){const response=await GET(new Request(link));expect(response.status).toBe(200);expect(await response.text()).toContain('Continue securely');expect(response.headers.get('cache-control')).toContain('no-store');expect(response.headers.get('referrer-policy')).toBe('no-referrer');}
+  for(let count=0;count<3;count++){const response=await GET(new Request(link));expect(response.status).toBe(200);expect(await response.text()).toContain('Continue securely');expect(response.headers.get('cache-control')).toContain('no-store');expect(response.headers.get('referrer-policy')).toBe('strict-origin');}
   expect(mocks.server).not.toHaveBeenCalled();expect(mocks.verify).not.toHaveBeenCalled();expect(mocks.signOut).not.toHaveBeenCalled();
  });
  it('moves to the canonical host before issuing cookies or consuming the token',async()=>{
