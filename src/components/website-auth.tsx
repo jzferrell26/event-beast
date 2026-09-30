@@ -8,7 +8,7 @@ import { errorMessage } from '@/lib/client';
 import { Brand, Busy, ErrorState } from './ui';
 
 type Mode = 'sign-in' | 'sign-up' | 'recover' | 'update-password';
-export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, linkError = false, emailReady = false }: { initialMode?: Mode; next?: string; demo?: boolean; linkError?: boolean; emailReady?: boolean }) {
+export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, linkError = false, emailReady = false, organizerOnly = false }: { initialMode?: Mode; next?: string; demo?: boolean; linkError?: boolean; emailReady?: boolean; organizerOnly?: boolean }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,8 +44,8 @@ export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, 
     const payload = mode === 'recover' ? { action: mode, email } : mode === 'update-password' ? { action: mode, password } : mode === 'sign-up' ? { action: mode, email, password } : { action: mode, email, password, next };
     void run(payload, 'submit');
   };
-  const title = mode === 'sign-in' ? 'Your people are here.' : mode === 'sign-up' ? 'Make your entrance.' : mode === 'recover' ? 'Let’s get you back in.' : 'A fresh start.';
-  const description = mode === 'sign-in' ? 'Sign in once on this browser, then come back to your event, saved sessions and conversations.' : mode === 'sign-up' ? 'Use your event registration email, choose a password and verify your email once. No app download needed.' : mode === 'recover' ? 'Enter your account email. Your reset link opens right here on the website.' : 'Choose a new password with at least 12 characters.';
+  const title = mode === 'sign-in' ? organizerOnly ? 'Organizer sign in.' : 'Your people are here.' : mode === 'sign-up' ? organizerOnly ? 'Activate organizer access.' : 'Make your entrance.' : mode === 'recover' ? 'Let’s get you back in.' : 'A fresh start.';
+  const description = organizerOnly && ['sign-in', 'sign-up'].includes(mode) ? 'For approved event organizers only. Attendees can browse the full event guide without an account. Creating an account does not grant editing access.' : mode === 'sign-in' ? 'Sign in once on this browser, then come back to your event, saved sessions and conversations.' : mode === 'sign-up' ? 'Use your event registration email, choose a password and verify your email once. No app download needed.' : mode === 'recover' ? 'Enter your account email. Your reset link opens right here on the website.' : 'Choose a new password with at least 12 characters.';
   const needsEmail = mode === 'sign-up' || mode === 'recover';
   return <main className="auth-layout"><aside className="auth-story"><Brand /><div><span className="eyebrow">MOMENTUM BUILDER LIVE 2026</span><h2>BIG IDEAS.<br />REAL PEOPLE.<br /><span>YOUR NEXT MOVE.</span></h2><p>Your event website. Open it in Safari, Chrome or your usual browser and stay connected.</p></div><span className="auth-credit">EVENT TECHNOLOGY POWERED BY CUANTICO AI</span></aside>
     <section className="auth-panel"><div className="auth-mobile-brand"><Brand /></div><Link href="/" className="back-link"><ArrowLeft size={16} />Back to the event guide</Link><span className="eyebrow">WELCOME TO THE LIVE EXPERIENCE</span><h1>{title}</h1><p className="auth-description">{description}</p>
@@ -62,7 +62,7 @@ export function AuthScreen({ initialMode = 'sign-in', next = '/', demo = false, 
         </form>}
       {waiting > 0 && <p className="demo-notice" role="status">A lot of attendees are joining. Retrying in about {waiting} seconds. Keep this page open.</p>}
       {error && <ErrorState message={error} />}
-      <div className="auth-switch">{mode === 'sign-in' ? <>First time here?<button type="button" disabled={busy} onClick={() => switchMode('sign-up')}>Create an account</button></> : <button type="button" disabled={busy} onClick={() => switchMode('sign-in')}>Already have an account? Sign in</button>}</div>
-      <div className="auth-assurance"><ShieldCheck size={18} /><p>Only event Admins can access attendee emails and phone numbers. Other attendees and sponsors connect with you through private chat.</p></div>
+      <div className="auth-switch">{mode === 'sign-in' ? organizerOnly ? <p>Need editing access? Contact the event owner to activate your organizer account.</p> : <>First time here?<button type="button" disabled={busy} onClick={() => switchMode('sign-up')}>Create an account</button></> : <button type="button" disabled={busy} onClick={() => switchMode('sign-in')}>Already have an account? Sign in</button>}</div>
+      <div className="auth-assurance"><ShieldCheck size={18} /><p>{organizerOnly ? 'Organizer permissions are assigned by the event owner. Public visitors cannot change event content or access private contact records.' : 'Only event Admins can access attendee emails and phone numbers. Other attendees and sponsors connect with you through private chat.'}</p></div>
     </section></main>;
 }

@@ -29,7 +29,7 @@
       const tiers = new Map((guide.tiers ?? []).map((t) => [t.id, t]));
       const sponsors = [...(guide.sponsors ?? [])].sort((a, b) => (tiers.get(a.tier_id)?.sort_order ?? 99999) - (tiers.get(b.tier_id)?.sort_order ?? 99999) || a.sort_order - b.sort_order || a.name.localeCompare(b.name));
       if (!sponsors.length) empty("No sponsors were included in the saved guide.");
-      sponsors.forEach((sponsor) => { const article = card(sponsor.name, sponsor.description); article.prepend(node("span", tiers.get(sponsor.tier_id)?.name ?? "Event partner", "eyebrow")); location(article, sponsor.booth); image(article, sponsor.logo_url, `${sponsor.name} logo`); target.append(article); });
+      sponsors.forEach((sponsor) => { const article = card(sponsor.name, guide.publicSite ? '' : sponsor.description); article.prepend(node("span", tiers.get(sponsor.tier_id)?.name ?? "Event partner", "eyebrow")); if (!guide.publicSite) location(article, sponsor.booth); image(article, sponsor.logo_url, `${sponsor.name} logo`); target.append(article); });
     } else if (section === "lunch") {
       if (!guide.lunches?.length) empty("Lunch details were not included in the saved guide.");
       (guide.lunches ?? []).forEach((lunch) => { const article = card(lunch.title, lunch.description); location(article, [lunch.location, lunch.hours].filter(Boolean).join(" · ")); article.append(node("h3", "Dietary information"), node("p", lunch.dietary_info || "Ask the organizer about dietary needs.")); image(article, lunch.image_url, lunch.title); target.append(article); });

@@ -32,10 +32,10 @@ export function MobileEventMoment() {
       <span className="mobile-moment-label">{moment.phase === 'live' ? 'Happening now' : 'Coming up'}{moment.current.length > 1 ? ` · ${moment.current.length} sessions live` : ''}</span>
       <strong>{session.title}</strong><span className="mobile-moment-time">{summary(session)}</span>
       <span className="mobile-moment-room"><MapPin size={15} aria-hidden="true" />{session.room || 'Location to be announced'}<ArrowUpRight size={17} aria-hidden="true" /></span>
-    </Link> : <Link prefetch={false} href={moment.phase === 'ended' ? '/people' : '/agenda'} className="mobile-next-session">
+    </Link> : <Link prefetch={false} href={moment.phase === 'ended' && !guide.publicSite ? '/people' : '/agenda'} className="mobile-next-session">
       <span className="mobile-moment-label">{moment.phase === 'ended' ? 'Keep the momentum going' : 'Your event at a glance'}</span>
-      <strong>{moment.phase === 'ended' ? 'Keep your connections close.' : 'The program is being prepared.'}</strong>
-      <span className="mobile-moment-time">{moment.phase === 'ended' ? 'No more sessions are scheduled. Visit People to reconnect.' : 'Open the agenda for the latest published details.'}</span>
+      <strong>{moment.phase === 'ended' ? guide.publicSite ? 'Keep the big ideas close.' : 'Keep your connections close.' : 'The program is being prepared.'}</strong>
+      <span className="mobile-moment-time">{moment.phase === 'ended' ? guide.publicSite ? 'No more sessions are scheduled. Browse the full program anytime.' : 'No more sessions are scheduled. Visit People to reconnect.' : 'Open the agenda for the latest published details.'}</span>
     </Link>}
     {moment.current.length > 0 && moment.next && <Link prefetch={false} href={`/agenda/${moment.next.id}`} className="mobile-following-session"><span>Up next · {mobileSessionDate(moment.next.starts_at, now, guide.event.timezone)} · {eventTime(moment.next.starts_at, guide.event.timezone)}</span><strong>{moment.next.title}</strong><ArrowRight size={17} aria-hidden="true" /></Link>}
     <nav className="mobile-day-shortcuts" aria-label="Event-day shortcuts">

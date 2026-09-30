@@ -4,6 +4,7 @@ import { safeNext } from "@/lib/format";
 import { authenticationOrigin } from '@/lib/auth-navigation';
 import { isDemo } from "@/lib/server/guide";
 import { ApiError, handle, json, parseBody } from "@/lib/server/http";
+import { publicSiteEnabled } from '@/lib/public-site';
 
 export const maxDuration = 60;
 
@@ -24,6 +25,7 @@ export const POST = (request: Request) => handle(async () => {
   const configuredSite = process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   if (!configuredSite) throw new ApiError(503, "Event sign-in is being configured.");
   const site = authenticationOrigin(configuredSite);
+  const verifiedNext = publicSiteEnabled() ? '/admin' : '/more/profile';
   if (['sign-up', 'recover', 'resend'].includes(body.action) && process.env.EVENT_BEAST_EMAIL_READY !== 'true') {
     throw new ApiError(503, 'Account email delivery is being prepared by the event team. The public agenda is available now.');
   }
@@ -39,7 +41,7 @@ export const POST = (request: Request) => handle(async () => {
   }
   if (body.action === "sign-up") {
     const { error } = await db.auth.signUp({ email: body.email.trim().toLowerCase(), password: body.password,
-      options: { emailRedirectTo: `${site}/auth/callback?next=/more/profile` } });
+      options: { emailRedirectTo: `${site}/auth/callback?next=${verifiedNext}` } });
     checkedAuthError(error, 'We could not create your account. Please try signing in or use password recovery.');
     return json({ message: "Check your email to verify your account. Event access will be matched to the registration email supplied by the organizer." });
   }
@@ -49,14 +51,14 @@ export const POST = (request: Request) => handle(async () => {
     return json({ message: "If an account exists for this email, a password reset link is on its way." });
   }
   if (body.action === 'resend') {
-    const { error } = await db.auth.resend({ type: 'signup', email: body.email.trim().toLowerCase(), options: { emailRedirectTo: `${site}/auth/callback?next=/more/profile` } });
+    const { error } = await db.auth.resend({ type: 'signup', email: body.email.trim().toLowerCase(), options: { emailRedirectTo: `${site}/auth/callback?next=${verifiedNext}` } });
     checkedAuthError(error, 'Check your inbox and wait a minute before requesting another code.');
     return json({ message: 'Check your email for your verification code.' });
   }
   if (body.action === 'verify-email') {
     const { error } = await db.auth.verifyOtp({ email: body.email.trim().toLowerCase(), token: body.token, type: 'signup' });
     checkedAuthError(error, 'That code could not be verified. Check the latest email or request a new code.');
-    return json({ next: '/more/profile' });
+    return json({ next: verifiedNext });
   }
   if (body.action === "update-password") {
     const { data, error: identityError } = await db.auth.getUser();

@@ -4,6 +4,7 @@ import { Bookmark, Clock3, MapPin, ArrowUpRight } from "lucide-react";
 import type { AgendaSession, SponsorPlacement } from "@/lib/types";
 import { eventTime, sessionSpeakers, sessionState } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
+import { SponsorCreative } from './sponsor-creative';
 
 export function SessionCard({ session, compact = false }: { session: AgendaSession; compact?: boolean }) {
   const { guide, saved, toggleSave } = useApp();
@@ -26,5 +27,6 @@ export function AgendaPlacement({ placement }: { placement: SponsorPlacement }) 
   const sponsor = guide.sponsors.find((s) => s.id === placement.sponsor_id);
   if (!sponsor) return null;
   const tier = guide.tiers.find((t) => t.id === sponsor.tier_id)?.name;
+  if (placement.image_url || guide.publicSite) return <SponsorCreative key={placement.image_url} placement={placement} sponsorName={sponsor.name} />;
   return <Link href={`/more/sponsors/${sponsor.id}`} className="agenda-ad"><div><span className="eyebrow">SPONSOR SPOTLIGHT {tier && ` / ${tier}`}</span><h3>{placement.headline || sponsor.name}</h3><p>{placement.body || sponsor.description}</p><strong>{sponsor.name}</strong></div><ArrowUpRight size={26} aria-hidden="true" /></Link>;
 }

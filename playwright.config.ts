@@ -2,6 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  testIgnore: ['**/public-site.spec.ts', '**/public-offline.spec.ts'],
   timeout: 30_000,
   expect: { timeout: 8_000 },
   fullyParallel: false,
@@ -12,7 +13,7 @@ export default defineConfig({
     url: "http://127.0.0.1:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 45000,
-    env: { EVENT_BEAST_DEMO_MODE: "true" },
+    env: { EVENT_BEAST_DEMO_MODE: "true", EVENT_BEAST_PUBLIC_SITE: "false" },
   },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3100",

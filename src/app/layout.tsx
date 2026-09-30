@@ -12,10 +12,11 @@ import "./readability.css";
 import "./roles.css";
 import "./branding.css";
 import "./mobile.css";
+import './public-site.css';
 
 export const metadata: Metadata = {
   title: { default: "Momentum Builder LIVE 2026 | Event Beast", template: "%s | Momentum Builder LIVE" },
-  description: "Your agenda, your people, your next move. The Momentum Builder LIVE 2026 event companion.",
+  description: "Your agenda, speakers, sponsors and event essentials. Momentum Builder LIVE 2026, no attendee account required.",
   applicationName: "Momentum Builder LIVE",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "MB LIVE" },

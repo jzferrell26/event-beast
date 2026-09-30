@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowUpRight, Check, CheckCircle2, Circle, ClipboardCheck, RefreshCw, TriangleAlert } from "lucide-react";
 import { useResource } from "@/lib/hooks";
 import { errorMessage, mutate } from "@/lib/client";
-import { launchCheckDefinitions, type LaunchCheck, type LaunchCheckKey, type LaunchReadiness, type ProgramReview } from "@/lib/launch-readiness";
+import { launchDefinitionsFor, type LaunchCheck, type LaunchCheckKey, type LaunchReadiness, type ProgramReview } from "@/lib/launch-readiness";
 import { useApp } from "./app-provider";
 import { Busy, ErrorState, LoadingCards, Modal, PageTitle } from "./ui";
 
@@ -13,6 +13,7 @@ export function LaunchCenter() {
   const { notify } = useApp();
   const [editing, setEditing] = useState<LaunchCheckKey | null>(null);
   const [reviewing, setReviewing] = useState<ProgramReview | null>(null);
+  const launchCheckDefinitions = launchDefinitionsFor(data?.publicSite);
   const definition = launchCheckDefinitions.find((c) => c.key === editing);
   return <>
     <PageTitle eyebrow="BEFORE THE FIRST ATTENDEE ARRIVES" title="Ready for the room." description="See what is filled in, what still needs attention, and which live checks your team has recorded."
@@ -28,13 +29,14 @@ export function LaunchCenter() {
           <small>Content checks inspect saved records. Live checks below are recorded by an organizer; this page does not run them automatically.</small>
         </div>
       </section>
-      <section className="launch-roster" aria-label="Registration readiness">
+      {!data.publicSite && <><section className="launch-roster" aria-label="Registration readiness">
         <Link href="/admin/attendees"><strong>{data.approvedMembers}</strong><span>Approved members & sponsors</span></Link>
         <Link href="/admin/users"><strong>{data.approvedAttendees}</strong><span>Total approved, including Admins</span></Link>
         <Link href="/admin/attendees"><strong>{data.claimedAttendees}</strong><span>Approved accounts connected</span></Link>
         <Link href="/admin/attendees"><strong>{data.pendingRequests}</strong><span>Awaiting access approval</span></Link>
       </section>
-      <p className="launch-roster-note">Compare these counts with the organizer’s final registration list. A bootstrap Admin is not an attendee roster; importing registrations does not send invitations or create accounts.</p>
+      <p className="launch-roster-note">Compare these counts with the organizer’s final registration list. A bootstrap Admin is not an attendee roster; importing registrations does not send invitations or create accounts.</p></>}
+      {data.publicSite && <p className="public-guide-note">Public information site: attendees do not need accounts. Email checks apply to organizer access and recovery, not attendee registration. Community messaging and roster imports are not release gates for this site.</p>}
       <section className="launch-section"><div className="launch-section-heading"><h2>The deployment attendees will use.</h2><p>These checks read this deployment’s configuration. A checked box below cannot override a closed email gate.</p></div>
         <div className="launch-content-list">{data.runtime.map((item) => <Link href={item.href} className="launch-runtime-item" key={item.key}>
           {item.status === "ready" ? <CheckCircle2 className="launch-ready" size={23} /> : <TriangleAlert className="launch-attention" size={23} />}
