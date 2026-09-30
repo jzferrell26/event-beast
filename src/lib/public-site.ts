@@ -1,14 +1,13 @@
 import type { Guide, SavedItems } from './types';
 
-/** Public information is the default. The old community experience is an explicit rollback only. */
+/** Public information remains available while member/community modules may be enabled separately. */
 export function publicSiteEnabled(value = process.env.EVENT_BEAST_PUBLIC_SITE): boolean {
   return value !== 'false';
 }
 
 export function publicRouteDecision(path: string): { redirect?: string; disabled?: boolean } {
-  if (/^\/api\/(people|inbox|profile|moderation|saved|access-request|sponsor)(\/|$)/.test(path)
+  if (/^\/api\/(sponsor)(\/|$)/.test(path)
     || /^\/api\/sponsors\/[^/]+\/representatives\/?$/.test(path)) return { disabled: true };
-  if (/^\/(people|inbox|join|access)(\/|$)/.test(path) || path === '/more/profile') return { redirect: '/' };
   if (/^\/(sponsor|more\/sponsors)(\/|$)/.test(path)) return { redirect: '/sponsors' };
   return {};
 }
@@ -18,7 +17,6 @@ export function publicSiteGuide(guide: Guide, enabled: boolean): Guide {
   if (!enabled) return { ...guide, publicSite: false };
   return {
     ...guide, publicSite: true,
-    settings: { ...guide.settings, directory_enabled: false, messaging_enabled: false },
     sponsors: guide.sponsors.map(sponsor => ({ ...sponsor, booth: '', description: '' })),
     speakers: guide.speakers.map(speaker => ({ ...speaker, source_url: '' })),
   };

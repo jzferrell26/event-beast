@@ -44,7 +44,8 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const router = useRouter();
   const pathname = usePathname();
   const organizerRoute = pathname === "/admin" || pathname.startsWith("/admin/");
-  const publicVisitor = Boolean(initialGuide.publicSite) && !pathname.startsWith('/admin') && !pathname.startsWith('/sponsor/');
+  const communityRoute = /^\/(feed|people|inbox|access)(\/|$)/.test(pathname) || pathname === '/more/profile';
+  const publicVisitor = Boolean(initialGuide.publicSite) && !communityRoute && !pathname.startsWith('/admin') && !pathname.startsWith('/sponsor/');
   const notify = useCallback((message: string, error = false) => setToast({ message, error }), []);
   const refreshMe = useCallback((): Promise<void> => {
     if (publicVisitor) return Promise.resolve();

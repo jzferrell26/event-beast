@@ -11,8 +11,12 @@ export async function GET(request: Request) {
   const type = url.searchParams.get("type");
   const db = await serverSupabase();
   if (db && token_hash && type && ["signup", "recovery", "invite", "email_change", "email"].includes(type)) {
+    // Invitation/recovery links belong to one identity. A browser may already
+    // hold another Event Beast session; clear it before consuming the token so
+    // the callback cannot update or redirect the wrong account.
+    if (type === 'invite' || type === 'recovery') await db.auth.signOut({ scope: 'local' });
     const { error } = await db.auth.verifyOtp({ token_hash, type: type as EmailOtpType });
-    if (!error) return NextResponse.redirect(new URL(type === "recovery" ? "/reset-password" : safeNext(url.searchParams.get("next") || "/more/profile"), origin));
+    if (!error) return NextResponse.redirect(new URL(type === "recovery" || type === 'invite' ? "/reset-password" : safeNext(url.searchParams.get("next") || "/more/profile"), origin));
   }
-  return NextResponse.redirect(new URL("/auth?error=link", origin));
+  return NextResponse.redirect(new URL("/auth?error=link&force=1", origin));
 }

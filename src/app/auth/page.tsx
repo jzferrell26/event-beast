@@ -9,10 +9,11 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
   const query = await searchParams;
   const organizerOnly = publicSiteEnabled();
   const next = safeNext(typeof query.next === 'string' ? query.next : organizerOnly ? '/admin' : null);
+  const forceAuth = query.force === '1';
   if (!isDemo() && query.mode !== 'recover' && !query.error) {
     const db = await serverSupabase();
     const identity = await db?.auth.getUser();
-    if (identity?.data.user?.email_confirmed_at) redirect(next);
+    if (identity?.data.user?.email_confirmed_at && !forceAuth) redirect(next);
   }
   return <AuthScreen organizerOnly={organizerOnly} initialMode={query.mode === "recover" ? "recover" : query.mode === "sign-up" ? "sign-up" : "sign-in"} demo={isDemo()} emailReady={process.env.EVENT_BEAST_EMAIL_READY === 'true'} next={next} linkError={query.error === "link"} />;
 }

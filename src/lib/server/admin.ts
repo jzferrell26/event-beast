@@ -10,7 +10,7 @@ export function demoResourceRows(resource: string): Record<string, unknown>[] {
     event_settings: [demoGuide.settings], announcements: demoGuide.announcements, agenda_days: demoGuide.days,
     agenda_sessions: demoGuide.sessions.map((session) => ({ ...session, speaker_ids: demoGuide.sessionSpeakers.filter((link) => link.session_id === session.id).map((link) => link.speaker_id) })), speakers: demoGuide.speakers, session_speakers: demoGuide.sessionSpeakers.map((link, index) => ({ ...link, id: `a0000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}` })),
     sponsors: demoGuide.sponsors, sponsor_tiers: demoGuide.tiers, agenda_sponsor_placements: demoGuide.placements,
-    sponsor_representatives: [], lunch_locations: demoGuide.lunches, venue_locations: demoGuide.venues,
+    sponsor_representatives: [], lunch_locations: demoGuide.lunches, venue_locations: demoGuide.venues, event_activities: demoGuide.activities ?? [],
     attendees: demoProfiles.map((p, index) => ({ id: p.attendee_id, event_id: p.event_id, registration_name: p.full_name, registration_email: `attendee${index + 1}@example.test`, status: "approved", directory_allowed: true, user_id: null })),
   };
   return (map[resource] ?? []) as Record<string, unknown>[];
@@ -24,5 +24,5 @@ export async function consoleGuide(): Promise<Guide> {
     db.from("events").select("*").eq("id", event.id).single(), db.from("event_settings").select("*").eq("event_id", event.id).single(),
   ]);
   databaseError(eventRow.error); databaseError(settings.error);
-  return { mode: "live", event: eventRow.data, settings: settings.data, days: [], sessions: [], speakers: [], sessionSpeakers: [], sponsors: [], tiers: [], placements: [], lunches: [], venues: [], announcements: [], fetchedAt: new Date().toISOString() } as Guide;
+  return { mode: "live", event: eventRow.data, settings: settings.data, days: [], sessions: [], speakers: [], sessionSpeakers: [], sponsors: [], tiers: [], placements: [], lunches: [], venues: [], announcements: [], activities: [], fetchedAt: new Date().toISOString() } as Guide;
 }
