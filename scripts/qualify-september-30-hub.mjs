@@ -5,6 +5,7 @@ import { chromium, expect } from '@playwright/test';
 import { backendAdmin, EVENT_ID, PROJECT_REF, query } from './backend-cli.mjs';
 
 const site='https://event-beast.vercel.app';
+const diagnosticHeaderOverride=process.env.EVENT_BEAST_QA_CONFIRMATION_DIAGNOSTIC==='true';
 const admin=backendAdmin();
 const statePath='supabase/.temp/hub-qualification-state.json';
 const prior=JSON.parse(await readFile(statePath,'utf8').catch(()=>'null'));
@@ -32,6 +33,12 @@ try{
   assert.ok(!checked(await admin.auth.admin.getUserById(user.id),'Pre-consumption identity').user.email_confirmed_at,'Passive GET consumed an invitation');
   const context=await browser.newContext({serviceWorkers:'block',viewport:label==='alice'?{width:390,height:844}:{width:1440,height:1000}});
   const page=await context.newPage();debugPage=page;
+  if(diagnosticHeaderOverride)await page.route('**/auth/confirm?*',async route=>{
+   if(route.request().method()!=='GET')return route.continue();
+   const response=await route.fetch();
+   const body=(await response.text()).replace('<head>','<head><meta name="referrer" content="strict-origin">');
+   return route.fulfill({response,body,headers:{...response.headers(),'referrer-policy':'strict-origin'}});
+  });
   await page.goto(link.toString());await page.getByRole('button',{name:'Continue securely',exact:true}).click();await page.waitForURL('**/reset-password');
   await expect(page.getByText(email,{exact:true})).toBeVisible();
   await page.locator('input[autocomplete="new-password"]').first().fill(password);await page.getByLabel('Confirm password',{exact:true}).fill(password);await page.getByRole('button',{name:'Update password',exact:true}).click();
@@ -82,14 +89,16 @@ try{
   await checkJson(await bob.context.request.post(site+'/api/moderation',{headers:{Origin:site},data:{action:'block',target:alice.attendee,blocked:true}}),'Block');
   assert.equal((await alice.context.request.post(site+'/api/inbox/'+conversation.id,{headers:{Origin:site},data:{client_id:randomUUID(),body:'After block'}})).status(),403);
  });
- await run('Recovery link requires a recipient click and then accepts the new password for fresh login',async()=>{
+ await run('Recovery safely switches an existing different-account session, refuses mismatched identity updates and accepts a fresh login',async()=>{
   const recovery=checked(await admin.auth.admin.generateLink({type:'recovery',email:alice.email}),'Synthetic recovery');
   const link=new URL('/auth/confirm',site);link.searchParams.set('token_hash',recovery.properties.hashed_token);link.searchParams.set('type','recovery');
   assert.equal((await fetch(link)).status,200);
-  await alice.page.goto(link.toString());await alice.page.getByRole('button',{name:'Continue securely'}).click();await alice.page.waitForURL('**/reset-password');
+  await bob.page.goto(link.toString());await bob.page.getByRole('button',{name:'Continue securely'}).click();await bob.page.waitForURL('**/reset-password');
+  await expect(bob.page.getByText(alice.email,{exact:true})).toBeVisible();
   const password=`Changed-${randomUUID()}!aA`;
-  await alice.page.locator('input[autocomplete="new-password"]').first().fill(password);await alice.page.getByLabel('Confirm password',{exact:true}).fill(password);await alice.page.getByRole('button',{name:'Update password'}).click();await alice.page.waitForURL('**/more/profile');
-  await checkJson(await alice.context.request.post(site+'/api/auth',{headers:{Origin:site},data:{action:'sign-out'}}),'Sign out');
+  assert.equal((await bob.context.request.post(site+'/api/auth',{headers:{Origin:site},data:{action:'update-password',password,expectedUserId:bob.id}})).status(),409);
+  await bob.page.locator('input[autocomplete="new-password"]').first().fill(password);await bob.page.getByLabel('Confirm password',{exact:true}).fill(password);await bob.page.getByRole('button',{name:'Update password'}).click();await bob.page.waitForURL('**/more/profile');
+  await alice.context.clearCookies();
   await checkJson(await alice.context.request.post(site+'/api/auth',{headers:{Origin:site},data:{action:'sign-in',email:alice.email,password,next:'/account-ready'}}),'Fresh login');
   await alice.page.goto(site+'/account-ready');await alice.page.waitForURL('**/more/profile');
  });
@@ -128,7 +137,7 @@ finally{
   for(const user of state.users){assert.ok(user.email.startsWith('event-beast-hub-qa-')&&user.email.endsWith('@example.test'));const stored=checked(await admin.auth.admin.getUserById(user.id),'Check synthetic cleanup').user;assert.equal(stored.email,user.email);checked(await admin.auth.admin.deleteUser(user.id),'Remove synthetic identity');}
   state.cleanedUp=true;await saveState();
  }catch(error){failure=error;console.error(JSON.stringify({cleanupFailed:true,message:error.message}));}
- const report={testedAt:new Date().toISOString(),site,project:PROJECT_REF,revision:release?.revision,passed:!failure,checks:results,syntheticUsers:state.users.length,cleanedUp:state.cleanedUp,realSoniaOrDonIdentityUsed:false,automaticEmailDeliveryTested:false,physicalDeviceTested:false};
+ const report={testedAt:new Date().toISOString(),site,project:PROJECT_REF,revision:release?.revision,passed:!failure,checks:results,syntheticUsers:state.users.length,cleanedUp:state.cleanedUp,diagnosticHeaderOverride,realSoniaOrDonIdentityUsed:false,automaticEmailDeliveryTested:false,physicalDeviceTested:false};
  await writeFile('docs/september-30-hosted-qualification.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({passed:!failure,checks:results.length,cleanedUp:state.cleanedUp}));
  if(failure)process.exitCode=1;
 }

@@ -4,7 +4,7 @@
 
 This is **post-event product work only**. It must not expand the Momentum Builder LIVE 2026 launch beyond the organizer's current September 30 requirements. Don subsequently changed the event scope from information-only to a principal event hub with registrant accounts, profiles and communication. Those event-specific community requirements are tracked in `SEPTEMBER-30-LAUNCH-PIVOT.md`. HighLevel/mass texting remains the event's mass-notification channel.
 
-The current event is the proving ground, not the permanent product architecture. Preserve reusable capabilities that already exist behind the event-specific experience, but do not re-enable them for Momentum Builder unless the organizer changes scope.
+The current event is the proving ground, not the permanent product architecture. The organizer-approved September 30 social wall, private messaging and profiles now belong to this event's launch. Preserve these reusable capabilities without turning event delivery into the SaaS migration.
 
 ## Product thesis
 
@@ -39,8 +39,8 @@ After Momentum Builder:
 1. Remove event-specific copy, IDs, dates, branding and navigation assumptions from application code.
 2. Add multi-organization/multi-event tenancy and a platform administration layer.
 3. Build event creation, cloning/templates, onboarding and self-service organizer setup.
-4. Convert module switches into database-backed per-event configuration with authorization tests.
-5. Restore and productize optional directory/profiles/private messaging behind those event flags.
+4. Extend the event-level module switches into commercial configuration and entitlements with authorization tests.
+5. Generalize the event's social wall, directory, profiles and private messaging into optional product modules.
 6. Productize notifications with real delivery semantics and channel integrations.
 7. Add white-label branding, custom-domain onboarding and domain/auth callback automation.
 8. Add billing/entitlements, plan enforcement, usage tracking and audit visibility.
@@ -64,4 +64,4 @@ Treat the live event as product discovery. After the event, record organizer set
 
 ## Explicitly parked until after Momentum Builder
 
-Do not turn the current event into the SaaS migration. Multi-tenancy, billing, generic branding, self-service event creation, restored attendee chat/directory, generalized notification delivery, reseller controls and product pricing are parked until the event has shipped and its lessons are documented.
+Do not turn the current event into the SaaS migration. Multi-tenancy, billing, generic branding, self-service event creation, generalized community-module packaging, generalized notification delivery, reseller controls and product pricing are parked until the event has shipped and its lessons are documented. The current event's specifically approved social wall, profiles and private messaging are not parked.

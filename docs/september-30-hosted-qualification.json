@@ -1,0 +1,47 @@
+{
+  "testedAt": "2026-09-30T17:38:31.940Z",
+  "site": "https://event-beast.vercel.app",
+  "project": "nyhzmazbfctuttizwnxp",
+  "revision": "6208bf01d9aae557160f5b251a5d1cbb770a599c",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Passive email scanners cannot consume invites; actual clicks activate exact Admin and Member roles",
+      "passed": true
+    },
+    {
+      "name": "Profile opt-in is explicit and attendee directory never returns CRM contacts",
+      "passed": true
+    },
+    {
+      "name": "Social wall writes persist once across retries, reloads and two authenticated browsers",
+      "passed": true
+    },
+    {
+      "name": "Reports reach Admin-only moderation; authors cannot restore a hidden post",
+      "passed": true
+    },
+    {
+      "name": "Private one-to-one messaging persists across browsers and never appears on the social wall",
+      "passed": true
+    },
+    {
+      "name": "Recovery safely switches an existing different-account session, refuses mismatched identity updates and accepts a fresh login",
+      "passed": true
+    },
+    {
+      "name": "Organizer can save/reload a draft lunch edit without changing the published event information",
+      "passed": true
+    },
+    {
+      "name": "Actual public site contains source program, day-specific lunches, ads and no notifications",
+      "passed": true
+    }
+  ],
+  "syntheticUsers": 3,
+  "cleanedUp": true,
+  "diagnosticHeaderOverride": false,
+  "realSoniaOrDonIdentityUsed": false,
+  "automaticEmailDeliveryTested": false,
+  "physicalDeviceTested": false
+}
