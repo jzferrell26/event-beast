@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import base from './playwright.config';
 process.env.EVENT_BEAST_PUBLIC_TESTS = 'true';
 export default defineConfig({
-  ...base, testIgnore: [], testMatch: ['**/public-site.spec.ts', '**/public-offline.spec.ts', '**/operator-console.spec.ts', '**/hub.spec.ts', '**/roster-import.spec.ts'],
+  ...base, testIgnore: [], testMatch: ['**/public-site.spec.ts', '**/public-offline.spec.ts', '**/operator-console.spec.ts', '**/hub.spec.ts', '**/roster-import.spec.ts', '**/chat-feedback.spec.ts'],
   outputDir: 'test-results/public-site', reporter: [['list'], ['json', { outputFile: 'test-results/public-site-results.json' }]],
   webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
     command: 'node node_modules/next/dist/bin/next start --port 3180', url: 'http://127.0.0.1:3180', reuseExistingServer: false, timeout: 60000,
