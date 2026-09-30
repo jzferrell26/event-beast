@@ -9,7 +9,7 @@ import { ingestMessageBatch, unconfirmedMessages, type MessageTimeline } from "@
 import { loadInboxWindow, MAX_INBOX_PAGES, type InboxPage } from "@/lib/inbox-window";
 import { useApp } from "./app-provider";
 import { Avatar, Busy, EmptyState, ErrorState, LoadingCards, PageTitle } from "./ui";
-import { useInboxSignal } from "./realtime";
+import { invalidateInbox, useInboxSignal } from "./realtime";
 import { ModerationActions } from "./moderation";
 import { useThreadViewport } from "./use-thread-viewport";
 
@@ -55,7 +55,7 @@ export function InboxScreen() {
   </>;
 }
 
-interface ThreadResponse { messages: Message[]; hasMore: boolean; peer: { id: string; name: string }; blockedByMe: boolean; peerReadId: number }
+interface ThreadResponse { messages: Message[]; hasMore: boolean; peer: { id: string; name: string; avatar_url?: string }; blockedByMe: boolean; peerReadId: number }
 
 export function ThreadScreen({ id }: { id: string }) {
   const { guide, me, online, notify } = useApp();
@@ -95,7 +95,7 @@ export function ThreadScreen({ id }: { id: string }) {
     const newest = records.current.cursor;
     if (guide.mode === "demo" || !newest || newest <= lastRead.current || marking.current || !atBottom.current || document.visibilityState !== "visible") return;
     marking.current = true;
-    try { await mutate(`/api/inbox/${id}`, "PATCH", { lastReadId: newest }); lastRead.current = newest; }
+    try { await mutate(`/api/inbox/${id}`, "PATCH", { lastReadId: newest }); lastRead.current = newest; invalidateInbox(); }
     catch { /* A later read/reconnect retries; never invent read receipts. */ }
     finally { marking.current = false; }
   }, [guide.mode, id]);
@@ -165,7 +165,7 @@ export function ThreadScreen({ id }: { id: string }) {
     try {
       const data = await mutate<{ message: Message }>(`/api/inbox/${id}`, "POST", { client_id: item.client_id, body: item.body });
       if (!mounted.current) return;
-      accept([data.message], "send"); scrollToBottom(); void reconcile();
+      accept([data.message], "send"); scrollToBottom(); void reconcile(); invalidateInbox();
     } catch (error) {
       if (mounted.current) setPending((previous) => previous.map((p) => p.client_id === item.client_id ? { ...p, status: "failed", error: errorMessage(error) } : p));
     } finally { sendingKeys.current.delete(item.client_id); if (mounted.current) setSending(sendingKeys.current.size > 0); }
@@ -180,7 +180,7 @@ export function ThreadScreen({ id }: { id: string }) {
     void deliver(item);
   };
   const disabled = guide.mode === "demo" || blocked || !online || !peer || Boolean(error && messages.length === 0);
-  return <section className="thread-screen" ref={thread}><header className="thread-header"><Link href="/inbox" className="icon-button" aria-label="Back to inbox"><ArrowLeft size={21} /></Link>{peer && <Avatar name={peer.name} />}<div className="thread-person"><h1>{peer?.name ?? "Your conversation"}</h1><span>{connection === "demo" ? "Sample conversation · read-only" : blocked ? "Attendee blocked" : connection === "offline" ? "Offline · messages are not being sent" : connection === "connected" ? "Private conversation" : "Reconnecting · history is saved"}</span></div>{peer && <button type="button" className="icon-button" aria-label="Conversation options" aria-expanded={showTools} onClick={() => setShowTools((value) => !value)}>{showTools ? <X size={20} /> : <MoreHorizontal size={21} />}</button>}</header>
+  return <section className="thread-screen" ref={thread}><header className="thread-header"><Link href="/inbox" className="icon-button" aria-label="Back to inbox"><ArrowLeft size={21} /></Link>{peer && <Avatar name={peer.name} src={peer.avatar_url} />}<div className="thread-person"><h1>{peer?.name ?? "Your conversation"}</h1><span>{connection === "demo" ? "Sample conversation · read-only" : blocked ? "Attendee blocked" : connection === "offline" ? "Offline · messages are not being sent" : connection === "connected" ? "Private conversation" : "Reconnecting · history is saved"}</span></div>{peer && <button type="button" className="icon-button" aria-label="Conversation options" aria-expanded={showTools} onClick={() => setShowTools((value) => !value)}>{showTools ? <X size={20} /> : <MoreHorizontal size={21} />}</button>}</header>
     {showTools && peer && <div className="thread-tools"><Link href={`/people/${peer.id}`} className="text-button">View attendee<ArrowUpRight size={14} /></Link><ModerationActions target={peer.id} blocked={blocked} messageId={reportMessageId} onChange={() => { setShowTools(false); setReportMessageId(undefined); void reconcile(); }} /></div>}
     <div className="thread-messages" ref={scroll} onScroll={() => { const el = scroll.current; if (!el) return; atBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 70; if (atBottom.current) { setNewBelow(false); void markRead(); } }}>
       <p className="thread-privacy"><ShieldCheck size={13} />Only you and this attendee can read this conversation. Reported messages can be reviewed by the event team.</p>

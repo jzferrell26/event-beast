@@ -1,0 +1,15 @@
+/* Only a mounted phone thread is pinned. The messages pane scrolls; the app
+   header/composer cannot drift into the keyboard's vacated document space. */
+@media(max-width:900px){
+ html[data-thread-viewport='true'],html[data-thread-viewport='true'] body{height:100%;overflow:hidden;overscroll-behavior-y:none;scroll-behavior:auto}
+ .app-shell[data-thread-viewport='true']{position:fixed;top:var(--thread-viewport-top,0px);left:0;right:0;height:var(--thread-viewport-height,100dvh);min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ .app-shell[data-thread-viewport='true']>.app-column{display:flex;flex-direction:column;flex:1;min-height:0;width:100%;margin:0;overflow:hidden}
+ .app-shell[data-thread-viewport='true'] .topbar{position:relative;top:auto;flex:none}
+ .app-shell[data-thread-viewport='true'] .demo-strip{flex:none}
+ .app-shell[data-thread-viewport='true'] .main-thread{display:flex;flex-direction:column;flex:1;min-height:0;max-width:none;width:100%;margin:0;overflow:hidden}
+ .app-shell[data-thread-viewport='true'] .thread-screen{height:100%!important;min-height:0;flex:1;width:100%;overflow:hidden}
+ .app-shell[data-thread-viewport='true'] .thread-header,.app-shell[data-thread-viewport='true'] .composer{flex-shrink:0}
+ .app-shell[data-thread-viewport='true'] .thread-messages{min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain}
+ .app-shell[data-thread-viewport='true']>.bottom-nav{position:relative;bottom:auto;flex:none}
+ .app-shell[data-thread-viewport='true'] .app-footer{display:none}
+}

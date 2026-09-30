@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { demoConversations, demoMessages } from "@/lib/demo";
 import { messageSchema, uuid } from "@/lib/validation";
+import { signAvatarRows } from '@/lib/server/avatar-urls';
 import { requireMember } from "@/lib/server/auth";
 import { isDemo } from "@/lib/server/guide";
 import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/http";
@@ -11,7 +12,7 @@ export const GET = (request: Request, context: Context) => handle(async () => {
   if (isDemo()) {
     const conversation = demoConversations.find((c) => c.id === id);
     if (!conversation) throw new ApiError(404, "Conversation not found.");
-    return json({ messages: demoMessages(id), hasMore: false, peer: { id: conversation.peer_id, name: conversation.peer_name }, blockedByMe: false, peerReadId: 2 });
+    return json({ messages: demoMessages(id), hasMore: false, peer: { id: conversation.peer_id, name: conversation.peer_name, avatar_url: conversation.avatar_url }, blockedByMe: false, peerReadId: 2 });
   }
   const { db, event, attendee } = await requireMember();
   const conversation = await db.from("conversations").select("id,attendee_a,attendee_b").eq("event_id", event.id).eq("id", id).maybeSingle();
@@ -27,14 +28,15 @@ export const GET = (request: Request, context: Context) => handle(async () => {
   if (after) query = query.gt("id", cursorSchema.parse(after));
   const [messages, profile, block, read] = await Promise.all([
     query,
-    db.from("attendee_profiles").select("full_name").eq("event_id", event.id).eq("attendee_id", peerId).maybeSingle(),
+    db.from("attendee_profiles").select("full_name,headshot_path").eq("event_id", event.id).eq("attendee_id", peerId).maybeSingle(),
     db.from("blocks").select("blocked_id").eq("event_id", event.id).eq("blocker_id", attendee.id).eq("blocked_id", peerId).maybeSingle(),
     db.from("conversation_reads").select("last_read_id").eq("event_id", event.id).eq("conversation_id", id).eq("attendee_id", peerId).maybeSingle(),
   ]);
   [messages, profile, block, read].forEach((r) => databaseError(r.error));
   const rows = (messages.data ?? []).slice(0, 50);
+  const avatars = await signAvatarRows(db, event.id, profile.data ? [{ attendee_id: peerId, headshot_path: profile.data.headshot_path }] : []);
   return json({ messages: after ? rows : rows.reverse(), hasMore: (messages.data?.length ?? 0) > 50,
-    peer: { id: peerId, name: profile.data?.full_name ?? "Private attendee" }, blockedByMe: Boolean(block.data), peerReadId: read.data?.last_read_id ?? 0 });
+    peer: { id: peerId, name: profile.data?.full_name ?? "Private attendee", avatar_url: avatars.get(peerId) }, blockedByMe: Boolean(block.data), peerReadId: read.data?.last_read_id ?? 0 });
 });
 export const POST = (request: Request, context: Context) => handle(async () => {
   const id = uuid.parse((await context.params).id);
