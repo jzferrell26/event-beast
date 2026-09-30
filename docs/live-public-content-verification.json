@@ -1,0 +1,43 @@
+{
+  "checkedAt": "2026-09-30T02:35:17.991Z",
+  "site": "https://event-beast.vercel.app",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Live guide has all approved sponsor listings and six real supplied creatives",
+      "passed": true
+    },
+    {
+      "name": "Every published sponsor logo and supplied creative is reachable",
+      "passed": true
+    },
+    {
+      "name": "desktop: public navigation and real sponsor logos render without overflow",
+      "passed": true
+    },
+    {
+      "name": "desktop: all six advertisements appear on their actual agenda days",
+      "passed": true
+    },
+    {
+      "name": "phone: public navigation and real sponsor logos render without overflow",
+      "passed": true
+    },
+    {
+      "name": "phone: all six advertisements appear on their actual agenda days",
+      "passed": true
+    },
+    {
+      "name": "safari-engine: public navigation and real sponsor logos render without overflow",
+      "passed": true
+    },
+    {
+      "name": "safari-engine: all six advertisements appear on their actual agenda days",
+      "passed": true
+    }
+  ],
+  "sponsorListings": 37,
+  "uniqueSponsorNames": 34,
+  "ads": 6,
+  "actualPhysicalDevicesTested": false
+}

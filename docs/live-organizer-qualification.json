@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-09-30T02:49:43.130Z",
+  "project": "nyhzmazbfctuttizwnxp",
+  "site": "https://event-beast.vercel.app",
+  "passed": true,
+  "checks": [
+    {
+      "name": "Deployed invite verification, password setup and real organizer login",
+      "passed": true
+    },
+    {
+      "name": "Actual deployed session and speaker assignments persist atomically",
+      "passed": true
+    },
+    {
+      "name": "Actual organizer image decode, storage upload, row patch and reload",
+      "passed": true
+    },
+    {
+      "name": "Real sponsor-ad and lunch edits save and reload without publishing test records",
+      "passed": true
+    },
+    {
+      "name": "Anonymous and Member users are refused organizer reads, writes and uploads",
+      "passed": true
+    },
+    {
+      "name": "Recovery-token password reset and fresh login work on the deployed site",
+      "passed": true
+    }
+  ],
+  "syntheticUsers": 2,
+  "cleanedUp": true,
+  "firstRenderClaimTested": true,
+  "realHttpAuthAndStorage": true,
+  "realSoniaLoginTested": false,
+  "emailDeliveryTested": false,
+  "realPublishedContentAltered": false,
+  "testedRevision": "5e297df3d6e93eeba1b36168c7e7fff1e3c8856f"
+}

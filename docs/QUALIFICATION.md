@@ -2,6 +2,16 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 29 approved live testing release (September 30 UTC)
+
+PR #8 and follow-up PR #9 are merged. The current tested production revision is `5e297df3d6e93eeba1b36168c7e7fff1e3c8856f`; both sponsor-creative and current-role storage migrations are applied to the dedicated Event Beast backend. Source verification passes **192 unit/database tests** and **45 public browser checks**. GitHub's full quality job passed before the organizer fix merged.
+
+Actual hosted qualification passes **six organizer workflows** against real deployed HTTP, Auth and Storage: fresh invite/password setup/direct Admin entry with no diagnostic pre-claim, atomic session/speaker persistence, actual image upload/patch/reload, draft ad/lunch writes, anonymous/Member refusal, and recovery-token password reset/fresh login. All synthetic accounts, unpublished rows and temporary upload objects were cleaned up. This separately fixes the first-render membership read and the old storage helper's missing roster-Admin support. Earlier local fixtures did not detect these two live failures; both now have regressions that failed before their fixes.
+
+The real content sync and **eight hosted public-content checks** confirm 37 tier listings (34 unique sponsors) in the visually confirmed official order and all six supplied ad images across desktop Chromium, phone Chromium and phone WebKit. All stored image bytes and public asset responses were verified. The complete Braincode PDF page and a complete static NFTYDoor GIF frame were prepared without changing ad copy. Ad positions are initial editable defaults requiring organizer review, not contractual sign-off.
+
+Sonia's approved private Admin registration is provisioned, and the recipient-only activation email was sent from Jonathan's Outlook with a verified Sent Items copy. Auth email verification is recorded, but her first event-Admin claim and saved edit are not yet confirmed. No real person's verification or password was supplied by the agent. Automated SMTP/verification/recovery email delivery remains gated; manual token-flow tests do not certify real automated inbox delivery. Existing DNS, final logistics/held program decisions, and physical-phone/venue-network acceptance remain separate. Current evidence is linked from [LIVE-ORGANIZER-HANDOFF.md](./LIVE-ORGANIZER-HANDOFF.md).
+
 ## September 29 public information-site candidate (September 30 UTC)
 
 Sonia's account-free public-site request is implemented with Home, Agenda, Speakers, Sponsors and More, local-device session bookmarks, retired community routes/APIs, a simple logo-and-tier sponsor page, and square/banner image ads for agenda and public pages. The latest full-agenda request supersedes the earlier condensed proposal. Organizer editing remains secured; no live account or content approval is inferred from a successful form preview.
