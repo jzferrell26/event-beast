@@ -33,7 +33,10 @@ export async function getActor() {
     const claim = await db.rpc(admin.data ? "claim_admin_attendee" : "claim_attendee", { p_event: event.data.id });
     databaseError(claim.error);
     if (claim.data) {
-      attendee = await db.from("attendees").select("id,status,directory_allowed,access_role,access_version").eq("event_id", event.data.id).eq("user_id", user.id).maybeSingle();
+      // This is a read after a write. An identical GET during an RSC render can
+      // reuse the pre-claim null result. Read the RPC-returned row identity
+      // instead, retaining both event scope and authenticated ownership.
+      attendee = await db.from("attendees").select("id,status,directory_allowed,access_role,access_version").eq("event_id", event.data.id).eq("id", claim.data).eq("user_id", user.id).maybeSingle();
       databaseError(attendee.error);
     }
   }
