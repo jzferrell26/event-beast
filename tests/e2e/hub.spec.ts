@@ -38,6 +38,7 @@ test('social wall retains a failed draft, retries idempotently, edits and remove
  await page.getByRole('dialog').getByLabel('Post text').fill('Revised takeaway');
  await page.getByRole('button',{name:'Save post',exact:true}).click();
  await expect(page.locator('.wall-body')).toHaveText('Revised takeaway');
+ await page.evaluate(() => { (document.activeElement as HTMLElement | null)?.blur(); window.scrollTo(0,0); });
  await page.screenshot({path:info.outputPath('social-wall.png'),fullPage:true});
  expect((await new AxeBuilder({page}).include('#main').analyze()).violations).toEqual([]);
  await page.locator('.wall-post').getByRole('button',{name:'Remove',exact:true}).click();

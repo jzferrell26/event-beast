@@ -103,7 +103,7 @@ try{
  await run('Actual public site contains source program, day-specific lunches, ads and no notifications',async()=>{
   const guide=await(await fetch(site+'/api/guide')).json();assert.equal(guide.sessions.length,49);assert.equal(guide.lunches.length,16);assert.equal(guide.placements.length,6);assert.equal(guide.sponsors.length,37);assert.equal(guide.communityEnabled,true);assert.equal(guide.announcements.length,0);assert.equal(guide.activities.length,0);
   const page=organizer.page;
-  for(const route of ['/','/agenda','/sponsors','/more/lunch','/more/fun-stuff']){await page.goto(site+route);await expect(page.locator('h1')).toBeVisible();assert.equal(await page.locator('a[href="/more/notifications"]').count(),0);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
+  for(const route of ['/','/agenda','/sponsors','/more/lunch','/more/fun-stuff']){await page.goto(site+route);await expect(page.getByRole('heading',{level:1})).toBeVisible();assert.equal(await page.locator('a[href="/more/notifications"]').count(),0);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));}
   await page.goto(site+'/more/lunch');await expect(page.getByText('Cumberland K (downstairs)',{exact:true}).first()).toBeVisible();await page.screenshot({path:'test-results/live-hub/lunch-desktop.png',fullPage:true});
   await alice.page.goto(site+'/more/lunch');await alice.page.screenshot({path:'test-results/live-hub/lunch-phone.png',fullPage:true});
  });
