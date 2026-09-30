@@ -15,6 +15,7 @@
   function render() {
     target.replaceChildren();
     if (!guide) { empty("There is no saved guide on this device yet. Open the app while connected to save the public event essentials."); return; }
+    document.querySelectorAll('[data-section="updates"], [data-section="notifications"]').forEach(tab => { tab.hidden = guide.settings?.announcements_enabled === false; });
     if (guide.event.is_demo || guide.mode === "demo") target.append(node("p", "DEMO · These dates and program details are samples.", "demo"));
     if (section === "agenda") {
       const days = Array.isArray(guide.days) ? guide.days : [];
@@ -24,7 +25,7 @@
       target.append(tabs, node("p", `All times in ${guide.event.timezone}`, "timezone"));
       const sessions = (guide.sessions ?? []).filter((s) => s.day_id === selectedDay);
       if (!sessions.length) empty("No sessions were included for this day in the saved guide.");
-      sessions.forEach((session) => { const article = card(session.title, session.description); article.prepend(node("span", `${time(session.starts_at)}–${time(session.ends_at)} · ${session.session_type}`, "eyebrow")); location(article, session.room); target.append(article); });
+      sessions.forEach((session) => { const article = card(session.title, session.description); article.prepend(node("span", `${time(session.starts_at)}${session.end_time_confirmed === false ? "" : "–" + time(session.ends_at)} · ${session.session_type}`, "eyebrow")); location(article, session.room); target.append(article); });
     } else if (section === "sponsors") {
       const tiers = new Map((guide.tiers ?? []).map((t) => [t.id, t]));
       const sponsors = [...(guide.sponsors ?? [])].sort((a, b) => (tiers.get(a.tier_id)?.sort_order ?? 99999) - (tiers.get(b.tier_id)?.sort_order ?? 99999) || a.sort_order - b.sort_order || a.name.localeCompare(b.name));
@@ -32,7 +33,7 @@
       sponsors.forEach((sponsor) => { const article = card(sponsor.name, guide.publicSite ? '' : sponsor.description); article.prepend(node("span", tiers.get(sponsor.tier_id)?.name ?? "Event partner", "eyebrow")); if (!guide.publicSite) location(article, sponsor.booth); image(article, sponsor.logo_url, `${sponsor.name} logo`); target.append(article); });
     } else if (section === "lunch") {
       if (!guide.lunches?.length) empty("Lunch details were not included in the saved guide.");
-      (guide.lunches ?? []).forEach((lunch) => { const article = card(lunch.title, lunch.description); location(article, [lunch.location, lunch.hours].filter(Boolean).join(" · ")); article.append(node("h3", "Dietary information"), node("p", lunch.dietary_info || "Ask the organizer about dietary needs.")); image(article, lunch.image_url, lunch.title); target.append(article); });
+      (guide.lunches ?? []).forEach((lunch) => { const article = card(lunch.title, lunch.description); location(article, [lunch.event_date, lunch.location, lunch.hours].filter(Boolean).join(" · ")); article.append(node("h3", "Dietary information"), node("p", lunch.dietary_info || "Ask the organizer about dietary needs.")); image(article, lunch.image_url, lunch.title); target.append(article); });
     } else if (section === "venue") {
       if (!guide.venues?.length) empty("Venue details were not included in the saved guide.");
       (guide.venues ?? []).forEach((venue) => { const article = card(venue.title, venue.description); location(article, venue.location); image(article, venue.map_url, `Map for ${venue.title}`); target.append(article); });

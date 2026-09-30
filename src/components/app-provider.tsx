@@ -7,7 +7,7 @@ import { demoMe } from "@/lib/demo";
 import { errorMessage, mutate, request } from "@/lib/client";
 import { browserSupabase } from "@/lib/supabase/browser";
 import { observeMobileViewport } from "@/lib/mobile-viewport";
-import { deviceBookmarkKey, parseDeviceBookmarks } from '@/lib/public-site';
+import { deviceBookmarkKey, parseDeviceBookmarks, isCommunityPath } from '@/lib/public-site';
 
 function subscribeOnline(callback: () => void) { window.addEventListener("online", callback); window.addEventListener("offline", callback); return () => { window.removeEventListener("online", callback); window.removeEventListener("offline", callback); }; }
 const onlineSnapshot = () => navigator.onLine;
@@ -44,11 +44,12 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const router = useRouter();
   const pathname = usePathname();
   const organizerRoute = pathname === "/admin" || pathname.startsWith("/admin/");
-  const communityRoute = /^\/(feed|people|inbox|access)(\/|$)/.test(pathname) || pathname === '/more/profile';
+  const communityRoute = isCommunityPath(pathname);
   const publicVisitor = Boolean(initialGuide.publicSite) && !communityRoute && !pathname.startsWith('/admin') && !pathname.startsWith('/sponsor/');
+  const skipIdentity = publicVisitor && !initialGuide.communityEnabled;
   const notify = useCallback((message: string, error = false) => setToast({ message, error }), []);
   const refreshMe = useCallback((): Promise<void> => {
-    if (publicVisitor) return Promise.resolve();
+    if (skipIdentity) return Promise.resolve();
     if (identityRequest.current) return identityRequest.current;
     const generation = identityGeneration.current;
     const pending = (async () => {
@@ -56,16 +57,16 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
         const next = await request<Me>("/api/me");
         if (generation !== identityGeneration.current) return;
         setMe(next); setMeError("");
-        if (next.eligible && !organizerRoute) {
+        if (next.eligible && !organizerRoute && !publicVisitor) {
           const nextSaved = await request<SavedItems>("/api/saved");
           if (generation === identityGeneration.current) setSaved(nextSaved);
-        } else if (next.mode !== "demo") setSaved({ sessions: [], attendees: [] });
+        } else if (next.mode !== "demo" && !publicVisitor) setSaved({ sessions: [], attendees: [] });
       } catch (error) { if (generation === identityGeneration.current) setMeError(errorMessage(error)); }
     })();
     identityRequest.current = pending;
     void pending.finally(() => { if (identityRequest.current === pending) identityRequest.current = null; });
     return pending;
-  }, [publicVisitor, organizerRoute]);
+  }, [publicVisitor, organizerRoute, skipIdentity]);
   const refreshGuide = useCallback(async () => {
     try { const next = await request<Guide>(organizerRoute ? "/api/admin/guide" : "/api/guide"); setGuide(next); } catch { /* Existing public guide remains usable; offline banner reports connectivity. */ }
   }, [organizerRoute]);
@@ -78,8 +79,11 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
       window.addEventListener('storage', sync);
       return () => window.removeEventListener('storage', sync);
     }
+  }, [publicVisitor, initialGuide.event.id]);
+  useEffect(() => {
+    if (skipIdentity) return;
     void refreshMe();
-    if (initialGuide.mode === "demo") {
+    if (initialGuide.mode === "demo" && !publicVisitor) {
       Promise.resolve().then(() => {
         try {
           const value = JSON.parse(localStorage.getItem(`event-beast:demo:${initialGuide.event.id}:saved`) || "null");
@@ -93,13 +97,13 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
         identityGeneration.current += 1;
         identityRequest.current = null;
         setMe({ mode: "live", authenticated: false, eligible: false, isAdmin: false, attendeeId: null, profile: null, preferences: null });
-        setSaved({ sessions: [], attendees: [] });
+        if (!publicVisitor) setSaved({ sessions: [], attendees: [] });
       }
       // Defer work until Supabase has released its auth callback lock.
       window.setTimeout(() => { void refreshMe(); }, 0);
     });
     return () => listener?.data.subscription.unsubscribe();
-  }, [initialGuide.mode, initialGuide.event.id, refreshMe, publicVisitor]);
+  }, [initialGuide.mode, initialGuide.event.id, refreshMe, publicVisitor, skipIdentity]);
   useEffect(() => {
     if (!online) return;
     const focus = () => { void refreshGuide(); void refreshMe(); };

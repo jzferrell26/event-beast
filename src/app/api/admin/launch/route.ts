@@ -49,8 +49,8 @@ export const GET = () => handle(async () => {
     });
     checks = (checkResult.data ?? []) as LaunchCheck[];
   }
-  guide = { ...guide, publicSite: publicSiteEnabled() };
-  const definitions = launchDefinitionsFor(guide.publicSite);
+  guide = { ...guide, publicSite: publicSiteEnabled(), communityEnabled: guide.settings.community_enabled === true };
+  const definitions = launchDefinitionsFor(guide.publicSite, guide.communityEnabled);
   const items = [...evaluateContent(guide, approvedMembers), ...evaluateProgramReview(guide, programReview)];
   const runtime = evaluateEnvironment({ demo: isDemo(), backendUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     backendKeyConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
@@ -59,7 +59,7 @@ export const GET = () => handle(async () => {
   const contentReady = items.every((item) => item.status === "ready");
   const runtimeReady = runtime.every((item) => item.status === "ready");
   const organizerChecksRecorded = definitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified));
-  return json({ publicSite: guide.publicSite, mode: guide.mode, eventName: guide.event.name, generatedAt: new Date().toISOString(), content: items, checks: checks.filter(check => definitions.some(item => item.key === check.check_key)), approvedAttendees,
+  return json({ publicSite: guide.publicSite, communityEnabled: guide.communityEnabled, mode: guide.mode, eventName: guide.event.name, generatedAt: new Date().toISOString(), content: items, checks: checks.filter(check => definitions.some(item => item.key === check.check_key)), approvedAttendees,
     contentReady, runtime, runtimeReady, organizerChecksRecorded, approvedMembers, claimedAttendees, pendingRequests, programReview,
     eventReady: contentReady && runtimeReady && organizerChecksRecorded,
   });

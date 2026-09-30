@@ -1,5 +1,7 @@
 # September 30 launch pivot — principal event hub
 
+> **Latest refinement:** Sonia's 15:10 UTC email keeps breakouts inside Lunch, calls the separate page **Fun Stuff** (content pending), requests a shared social wall plus private messaging, and excludes notifications. See `SEPTEMBER-30-EVENT-HUB-RELEASE.md` for the implemented scope and release evidence. Earlier Activities language below is historical.
+
 ## Decision and supersession
 
 Don's September 30 morning direction supersedes the September 29 information-only decision. Momentum Builder LIVE 2026 will use Event Beast as its **principal event hub**, including registrant accounts, attendee profiles and attendee-to-attendee communication. Eric's separate permanent platform is not the event communication hub; it will be offered/teased separately as the paid-member technology.

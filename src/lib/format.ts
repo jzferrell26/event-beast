@@ -33,7 +33,12 @@ export function sessionSpeakers(guide: Guide, sessionId: string) {
 }
 export function safeNext(next: string | null | undefined): string {
   if (!next) return "/";
-  return /^\/(?:agenda(?:\/[a-f0-9-]{36})?|people(?:\/[a-f0-9-]{36})?|inbox(?:\/[a-f0-9-]{36})?|feed|sponsor(?:\/[a-f0-9-]{36})?|more(?:\/[a-z-]+)?|admin(?:\/[a-z_]+)?|reset-password|access)?$/.test(next) ? next : "/";
+  return /^\/(?:agenda(?:\/[a-f0-9-]{36})?|people(?:\/[a-f0-9-]{36})?|inbox(?:\/[a-f0-9-]{36})?|feed|sponsors|sponsor(?:\/[a-f0-9-]{36})?|more(?:\/[a-z-]+)?|admin(?:\/[a-z_]+)?|reset-password|account-ready|access)?$/.test(next) ? next : "/";
+}
+
+/** Do not display an inferred scheduling boundary as an organizer-confirmed end time. */
+export function sessionTimeRange(session: AgendaSession, timezone: string): string {
+  return eventTime(session.starts_at, timezone) + (session.end_time_confirmed === false ? '' : ' – ' + eventTime(session.ends_at, timezone));
 }
 export function httpsUrl(value: string | null | undefined): string | null {
   try { const url = new URL(value ?? ""); return url.protocol === "https:" ? url.href : null; } catch { return null; }

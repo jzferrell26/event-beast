@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Bookmark, Clock3, MapPin, ArrowUpRight } from "lucide-react";
 import type { AgendaSession, SponsorPlacement } from "@/lib/types";
-import { eventTime, sessionSpeakers, sessionState } from "@/lib/format";
+import { eventTime, sessionSpeakers, sessionState, sessionTimeRange } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
 import { SponsorCreative } from './sponsor-creative';
 
@@ -16,9 +16,9 @@ export function SessionCard({ session, compact = false }: { session: AgendaSessi
     {!compact && <div className="session-time"><strong>{eventTime(session.starts_at, guide.event.timezone).replace(/ [AP]M/, "")}</strong><span>{eventTime(session.starts_at, guide.event.timezone).slice(-2)}</span><span className="time-line" /></div>}
     <div className="session-body"><div className="session-meta"><span className={`type-pill type-${session.session_type.toLowerCase()}`}>{session.session_type}</span>{current && <span className="live-label"><span className="live-dot" />LIVE NOW</span>}</div>
       <Link href={`/agenda/${session.id}`} className="session-title"><h3>{session.title}</h3></Link>
-      {compact && <p className="session-duration"><Clock3 size={14} />{eventTime(session.starts_at, guide.event.timezone)} – {eventTime(session.ends_at, guide.event.timezone)}</p>}
+      {compact && <p className="session-duration"><Clock3 size={14} />{sessionTimeRange(session, guide.event.timezone)}</p>}
       {!compact && speakers.length > 0 && <p className="session-speakers">{speakers.map((s) => s.full_name).join(" · ")}</p>}
-      <p className="session-location"><MapPin size={14} />{session.room || "Location to be announced"}{!compact && <span className="session-end">Until {eventTime(session.ends_at, guide.event.timezone)}</span>}</p>
+      <p className="session-location"><MapPin size={14} />{session.room || "Location to be announced"}{!compact && session.end_time_confirmed !== false && <span className="session-end">Until {eventTime(session.ends_at, guide.event.timezone)}</span>}</p>
     </div><button type="button" className={`icon-button bookmark-button${isSaved ? " is-saved" : ""}`} aria-label={`${isSaved ? "Unsave" : "Save"} ${session.title}`} aria-pressed={isSaved} onClick={() => void toggleSave("session", session.id)}><Bookmark size={20} fill={isSaved ? "currentColor" : "none"} /></button>
   </article>;
 }

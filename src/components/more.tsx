@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Bell, Bookmark, CalendarDays, CircleHelp, Compass, LogOut, Mail, MapPin, ShieldCheck, Smartphone, Trophy, UserRound, Utensils, WifiOff, Zap, Settings2, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Bell, Bookmark, CircleHelp, Compass, LogOut, Mail, MapPin, ShieldCheck, Smartphone, Trophy, UserRound, Utensils, WifiOff, Zap, Settings2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { activeAnnouncements, eventDay, httpsUrl, initials } from "@/lib/format";
@@ -8,6 +8,7 @@ import { errorMessage, mutate } from "@/lib/client";
 import { useApp, useNow } from "./app-provider";
 import { Avatar, EmptyState, PageTitle, SectionTitle } from "./ui";
 import { Onboarding } from "./onboarding";
+import { LunchInformation } from "./lunch";
 import { PublicHelpScreen, PublicMoreScreen, PublicSponsorsScreen } from './public-event';
 
 export function MoreScreen() {
@@ -20,11 +21,11 @@ export function MoreScreen() {
     { href: "/more/sponsors", name: "Our sponsors", detail: "The partners behind the momentum", icon: Trophy },
     { href: '/more/speakers', name: 'Meet the speakers', detail: 'The people and ideas behind the program', icon: UserRound },
     { href: "/more/lunch", name: "Lunch & a little downtime", detail: "What, when and where to eat", icon: Utensils },
-    { href: "/more/activities", name: "Breakouts & activities", detail: "Parties, meetups, book signings and bonus sessions", icon: Sparkles },
+    { href: "/more/fun-stuff", name: "Fun Stuff", detail: "Extra event moments from the organizer", icon: Sparkles },
     { href: "/more/venue", name: "Find your way", detail: "Venue, directions and the welcome desk", icon: MapPin },
     { href: "/more/profile", name: "My profile", detail: "Your introduction and privacy choices", icon: UserRound },
     { href: "/more/saved", name: "Saved sessions", detail: "The moments you don’t want to miss", icon: Bookmark },
-    { href: "/more/notifications", name: "Event updates", detail: "The latest from the organizer", icon: Bell },
+    ...(guide.settings.announcements_enabled !== false ? [{ href: "/more/notifications", name: "Event updates", detail: "The latest from the organizer", icon: Bell }] : []),
     { href: "/more/help", name: "A little help", detail: "App walkthrough, installation and support", icon: CircleHelp },
   ];
   const signOut = async () => {
@@ -47,10 +48,7 @@ export function SponsorsScreen() {
   })}<p className="fine-print sponsor-fine-print">Sponsor order follows the event team’s tier and placement settings.</p></>;
 }
 
-export function LunchScreen() {
-  const { guide } = useApp();
-  return <><PageTitle eyebrow="RECHARGE. RECONNECT. REFUEL." title="Make time for lunch." description="Good food and a good conversation belong on the agenda, too." />{!guide.lunches.length ? <EmptyState title="Lunch details are on the way." icon={<Utensils size={30} />}>Check back for the organizer’s menu, locations and times.</EmptyState> : <div className="practical-grid">{guide.lunches.map((lunch) => <article className="practical-card" key={lunch.id}>{httpsUrl(lunch.image_url) && <img className="practical-image" src={lunch.image_url} alt={lunch.title} loading="lazy" />}<div className="practical-card-content"><span className="practical-icon"><Utensils size={26} /></span>{lunch.is_demo && <span className="eyebrow">SAMPLE LUNCH INFORMATION</span>}<h2>{lunch.title}</h2><div className="practical-facts"><p><MapPin size={16} />{lunch.location || "Location to be confirmed"}</p><p><CalendarDays size={16} />{lunch.hours || "Times to be confirmed"}</p></div><p className="practical-description">{lunch.description}</p><div className="dietary-note"><strong>Dietary information</strong><p>{lunch.dietary_info || "The organizer has not supplied dietary information. Please ask the event team about your needs."}</p></div>{httpsUrl(lunch.directions_url) && <a className="button button-outline" href={lunch.directions_url} target="_blank" rel="noopener noreferrer">Get directions<ArrowUpRight size={17} /></a>}</div></article>)}</div>}<Link href="/more/venue" className="venue-feature"><MapPin size={25} /><div><strong>Need a hand finding it?</strong><p>See venue information and event help.</p></div><ArrowUpRight size={20} /></Link></>;
-}
+export function LunchScreen() { return <LunchInformation />; }
 
 export function VenueScreen() {
   const { guide, notify } = useApp();

@@ -83,7 +83,7 @@ describe("constrained organizer forms", () => {
   });
   it("validates end times after start times", () => {
     const resource = getAdminResource("agenda_sessions")!;
-    const values = Object.fromEntries(resource.fields.map((field) => [field.key, demoGuide.sessions[0][field.key as keyof typeof demoGuide.sessions[number]]]));
+    const values: Record<string, unknown> = { ...Object.fromEntries(resource.fields.map((field) => [field.key, demoGuide.sessions[0][field.key as keyof typeof demoGuide.sessions[number]]])), end_time_confirmed: true };
     expect(resourceSchema(resource).safeParse(values).success).toBe(true);
     expect(resourceSchema(resource).safeParse({ ...values, ends_at: values.starts_at }).success).toBe(false);
   });

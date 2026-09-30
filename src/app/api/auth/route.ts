@@ -4,7 +4,6 @@ import { safeNext } from "@/lib/format";
 import { authenticationOrigin } from '@/lib/auth-navigation';
 import { isDemo } from "@/lib/server/guide";
 import { ApiError, handle, json, parseBody } from "@/lib/server/http";
-import { publicSiteEnabled } from '@/lib/public-site';
 
 export const maxDuration = 60;
 
@@ -14,7 +13,7 @@ const schema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("recover"), email: z.email() }),
   z.object({ action: z.literal('resend'), email: z.email() }),
   z.object({ action: z.literal('verify-email'), email: z.email(), token: z.string().regex(/^\d{6,10}$/) }),
-  z.object({ action: z.literal("update-password"), password: z.string().min(12, "Use at least 12 characters").max(256) }),
+  z.object({ action: z.literal("update-password"), password: z.string().min(12, "Use at least 12 characters").max(256), expectedUserId: z.uuid() }),
   z.object({ action: z.literal("sign-out") }),
 ]);
 export const POST = (request: Request) => handle(async () => {
@@ -25,7 +24,7 @@ export const POST = (request: Request) => handle(async () => {
   const configuredSite = process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   if (!configuredSite) throw new ApiError(503, "Event sign-in is being configured.");
   const site = authenticationOrigin(configuredSite);
-  const verifiedNext = publicSiteEnabled() ? '/admin' : '/more/profile';
+  const verifiedNext = '/account-ready';
   if (['sign-up', 'recover', 'resend'].includes(body.action) && process.env.EVENT_BEAST_EMAIL_READY !== 'true') {
     throw new ApiError(503, 'Account email delivery is being prepared by the event team. The public agenda is available now.');
   }
@@ -63,9 +62,10 @@ export const POST = (request: Request) => handle(async () => {
   if (body.action === "update-password") {
     const { data, error: identityError } = await db.auth.getUser();
     if (identityError || !data.user) throw new ApiError(401, "Open the password reset link from your email first.");
+    if (data.user.id !== body.expectedUserId) throw new ApiError(409, 'The signed-in account changed in another tab. Reload this page before setting a password.');
     const { error } = await db.auth.updateUser({ password: body.password });
     if (error) throw new ApiError(400, "Your password could not be changed. Request a new reset link and try again.");
-    return json({ message: "Your password has been updated.", next: "/access" });
+    return json({ message: "Your password has been updated.", next: verifiedNext });
   }
   const { error } = await db.auth.signOut({ scope: 'local' });
   if (error) throw new ApiError(503, "Sign-out was not confirmed. Please try again.");

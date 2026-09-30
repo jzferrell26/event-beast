@@ -9,8 +9,8 @@ export const launchCheckDefinitions = [
   { key: "production_environment", title: "The dedicated production environment is verified", detail: "Verify the live HTTPS address, dedicated Event Beast database, migrations, email sender, callback URLs and organizer access. Confirm production demo mode is off." },
 ] as const;
 export type LaunchCheckKey = typeof launchCheckDefinitions[number]["key"];
-export function launchDefinitionsFor(publicSite = false): { key: LaunchCheckKey; title: string; detail: string }[] {
-  if (!publicSite) return [...launchCheckDefinitions];
+export function launchDefinitionsFor(publicSite = false, communityEnabled = false): { key: LaunchCheckKey; title: string; detail: string }[] {
+  if (!publicSite || communityEnabled) return [...launchCheckDefinitions];
   return launchCheckDefinitions.filter(item => item.key !== 'two_account_messaging').map(item => {
     if (item.key === 'content_review') return { ...item, title: 'The full program, sponsor order and creative placements are approved', detail: 'Confirm every published session, speaker, lunch location, sponsor tier/order and ad placement against the organizer-approved sources. No attendee roster is required for this public guide.' };
     if (item.key === 'email_delivery') return { ...item, title: 'Organizer access and password recovery work', detail: 'Verify an approved organizer can sign in, save an edit and recover their account. Attendees do not sign in or receive verification emails for this site.' };
@@ -26,6 +26,7 @@ export interface ReadinessItem {
   key: string; title: string; detail: string; status: "ready" | "needs_attention"; href: string;
 }
 export interface LaunchReadiness {
+  communityEnabled?: boolean;
   publicSite?: boolean;
   mode: "demo" | "live"; eventName: string; generatedAt: string;
   content: ReadinessItem[]; checks: LaunchCheck[]; approvedAttendees: number;
@@ -106,7 +107,7 @@ export function evaluateContent(guide: Guide, approvedAttendees: number): Readin
   const incompleteVenues = venues.filter((v) => !v.location.trim() || !v.description.trim());
   add("venue", "Attendees can find their way", venues.length > 0 && !incompleteVenues.length,
     !venues.length ? "Publish the venue locations and where to get help." : incompleteVenues.length ? `${incompleteVenues.length} location(s) need an address/room or helpful directions.` : `${venues.length} venue location(s) published. Check the actual map on a phone before launch.`, "/admin/venue_locations");
-  if (!guide.publicSite) add("roster", "The registration roster is loaded", approvedAttendees > 0,
+  if (!guide.publicSite || guide.communityEnabled) add("roster", "The registration roster is loaded", approvedAttendees > 0,
     approvedAttendees ? `${approvedAttendees} approved Member/Sponsor registration(s), excluding Admins. Reconcile this count with the organizer's complete roster. Importing does not publish profiles or send invitations.` : "Only Admins or no approved attendees are loaded. Import the Member/Sponsor roster, then verify matching email access.", "/admin/attendees");
   return items;
 }

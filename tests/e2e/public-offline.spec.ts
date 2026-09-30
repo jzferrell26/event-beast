@@ -31,9 +31,10 @@ test('account-free essentials survive offline without private data in the cache'
   await page.getByRole('tab', { name: 'Sponsors', exact: true }).click();
   await expect(page.locator('#guide-content')).toContainText('Cuantico AI');
   await expect(page.locator('#guide-content .location')).toHaveCount(0);
-  for (const section of ['Lunch', 'Venue', 'Updates']) {
+  for (const section of ['Lunch', 'Venue']) {
     await page.getByRole('tab', { name: section, exact: true }).click();
     await expect(page.locator('#guide-content')).not.toBeEmpty();
   }
+  await expect(page.getByRole('tab', { name: 'Updates', exact: true })).toHaveCount(0);
   await context.setOffline(false);
 });
