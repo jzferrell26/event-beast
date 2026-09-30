@@ -65,7 +65,7 @@ export const POST = (request: Request) => handle(async () => {
     if (identityError || !data.user) throw new ApiError(401, "Open the password reset link from your email first.");
     const { error } = await db.auth.updateUser({ password: body.password });
     if (error) throw new ApiError(400, "Your password could not be changed. Request a new reset link and try again.");
-    return json({ message: "Your password has been updated.", next: "/" });
+    return json({ message: "Your password has been updated.", next: "/access" });
   }
   const { error } = await db.auth.signOut({ scope: 'local' });
   if (error) throw new ApiError(503, "Sign-out was not confirmed. Please try again.");

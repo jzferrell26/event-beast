@@ -7,10 +7,10 @@ describe('account-free event guide', () => {
   it('defaults to public mode and requires an explicit legacy rollback', () => {
     expect(publicSiteEnabled('')).toBe(true); expect(publicSiteEnabled('true')).toBe(true); expect(publicSiteEnabled('false')).toBe(false);
   });
-  it('redirects old community pages and disables community APIs without blocking organizers', () => {
-    for (const path of ['/people', '/people/abc', '/inbox/abc', '/join', '/access', '/more/profile']) expect(publicRouteDecision(path)).toEqual({ redirect: '/' });
+  it('keeps member/community pages available while retaining public sponsor simplification', () => {
+    for (const path of ['/people', '/people/abc', '/inbox/abc', '/join', '/access', '/more/profile', '/api/people', '/api/inbox/123', '/api/profile', '/api/saved', '/api/moderation', '/api/access-request']) expect(publicRouteDecision(path)).toEqual({});
     for (const path of ['/sponsor', '/sponsor/id', '/more/sponsors', '/more/sponsors/id']) expect(publicRouteDecision(path)).toEqual({ redirect: '/sponsors' });
-    for (const path of ['/api/people', '/api/inbox/123', '/api/profile', '/api/saved', '/api/moderation', '/api/access-request', '/api/sponsor/123', '/api/sponsors/123/representatives']) expect(publicRouteDecision(path)).toEqual({ disabled: true });
+    for (const path of ['/api/sponsor/123', '/api/sponsors/123/representatives']) expect(publicRouteDecision(path)).toEqual({ disabled: true });
     for (const path of ['/admin', '/api/admin/content/sponsors', '/api/auth', '/api/me', '/sponsors', '/more/saved', '/api/guide']) expect(publicRouteDecision(path)).toEqual({});
   });
   it('strips public booth/profile/source copy without mutating organizer data', () => {
@@ -19,7 +19,7 @@ describe('account-free event guide', () => {
     expect(projected.publicSite).toBe(true);
     expect(projected.sponsors.every(sponsor => !sponsor.booth && !sponsor.description)).toBe(true);
     expect(projected.speakers.every(speaker => !speaker.source_url)).toBe(true);
-    expect(projected.settings.directory_enabled).toBe(false); expect(projected.settings.messaging_enabled).toBe(false);
+    expect(projected.settings.directory_enabled).toBe(guide.settings.directory_enabled); expect(projected.settings.messaging_enabled).toBe(guide.settings.messaging_enabled);
     expect(guide.speakers[0].source_url).toBe('https://speaker.example'); expect(publicSiteGuide(guide, false).settings).toEqual(guide.settings);
   });
   it('isolates device favorites per event and accepts bounded identifiers, never contacts', () => {

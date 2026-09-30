@@ -20,7 +20,7 @@ const loadPublicGuide = async (slug: string): Promise<Guide | null> => {
   databaseError(eventResult.error);
   if (!eventResult.data) return null;
   const event = eventResult.data as Guide["event"];
-  const [settings, days, sessions, speakers, links, sponsors, tiers, placements, lunches, venues, announcements] = await Promise.all([
+  const [settings, days, sessions, speakers, links, sponsors, tiers, placements, lunches, venues, announcements, activities] = await Promise.all([
     db.from("event_settings").select("*").eq("event_id", event.id).single(),
     db.from("agenda_days").select("*").eq("event_id", event.id).eq("published", true).order("sort_order"),
     db.from("agenda_sessions").select("*").eq("event_id", event.id).eq("published", true).order("starts_at"),
@@ -32,8 +32,9 @@ const loadPublicGuide = async (slug: string): Promise<Guide | null> => {
     db.from("lunch_locations").select("*").eq("event_id", event.id).eq("published", true).order("sort_order"),
     db.from("venue_locations").select("*").eq("event_id", event.id).eq("published", true).order("sort_order"),
     db.from("announcements").select("*").eq("event_id", event.id).eq("published", true).order("created_at", { ascending: false }),
+    db.from("event_activities").select("*").eq("event_id", event.id).eq("published", true).order("starts_at").order("sort_order"),
   ]);
-  [settings, days, sessions, speakers, links, sponsors, tiers, placements, lunches, venues, announcements].forEach((r) => databaseError(r.error));
+  [settings, days, sessions, speakers, links, sponsors, tiers, placements, lunches, venues, announcements, activities].forEach((r) => databaseError(r.error));
   const publishedDays = new Set((days.data ?? []).map((d) => d.id));
   const publishedSponsors = new Set((sponsors.data ?? []).map((s) => s.id));
   return {
@@ -41,7 +42,7 @@ const loadPublicGuide = async (slug: string): Promise<Guide | null> => {
     days: days.data ?? [], sessions: (sessions.data ?? []).filter((s) => publishedDays.has(s.day_id)),
     speakers: speakers.data ?? [], sessionSpeakers: links.data ?? [], sponsors: sponsors.data ?? [], tiers: tiers.data ?? [],
     placements: (placements.data ?? []).filter((p) => (p.surface && p.surface !== 'agenda' || publishedDays.has(p.day_id)) && publishedSponsors.has(p.sponsor_id)),
-    lunches: lunches.data ?? [], venues: venues.data ?? [], announcements: announcements.data ?? [], fetchedAt: new Date().toISOString(),
+    lunches: lunches.data ?? [], venues: venues.data ?? [], announcements: announcements.data ?? [], activities: activities.data ?? [], fetchedAt: new Date().toISOString(),
   } as Guide;
 };
 

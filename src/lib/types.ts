@@ -41,13 +41,22 @@ export interface Announcement {
   id: string; event_id: string; title: string; body: string; severity: "info" | "important" | "urgent";
   starts_at: string | null; expires_at: string | null; published: boolean; is_demo: boolean; created_at: string;
 }
+export interface EventActivity {
+  id: string; event_id: string; title: string; activity_type: 'Activity' | 'Party' | 'Breakout' | 'Book Signing' | 'Fitness' | 'Wellness' | 'Networking' | 'Other';
+  starts_at: string | null; ends_at: string | null; location: string; description: string; host: string; capacity_note: string;
+  sort_order: number; published: boolean; is_demo: boolean;
+}
+export interface FeedPost {
+  id: string; event_id: string; author_id: string; body: string; status: 'visible' | 'hidden' | 'deleted';
+  created_at: string; updated_at: string; author_name?: string; author_company?: string; author_title?: string; avatar_url?: string;
+}
 export interface Guide {
   publicSite?: boolean;
   mode: "demo" | "live"; event: EventInfo; settings: EventSettings;
   days: AgendaDay[]; sessions: AgendaSession[]; speakers: Speaker[];
   sessionSpeakers: { id?: string; event_id: string; session_id: string; speaker_id: string }[];
   sponsors: Sponsor[]; tiers: SponsorTier[]; placements: SponsorPlacement[];
-  lunches: LunchLocation[]; venues: VenueLocation[]; announcements: Announcement[]; fetchedAt: string;
+  lunches: LunchLocation[]; venues: VenueLocation[]; announcements: Announcement[]; activities?: EventActivity[]; fetchedAt: string;
 }
 export interface Profile {
   attendee_id: string; event_id: string; full_name: string; company: string; title: string;

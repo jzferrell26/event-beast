@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Bell, Bookmark, CalendarDays, CircleHelp, Compass, LogOut, Mail, MapPin, ShieldCheck, Smartphone, Trophy, UserRound, Utensils, WifiOff, Zap, Settings2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Bell, Bookmark, CalendarDays, CircleHelp, Compass, LogOut, Mail, MapPin, ShieldCheck, Smartphone, Trophy, UserRound, Utensils, WifiOff, Zap, Settings2, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { activeAnnouncements, eventDay, httpsUrl, initials } from "@/lib/format";
@@ -20,6 +20,7 @@ export function MoreScreen() {
     { href: "/more/sponsors", name: "Our sponsors", detail: "The partners behind the momentum", icon: Trophy },
     { href: '/more/speakers', name: 'Meet the speakers', detail: 'The people and ideas behind the program', icon: UserRound },
     { href: "/more/lunch", name: "Lunch & a little downtime", detail: "What, when and where to eat", icon: Utensils },
+    { href: "/more/activities", name: "Breakouts & activities", detail: "Parties, meetups, book signings and bonus sessions", icon: Sparkles },
     { href: "/more/venue", name: "Find your way", detail: "Venue, directions and the welcome desk", icon: MapPin },
     { href: "/more/profile", name: "My profile", detail: "Your introduction and privacy choices", icon: UserRound },
     { href: "/more/saved", name: "Saved sessions", detail: "The moments you don’t want to miss", icon: Bookmark },
