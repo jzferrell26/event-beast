@@ -2,6 +2,10 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 29 final organizer scope confirmation
+
+Sonia confirmed the event website should have **no People directory, chat/messaging, attendee profiles, or in-site notifications/announcements**. Their permanent community is the attendee communication product and mass texting is the live-event notification channel. Event Beast is the public information website for this event, not a required-download app. The existing messaging implementation is intentionally not exposed by the production public-site mode. Commercial product expansion is parked in `POST-MOMENTUM-BUILDER-PRODUCT.md` and must not creep into the Momentum Builder launch.
+
 ## September 29 approved live testing release (September 30 UTC)
 
 PR #8 and follow-up PR #9 are merged. The current tested production revision is `5e297df3d6e93eeba1b36168c7e7fff1e3c8856f`; both sponsor-creative and current-role storage migrations are applied to the dedicated Event Beast backend. Source verification passes **192 unit/database tests** and **45 public browser checks**. GitHub's full quality job passed before the organizer fix merged.
