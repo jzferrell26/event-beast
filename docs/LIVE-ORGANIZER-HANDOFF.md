@@ -1,6 +1,6 @@
 # Live organizer testing handoff
 
-> **Confirmed event scope:** Sonia confirmed on September 29 that Momentum Builder's Event Beast site is information-only: no People directory, chat/messaging, attendee profiles, or in-site notifications/announcements. Their permanent community handles communication and mass texting handles event notifications. The site is a website; attendees do not need to download an app. Reusable community/messaging capabilities remain parked for the post-event product track in [POST-MOMENTUM-BUILDER-PRODUCT.md](./POST-MOMENTUM-BUILDER-PRODUCT.md).
+> **Superseded scope:** Sonia's September 29 information-only direction was superseded by Don on September 30. Event Beast is now the principal event hub, including registrant accounts, profiles and attendee communication; see [SEPTEMBER-30-LAUNCH-PIVOT.md](./SEPTEMBER-30-LAUNCH-PIVOT.md). Mass texting remains outside Event Beast.
 
 ## September 29 release continuation (September 30 UTC)
 

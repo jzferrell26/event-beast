@@ -2,7 +2,7 @@
 
 ## Boundary
 
-This is **post-event product work only**. It must not expand the Momentum Builder LIVE 2026 launch scope. For this event, ship the organizer-confirmed information website: no attendee People directory, chat/messaging, attendee profiles, or in-site notifications/announcements. HighLevel/mass texting remains the event notification channel.
+This is **post-event product work only**. It must not expand the Momentum Builder LIVE 2026 launch beyond the organizer's current September 30 requirements. Don subsequently changed the event scope from information-only to a principal event hub with registrant accounts, profiles and communication. Those event-specific community requirements are tracked in `SEPTEMBER-30-LAUNCH-PIVOT.md`. HighLevel/mass texting remains the event's mass-notification channel.
 
 The current event is the proving ground, not the permanent product architecture. Preserve reusable capabilities that already exist behind the event-specific experience, but do not re-enable them for Momentum Builder unless the organizer changes scope.
 

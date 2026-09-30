@@ -2,9 +2,9 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
-## September 29 final organizer scope confirmation
+## September 29 organizer scope — superseded September 30
 
-Sonia confirmed the event website should have **no People directory, chat/messaging, attendee profiles, or in-site notifications/announcements**. Their permanent community is the attendee communication product and mass texting is the live-event notification channel. Event Beast is the public information website for this event, not a required-download app. The existing messaging implementation is intentionally not exposed by the production public-site mode. Commercial product expansion is parked in `POST-MOMENTUM-BUILDER-PRODUCT.md` and must not creep into the Momentum Builder launch.
+Sonia's information-only direction was implemented and qualified, but Don superseded it on September 30: Event Beast is now the principal event hub and should load registrants with profiles and attendee communication. This historical section is not the current launch scope. The current work and gates are in `SEPTEMBER-30-LAUNCH-PIVOT.md`. Mass texting remains the external event-notification channel.
 
 ## September 29 approved live testing release (September 30 UTC)
 
