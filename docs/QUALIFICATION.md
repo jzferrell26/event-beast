@@ -2,6 +2,16 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## September 29 public information-site candidate (September 30 UTC)
+
+Sonia's account-free public-site request is implemented with Home, Agenda, Speakers, Sponsors and More, local-device session bookmarks, retired community routes/APIs, a simple logo-and-tier sponsor page, and square/banner image ads for agenda and public pages. The latest full-agenda request supersedes the earlier condensed proposal. Organizer editing remains secured; no live account or content approval is inferred from a successful form preview.
+
+**Source qualification:** lint, TypeScript, production build and **184 unit/database tests** pass. The dedicated public-site suite reports **45 passes, zero skips and zero failures** across desktop Chromium, mobile Chromium and mobile WebKit, including database-backed session/lunch/ad save/retry/reload, fixture upload previews, public privacy boundaries, scoped accessibility and offline essentials. WebKit offline operation is checked against the actual worker on a stopped isolated origin, with an uncached negative control. Synthetic fixtures are not hosted Auth/Storage verification.
+
+**Current production facts, independently queried read-only:** the September 29 session-editor migration is already applied. The new sponsor creative columns are not yet applied. The event has 33 published sessions, 44 published speakers, one published sponsor and zero published ad placements. The intended `team@momentumbuilder.com` organizer has no event registration yet. No production mutation, account invitation, DNS change or new production deployment is certified by this candidate.
+
+The separate legacy rollback regression passes **125 Chromium checks with three intentional skips**, and the focused legacy mobile WebKit suite passes **28 checks with no skips or failures**. The test checklist, supplied-creative inventory, source-order reference and precise remaining handoff gates are in [`PUBLIC-SITE-TESTING.md`](./PUBLIC-SITE-TESTING.md). The previously recorded community release checks below are historical and do not restore People/Inbox to the new public-site scope.
+
 ## September 29 event operator console (PRD-001)
 
 The approved increment completes speaker/sponsor list and form uploads plus session-speaker editing in the existing organizer console. List uploads now save only the image field instead of overwriting newer row content. The session form searches/selects speakers and atomically commits its fields and existing join-table links through the additive `admin_save_agenda_session` RPC. Missing link data blocks saving. The existing event timezone, RLS, composite foreign keys, audit trail, review-reopen trigger and guide invalidation are preserved.

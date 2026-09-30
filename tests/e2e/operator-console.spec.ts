@@ -5,7 +5,7 @@ import { adminDefaults, adminResources, resourceSchema, sessionSpeakerIdsSchema 
 import { asUser, createDatabase, ids, seedSecurityFixture } from "../db-harness";
 
 test.use({ serviceWorkers: "block" });
-const origin = new URL(process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:3100").origin;
+const origin = new URL(process.env.PLAYWRIGHT_BASE_URL || (process.env.EVENT_BEAST_PUBLIC_TESTS === 'true' ? 'http://127.0.0.1:3180' : "http://127.0.0.1:3100")).origin;
 const imageFile = { name: "photo.png", mimeType: "image/png", buffer: Buffer.from("synthetic-upload-transport-fixture") };
 const respond = (route: Route, data: unknown, status = 200) => route.fulfill({ status, contentType: "application/json", headers: { "Cache-Control": "private, no-store" }, body: JSON.stringify(data) });
 
@@ -196,3 +196,69 @@ test("session picker and speaker upload form pass scoped accessibility checks", 
     expect(scan.violations).toEqual([]);
   }
 });
+
+for (const resource of ['agenda_sponsor_placements', 'lunch_locations'] as const) {
+  test(`organizer saves ${resource}, retries failure and reloads the actual database row`, async ({ page }, testInfo) => {
+    test.setTimeout(60000);
+    const db = await createDatabase();
+    let queue: Promise<unknown> = Promise.resolve();
+    const serial = <T,>(run: () => Promise<T>) => { const next = queue.then(run, run); queue = next.catch(() => undefined); return next; };
+    const id = '71000000-0000-4000-8000-000000000001';
+    const definition = adminResources[resource];
+    const ad = resource === 'agenda_sponsor_placements';
+    const titleField = ad ? 'headline' : 'title';
+    const expectedTitle = ad ? 'Sponsor testing creative' : 'Updated event lunch';
+    let failNext = true;
+    try {
+      await seedSecurityFixture(db);
+      const original = { ...adminDefaults(definition), id, event_id: ids.event, [titleField]: 'Organizer original', ...(ad ? { sponsor_id: ids.sponsor, surface: 'home', image_format: 'square' } : { location: 'Main hall', hours: '12:00 PM', dietary_info: 'Ask the event team' }) };
+      await db.query(`insert into public.${resource} select * from jsonb_populate_record(null::public.${resource},$1::jsonb)`, [JSON.stringify(original)]);
+      await page.route('https://assets.example/**', route => route.fulfill({ path: 'public/icons/icon-192.png', contentType: 'image/png' }));
+      await page.route('**/api/uploads', route => respond(route, { url: 'https://assets.example/approved.webp' }));
+      await page.route('**/api/admin/**', route => serial(async () => {
+        const path = new URL(route.request().url()).pathname;
+        if (path === '/api/admin/guide') return respond(route, { ...demoGuide, mode: 'live', event: { ...demoGuide.event, id: ids.event } });
+        if (path === '/api/admin/lookups') return respond(route, { sponsors: [{ id: ids.sponsor, label: 'Approved sponsor' }], agenda_days: [{ id: ids.day, label: 'Day 1' }], agenda_sessions: [] });
+        if (path !== `/api/admin/content/${resource}`) return respond(route, { error: 'Unknown fixture route' }, 404);
+        return asUser(db, ids.admin, async () => {
+          if (route.request().method() === 'POST') {
+            if (failNext) { failNext = false; return respond(route, { error: 'Synthetic save failure. Please retry.' }, 503); }
+            const values = resourceSchema(definition).parse(route.request().postDataJSON().values);
+            const entries = Object.entries(values);
+            await db.query(`update public.${resource} set ${entries.map(([key], index) => `${key}=$${index + 1}`).join(',')} where event_id=$${entries.length + 1} and id=$${entries.length + 2}`, [...entries.map(([, value]) => value), ids.event, id]);
+            return respond(route, { saved: true, record: { id } });
+          }
+          return respond(route, { rows: (await db.query(`select * from public.${resource} where event_id=$1`, [ids.event])).rows, hasMore: false });
+        });
+      }));
+      await page.goto(`/admin/${resource}`); await useFixtureGuide(page);
+      await page.getByRole('button', { name: 'Edit', exact: true }).click();
+      const dialog = page.getByRole('dialog');
+      await dialog.getByLabel(ad ? 'Placement headline' : 'Lunch option', { exact: false }).fill(expectedTitle);
+      if (ad) {
+        await dialog.getByLabel('Show advertisement on').selectOption('sponsors');
+        await expect(dialog.getByLabel('Event day')).toHaveCount(0);
+        await dialog.getByLabel('Image description for accessibility').fill('Approved sponsor creative');
+        await dialog.getByLabel('Upload image', { exact: true }).setInputFiles(imageFile);
+        await expect(dialog.getByAltText('Approved sponsor creative')).toBeVisible();
+        expect((await serial(() => db.query<{ image_url: string }>(`select image_url from public.${resource} where id=$1`, [id]))).rows[0].image_url).toBe('');
+        await dialog.getByLabel('Published').check();
+      } else {
+        await dialog.getByLabel('Location', { exact: false }).fill('Updated lunch hall');
+        await dialog.getByLabel('Times', { exact: false }).fill('12:15 PM – 1:30 PM');
+      }
+      await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
+      await expect(dialog.getByRole('alert')).toContainText('Synthetic save failure');
+      await expect(dialog.getByLabel(ad ? 'Placement headline' : 'Lunch option', { exact: false })).toHaveValue(expectedTitle);
+      await page.screenshot({ path: testInfo.outputPath(`${resource}-edit.png`), fullPage: true });
+      await dialog.getByRole('button', { name: 'Save changes', exact: true }).click();
+      await expect(dialog).toHaveCount(0);
+      await page.reload(); await useFixtureGuide(page);
+      await expect(page.getByRole('heading', { name: expectedTitle, exact: true })).toBeVisible();
+      const row = (await serial(() => db.query<Record<string, unknown>>(`select * from public.${resource} where id=$1`, [id]))).rows[0];
+      expect(row[titleField]).toBe(expectedTitle);
+      if (ad) expect(row).toMatchObject({ image_url: 'https://assets.example/approved.webp', image_alt: 'Approved sponsor creative', surface: 'sponsors', image_format: 'square', day_id: null, after_session_id: null, published: true });
+      else expect(row).toMatchObject({ location: 'Updated lunch hall', hours: '12:15 PM – 1:30 PM' });
+    } finally { await page.unrouteAll({ behavior: 'wait' }); await queue; await db.close(); }
+  });
+}

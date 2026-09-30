@@ -34,6 +34,7 @@ export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
   };
   return <><PageTitle eyebrow="MAKE THE MOST OF EVERY MOMENT" title={savedOnly ? "Your saved sessions." : "Your next move."} description={savedOnly ? "The sessions you want to be in the room for." : "Big ideas, practical takeaways, and space to connect."} />
     {guide.settings.agenda_notice && <p className="agenda-working-notice">{guide.settings.agenda_notice}</p>}
+    {savedOnly && guide.publicSite && <p className="fine-print">Saved on this device only. No account needed. Clearing browser data removes these favorites.</p>}
     <div className="agenda-controls">
       {!savedOnly && <div className="day-tabs" role="tablist" aria-label="Event day">{guide.days.map((d, index) => <button key={d.id} type="button" role="tab" aria-selected={day?.id === d.id} tabIndex={day?.id === d.id ? 0 : -1} className={day?.id === d.id ? "active" : ""} onKeyDown={(event) => moveDay(event, index)} onClick={() => setSelected(d.id)}><strong>{d.label}</strong><span>{eventDay(d.date, { weekday: "short", month: "short", day: "numeric" })}</span></button>)}</div>}
       <div className="agenda-toolbar"><label className="search-field"><Search size={20} /><input aria-label="Search sessions" placeholder="Find a session, speaker or topic" enterKeyHint="search" value={query} onChange={(e) => setQuery(e.target.value)} />{query && <button type="button" aria-label="Clear search" onClick={() => setQuery("")}><X size={18} /></button>}</label>{!savedOnly && <button type="button" className={`filter-button${onlySaved ? " selected" : ""}`} onClick={() => setOnlySaved((s) => !s)} aria-pressed={onlySaved}><Bookmark size={17} />Saved</button>}</div>
@@ -65,7 +66,7 @@ export function SessionDetail({ id }: { id: string }) {
         <SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} />
         <div className="session-speaker-copy"><h3>{speaker.full_name}</h3>{speaker.title && <span className="muted">{speaker.title}</span>}<p>{speaker.bio}</p></div>
       </Link>)}</section>}
-    {sponsor && <section className="detail-section"><span className="eyebrow">SESSION PARTNER</span><Link href={`/more/sponsors/${sponsor.id}`} className="text-button">{sponsor.name}</Link></section>}
+    {sponsor && <section className="detail-section"><span className="eyebrow">SESSION PARTNER</span><Link href={guide.publicSite ? '/sponsors' : `/more/sponsors/${sponsor.id}`} className="text-button">{sponsor.name}</Link></section>}
     <p className="fine-print">Times are shown in {guide.event.timezone.replaceAll("_", " ")}. Check the agenda for organizer updates.</p>
   </div>;
 }

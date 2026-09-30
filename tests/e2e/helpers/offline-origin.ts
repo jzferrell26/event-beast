@@ -2,12 +2,13 @@ import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { expect, type Browser, type Page } from '@playwright/test';
 import { demoGuide } from '../../../src/lib/demo';
+import type { Guide } from '../../../src/lib/types';
 
 /** WebKit's setOffline flag currently kills even cache-only worker responses:
  * https://github.com/microsoft/playwright/issues/42775
  * Stop an isolated origin instead. Use the actual shipped worker, reader and
  * assets, never mocked fetch/cache responses or a production server shutdown. */
-export async function verifyWebKitOfflineOrigin(page: Page, browser: Browser): Promise<void> {
+export async function verifyWebKitOfflineOrigin(page: Page, browser: Browser, guide: Guide = demoGuide): Promise<void> {
   const files = new Map([
     ['/sw.js', 'application/javascript'], ['/offline.js', 'application/javascript'],
     ['/offline.html', 'text/html'], ['/offline-base.css', 'text/css'],
@@ -24,7 +25,7 @@ export async function verifyWebKitOfflineOrigin(page: Page, browser: Browser): P
     } else if (path === '/api/guide') {
       response.setHeader('Content-Type', 'application/json');
       response.setHeader('X-Event-Beast-Public', 'guide-v1');
-      response.end(JSON.stringify(demoGuide));
+      response.end(JSON.stringify(guide));
     } else if (files.has(path)) {
       const file = files.get(path)!;
       response.setHeader('Content-Type', file.type); response.end(file.bytes);

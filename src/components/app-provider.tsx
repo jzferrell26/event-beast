@@ -7,6 +7,7 @@ import { demoMe } from "@/lib/demo";
 import { errorMessage, mutate, request } from "@/lib/client";
 import { browserSupabase } from "@/lib/supabase/browser";
 import { observeMobileViewport } from "@/lib/mobile-viewport";
+import { deviceBookmarkKey, parseDeviceBookmarks } from '@/lib/public-site';
 
 function subscribeOnline(callback: () => void) { window.addEventListener("online", callback); window.addEventListener("offline", callback); return () => { window.removeEventListener("online", callback); window.removeEventListener("offline", callback); }; }
 const onlineSnapshot = () => navigator.onLine;
@@ -42,8 +43,11 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const online = useSyncExternalStore(subscribeOnline, onlineSnapshot, serverOnlineSnapshot);
   const router = useRouter();
   const pathname = usePathname();
+  const organizerRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  const publicVisitor = Boolean(initialGuide.publicSite) && !pathname.startsWith('/admin') && !pathname.startsWith('/sponsor/');
   const notify = useCallback((message: string, error = false) => setToast({ message, error }), []);
   const refreshMe = useCallback((): Promise<void> => {
+    if (publicVisitor) return Promise.resolve();
     if (identityRequest.current) return identityRequest.current;
     const generation = identityGeneration.current;
     const pending = (async () => {
@@ -51,7 +55,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
         const next = await request<Me>("/api/me");
         if (generation !== identityGeneration.current) return;
         setMe(next); setMeError("");
-        if (next.eligible) {
+        if (next.eligible && !organizerRoute) {
           const nextSaved = await request<SavedItems>("/api/saved");
           if (generation === identityGeneration.current) setSaved(nextSaved);
         } else if (next.mode !== "demo") setSaved({ sessions: [], attendees: [] });
@@ -60,13 +64,19 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
     identityRequest.current = pending;
     void pending.finally(() => { if (identityRequest.current === pending) identityRequest.current = null; });
     return pending;
-  }, []);
-  const organizerRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+  }, [publicVisitor, organizerRoute]);
   const refreshGuide = useCallback(async () => {
     try { const next = await request<Guide>(organizerRoute ? "/api/admin/guide" : "/api/guide"); setGuide(next); } catch { /* Existing public guide remains usable; offline banner reports connectivity. */ }
   }, [organizerRoute]);
 
   useEffect(() => {
+    if (publicVisitor) {
+      const readSaved = () => { try { setSaved(parseDeviceBookmarks(localStorage.getItem(deviceBookmarkKey(initialGuide.event.id)))); } catch { setSaved({ sessions: [], attendees: [] }); } };
+      queueMicrotask(readSaved);
+      const sync = (event: StorageEvent) => { if (event.key === deviceBookmarkKey(initialGuide.event.id) || event.key === null) readSaved(); };
+      window.addEventListener('storage', sync);
+      return () => window.removeEventListener('storage', sync);
+    }
     void refreshMe();
     if (initialGuide.mode === "demo") {
       Promise.resolve().then(() => {
@@ -88,7 +98,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
       window.setTimeout(() => { void refreshMe(); }, 0);
     });
     return () => listener?.data.subscription.unsubscribe();
-  }, [initialGuide.mode, initialGuide.event.id, refreshMe]);
+  }, [initialGuide.mode, initialGuide.event.id, refreshMe, publicVisitor]);
   useEffect(() => {
     if (!online) return;
     const focus = () => { void refreshGuide(); void refreshMe(); };
@@ -112,6 +122,15 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   useEffect(() => observeMobileViewport(), []);
 
   const toggleSave = useCallback(async (kind: "session" | "attendee", id: string) => {
+    if (publicVisitor) {
+      if (kind !== 'session' || !guide.sessions.some(session => session.id === id)) return;
+      const desired = !saved.sessions.includes(id);
+      const sessions = desired ? [...new Set([...saved.sessions, id])].slice(0, 1000) : saved.sessions.filter(item => item !== id);
+      setSaved({ sessions, attendees: [] });
+      try { localStorage.setItem(deviceBookmarkKey(guide.event.id), JSON.stringify(sessions)); notify(desired ? 'Saved on this device. No account needed.' : 'Removed from saved sessions.'); }
+      catch { notify('Saved for this visit only. Browser storage is unavailable.', true); }
+      return;
+    }
     const key = `${kind}:${id}`;
     if (inflight.current.has(key)) return;
     if (guide.mode !== "demo" && !me?.eligible) { router.push(me?.authenticated ? "/access" : `/auth?next=${encodeURIComponent(pathname)}`); return; }
@@ -128,7 +147,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
       notify(desired ? guide.mode === "demo" ? "Saved on this device for your demo." : kind === "session" ? "Added to your saved sessions." : "Attendee saved." : "Removed from your saved items.");
     } catch (error) { notify(errorMessage(error), true); }
     finally { inflight.current.delete(key); }
-  }, [guide.mode, guide.event.id, me, notify, pathname, router, saved]);
+  }, [guide.mode, guide.event.id, guide.sessions, me, notify, pathname, router, saved, publicVisitor]);
 
   return <Context.Provider value={{ guide, me, saved, online, meError, refreshMe, refreshGuide, toggleSave, notify }}>
     {!online && <div className="offline-banner" role="status"><WifiOff size={16} /><span>You’re offline. Previously loaded event essentials are available.</span><a href="/offline.html">Open guide</a></div>}

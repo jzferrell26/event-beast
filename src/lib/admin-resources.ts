@@ -24,7 +24,7 @@ export const adminResources: Record<string, AdminResource> = {
   session_speakers: { title: "Session speakers", singular: "Speaker assignment", description: "Connect speakers to their sessions. Multiple speakers can share a session.", titleField: "session_id", subtitleField: "speaker_id", order: "id", fields: [source("session_id", "Session", "agenda_sessions"), source("speaker_id", "Speaker", "speakers")] },
   sponsor_tiers: { title: "Sponsor tiers", singular: "Sponsor tier", description: "Set contractual tiers and the order in which they appear.", titleField: "name", order: "sort_order", fields: [text("name", "Tier name", 80, true), order] },
   sponsors: { title: "Sponsors", singular: "Sponsor", description: "Give each partner a clear, useful presence in the event.", titleField: "name", subtitleField: "booth", order: "sort_order", fields: [text("name", "Sponsor name", 120, true), source("tier_id", "Sponsor tier", "sponsor_tiers", true), paragraph("description", "About this sponsor", 3000), url("logo_url", "Public logo URL"), text("booth", "Booth / location", 160), text("cta_label", "Link label", 80), url("cta_url", "Sponsor link"), order, flag("featured", "Featured within its tier and order"), published, sample] },
-  agenda_sponsor_placements: { title: "Agenda sponsor placements", singular: "Agenda placement", description: "Place sponsor content between sessions, according to the event agreement.", titleField: "headline", subtitleField: "body", order: "sort_order", fields: [source("day_id", "Event day", "agenda_days"), source("after_session_id", "Place after this session", "agenda_sessions", true), source("sponsor_id", "Sponsor", "sponsors"), text("headline", "Placement headline", 160), paragraph("body", "Placement copy", 500), order, published] },
+  agenda_sponsor_placements: { title: "Sponsor ads & placements", singular: "Sponsor ad", description: "Place square or banner sponsor images in the agenda and throughout the site. Use the organizer-approved creative and placement order.", titleField: "headline", subtitleField: "body", order: "sort_order", fields: [{ key: 'surface', label: 'Show advertisement on', kind: 'select', options: ['agenda', 'home', 'speakers', 'sponsors', 'lunch', 'venue'], initial: 'agenda' }, source("day_id", "Event day", "agenda_days", true), source("after_session_id", "Place after this session", "agenda_sessions", true), source("sponsor_id", "Sponsor", "sponsors"), text("headline", "Placement headline", 160), paragraph("body", "Placement copy", 500), url("image_url", "Sponsor ad image URL"), text("image_alt", "Image description for accessibility", 500), { key: "image_format", label: "Creative format", kind: "select", options: ["square", "banner"], initial: "banner", help: "The complete image is fitted inside this shape, never cropped." }, url("link_url", "Advertisement destination"), order, published] },
   sponsor_representatives: { title: "Sponsor representatives", singular: "Representative assignment", description: "Link an attendee to a sponsor. Their profile still follows their own directory privacy choices.", titleField: "sponsor_id", subtitleField: "attendee_id", order: "id", fields: [source("sponsor_id", "Sponsor", "sponsors"), source("attendee_id", "Registered attendee", "attendees")] },
   lunch_locations: { title: "Lunch information", singular: "Lunch option", description: "Publish organizer-supplied times, locations and dietary information.", titleField: "title", subtitleField: "location", order: "sort_order", fields: [text("title", "Lunch option", 160, true), text("location", "Location", 240), text("hours", "Times", 160), paragraph("description", "Description", 3000), paragraph("dietary_info", "Dietary information", 2000), url("directions_url", "Directions link"), url("image_url", "Public image URL"), order, published, sample] },
   venue_locations: { title: "Venue information", singular: "Venue location", description: "Help attendees quickly find the room, booth or person they need.", titleField: "title", subtitleField: "location", order: "sort_order", fields: [text("title", "Location name", 160, true), text("location", "Address / room", 240), paragraph("description", "Helpful details", 3000), url("directions_url", "Directions link"), url("map_url", "Public map image URL"), order, published, sample] },
@@ -34,11 +34,11 @@ export function getAdminResource(key: string): AdminResource | null { return Obj
 
 /** List-row upload targets. Venue maps stay inside their edit form. */
 export function adminImageField(resource: AdminResource): AdminField | null {
-  return resource.fields.find((field) => field.kind === "url" && (field.key === "headshot_url" || field.key === "logo_url")) ?? null;
+  return resource.fields.find((field) => field.kind === "url" && (field.key === "headshot_url" || field.key === "logo_url" || field.key === 'image_url')) ?? null;
 }
 
 export function adminImageLabel(field: AdminField): string {
-  return field.key === "logo_url" ? "Upload logo" : "Upload photo";
+  return field.key === "logo_url" ? "Upload logo" : field.key === 'image_url' ? 'Upload image' : "Upload photo";
 }
 
 /** List uploads change only the image, never an older snapshot of the row. */
@@ -81,6 +81,8 @@ export function resourceSchema(resource: AdminResource) {
     shape[field.key] = field.nullable ? schema.nullable() : schema;
   }
   return z.object(shape).strict().superRefine((record, context) => {
+    if (record.surface === 'agenda' && !record.day_id) context.addIssue({ code: 'custom', path: ['day_id'], message: 'Choose an event day for an agenda advertisement.' });
+    if (typeof record.surface === 'string' && record.surface !== 'agenda' && (record.day_id || record.after_session_id)) context.addIssue({ code: 'custom', path: ['surface'], message: 'Page advertisements cannot be linked to an agenda day or session.' });
     if (typeof record.starts_at === "string" && typeof record.ends_at === "string" && Date.parse(record.ends_at) <= Date.parse(record.starts_at)) context.addIssue({ code: "custom", path: ["ends_at"], message: "End time must be after start time" });
     if (typeof record.starts_at === "string" && typeof record.expires_at === "string" && Date.parse(record.expires_at) <= Date.parse(record.starts_at)) context.addIssue({ code: "custom", path: ["expires_at"], message: "Expiry must be after the start" });
   });

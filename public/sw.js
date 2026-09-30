@@ -13,7 +13,7 @@ function isPublicAsset(url) {
   return url.protocol === "https:" && /\/storage\/v1\/object\/public\/event-assets\//.test(url.pathname) && !url.search;
 }
 async function cachePublicImages(guide, cache) {
-  const urls = [...(guide.sponsors ?? []).map((s) => s.logo_url), ...(guide.speakers ?? []).map((s) => s.headshot_url), ...(guide.lunches ?? []).map((s) => s.image_url), ...(guide.venues ?? []).map((s) => s.map_url)]
+  const urls = [...(guide.sponsors ?? []).map((s) => s.logo_url), ...(guide.speakers ?? []).map((s) => s.headshot_url), ...(guide.lunches ?? []).map((s) => s.image_url), ...(guide.venues ?? []).map((s) => s.map_url), ...(guide.placements ?? []).filter((p) => p.published).map((p) => p.image_url)]
     .filter((raw) => { try { const url = new URL(raw); return isPublicAsset(url) && url.pathname.includes(`/event-assets/${guide.event.id}/`); } catch { return false; } });
   // Public bucket images only. No signed URLs, arbitrary external responses,
   // private headshots or contact records are admitted to this cache.

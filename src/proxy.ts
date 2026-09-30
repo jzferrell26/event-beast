@@ -2,8 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseConfig } from "./lib/supabase/config";
 import { sessionCookieOptions } from './lib/supabase/session-options';
+import { publicRouteDecision, publicSiteEnabled } from './lib/public-site';
 
 export async function proxy(request: NextRequest) {
+  if (publicSiteEnabled()) {
+    const decision = publicRouteDecision(request.nextUrl.pathname);
+    if (decision.disabled) return NextResponse.json({ error: 'Community profiles and messaging are not part of this public event guide.' }, { status: 410, headers: { 'Cache-Control': 'private, no-store' } });
+    if (decision.redirect) return NextResponse.redirect(new URL(decision.redirect, request.url), 307);
+  }
   const config = supabaseConfig();
   let response = NextResponse.next({ request });
   if (!config || !request.cookies.getAll().some((c) => c.name.startsWith("sb-"))) return response;

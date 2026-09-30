@@ -1,11 +1,12 @@
 import { z } from "zod";
 import type { Guide } from "@/lib/types";
 import { demoGuide, demoProfiles } from "@/lib/demo";
-import { evaluateContent, evaluateProgramReview, launchCheckDefinitions, type LaunchCheck, type LaunchCheckKey, type ProgramReview } from "@/lib/launch-readiness";
+import { evaluateContent, evaluateProgramReview, launchCheckDefinitions, launchDefinitionsFor, type LaunchCheck, type LaunchCheckKey, type ProgramReview } from "@/lib/launch-readiness";
 import { evaluateEnvironment } from "@/lib/launch-environment";
 import { requireAdmin } from "@/lib/server/auth";
 import { isDemo } from "@/lib/server/guide";
 import { ApiError, databaseError, handle, json, parseBody } from "@/lib/server/http";
+import { publicSiteEnabled } from '@/lib/public-site';
 
 export const GET = () => handle(async () => {
   let guide: Guide = demoGuide;
@@ -48,6 +49,8 @@ export const GET = () => handle(async () => {
     });
     checks = (checkResult.data ?? []) as LaunchCheck[];
   }
+  guide = { ...guide, publicSite: publicSiteEnabled() };
+  const definitions = launchDefinitionsFor(guide.publicSite);
   const items = [...evaluateContent(guide, approvedMembers), ...evaluateProgramReview(guide, programReview)];
   const runtime = evaluateEnvironment({ demo: isDemo(), backendUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     backendKeyConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
@@ -55,8 +58,8 @@ export const GET = () => handle(async () => {
     emailReady: process.env.EVENT_BEAST_EMAIL_READY === "true", activeAdmins });
   const contentReady = items.every((item) => item.status === "ready");
   const runtimeReady = runtime.every((item) => item.status === "ready");
-  const organizerChecksRecorded = launchCheckDefinitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified));
-  return json({ mode: guide.mode, eventName: guide.event.name, generatedAt: new Date().toISOString(), content: items, checks, approvedAttendees,
+  const organizerChecksRecorded = definitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified));
+  return json({ publicSite: guide.publicSite, mode: guide.mode, eventName: guide.event.name, generatedAt: new Date().toISOString(), content: items, checks: checks.filter(check => definitions.some(item => item.key === check.check_key)), approvedAttendees,
     contentReady, runtime, runtimeReady, organizerChecksRecorded, approvedMembers, claimedAttendees, pendingRequests, programReview,
     eventReady: contentReady && runtimeReady && organizerChecksRecorded,
   });

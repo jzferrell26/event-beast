@@ -4,9 +4,10 @@ import { AgendaScreen } from "@/components/agenda";
 import { ProfileScreen } from "@/components/profile";
 import { pageAccess } from "@/lib/server/auth";
 import { SpeakersScreen } from '@/components/speakers';
+import { publicSiteEnabled } from '@/lib/public-site';
 export default async function MoreSectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
-  if (section === "profile" || section === "saved") await pageAccess(`/more/${section}`);
+  if (section === "profile" || (section === "saved" && !publicSiteEnabled())) await pageAccess(`/more/${section}`);
   switch (section) {
     case 'speakers': return <SpeakersScreen />;
     case "sponsors": return <SponsorsScreen />;

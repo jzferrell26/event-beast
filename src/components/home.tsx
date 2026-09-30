@@ -7,6 +7,7 @@ import { SectionTitle } from "./ui";
 import { SessionCard } from "./session-card";
 import { Onboarding } from "./onboarding";
 import { MobileEventAlerts, MobileEventMoment } from "./mobile-event";
+import { PublicHomeScreen } from './public-event';
 
 export function HomeScreen() {
   const { guide, saved, me } = useApp();
@@ -14,6 +15,7 @@ export function HomeScreen() {
   const active = guide.sessions.filter((s) => sessionState(s, now) === "now");
   const upcoming = guide.sessions.filter((s) => sessionState(s, now) === "upcoming");
   const alerts = activeAnnouncements(guide.announcements, now);
+  if (guide.publicSite) return <PublicHomeScreen />;
   const quickLinks = [
     { href: "/agenda", label: "The agenda", icon: CalendarDays, caption: "Plan your day" },
     { href: "/people", label: "Your people", icon: Users, caption: "Make a connection" },

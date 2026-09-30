@@ -10,6 +10,7 @@ import type { ImportIssue, ImportRow } from "@/lib/validation";
 import { useApp } from "./app-provider";
 import { Brand, Busy, EmptyState, ErrorState, LoadingCards, Modal, PageTitle } from "./ui";
 import { AdminSessionSpeakers } from "./admin-session-speakers";
+import { SponsorCreative } from './sponsor-creative';
 
 const adminNav = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
@@ -111,7 +112,7 @@ function ContentManager({ resource, definition }: { resource: string; definition
       const result = await request<{ url: string }>("/api/uploads", { method: "POST", body: data });
       await mutate(`/api/admin/content/${resource}`, "PATCH", { id: row.id, url: result.url });
       void refresh(); void refreshGuide();
-      notify(imageField.key === "logo_url" ? "Logo saved." : "Photo saved.");
+      notify(imageField.key === "logo_url" ? "Logo saved." : imageField.key === 'image_url' ? 'Image saved.' : "Photo saved.");
     } catch (error) { setUploadError(errorMessage(error)); }
     finally { setRowUpload(null); }
   };
@@ -139,7 +140,7 @@ function ResourceEditor({ resource, definition, existing, lookups, lookupsReady,
   const sessionForm = resource === "agenda_sessions";
   const speakersReady = lookupsReady && (!existing?.id || Array.isArray(existing.speaker_ids));
   const reviewNote = existing?.import_note as { issue?: string; review_status?: string } | null | undefined;
-  const update = (field: AdminField, value: unknown) => setValues((prior) => ({ ...prior, [field.key]: value, ...(field.key === "day_id" && resource === "agenda_sponsor_placements" ? { after_session_id: null } : {}) }));
+  const update = (field: AdminField, value: unknown) => setValues((prior) => ({ ...prior, [field.key]: value, ...(field.key === "day_id" && resource === "agenda_sponsor_placements" ? { after_session_id: null } : {}), ...(field.key === 'surface' && value !== 'agenda' ? { day_id: null, after_session_id: null } : {}) }));
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (sessionForm && !speakersReady) { setError("Reload the session and speaker choices before saving. No changes were sent."); return; }
@@ -164,11 +165,12 @@ function ResourceEditor({ resource, definition, existing, lookups, lookupsReady,
     finally { setUploading(null); }
   };
   return <form onSubmit={submit} className="resource-editor"><fieldset className="admin-form-fields" disabled={busy || Boolean(uploading)}>{definition.fields.map((field) => {
+    if (resource === 'agenda_sponsor_placements' && values.surface !== 'agenda' && ['day_id', 'after_session_id'].includes(field.key)) return null;
     const value = values[field.key];
     if (field.kind === "boolean") return <label className="admin-checkbox" key={field.key}><input type="checkbox" checked={Boolean(value)} onChange={(e) => update(field, e.target.checked)} /><span>{field.label}</span></label>;
     const options = field.source ? (lookups[field.source] ?? []).filter((item) => field.key !== "after_session_id" || !values.day_id || item.day_id === values.day_id) : (field.options ?? []).map((v) => ({ id: v, label: v }));
     return <label className="form-field" key={field.key}><span>{field.label}{field.required && " *"}</span>{field.kind === "textarea" ? <textarea rows={4} maxLength={field.max} required={field.required} value={String(value ?? "")} onChange={(e) => update(field, e.target.value)} /> : field.kind === "select" ? <select required={field.required} value={String(value ?? "")} onChange={(e) => update(field, e.target.value || (field.nullable ? null : ""))}>{(field.nullable || field.source) && <option value="">{field.nullable ? "None / not set" : "Choose one"}</option>}{options.map((option) => <option value={option.id} key={option.id}>{option.label}</option>)}</select> : <input type={field.kind === "datetime" ? "datetime-local" : field.kind === "number" ? "number" : field.kind} value={String(value ?? "")} min={field.kind === "number" ? 0 : undefined} max={field.kind === "number" ? 100000 : undefined} maxLength={field.max} required={field.required} onChange={(e) => update(field, field.kind === "number" ? Number(e.target.value) : e.target.value)} />}{field.help && <small>{field.help}</small>}{field.kind === "url" && /logo|headshot|image|map/.test(field.key) && <span className="asset-upload"><FileUp size={15} /><span>{uploading === field.key ? "Uploading…" : field.key === "headshot_url" || field.key === "logo_url" ? adminImageLabel(field) : "Upload image"}</span><input type="file" accept="image/jpeg,image/png,image/webp" aria-label={field.key === "headshot_url" || field.key === "logo_url" ? adminImageLabel(field) : "Upload image"} disabled={Boolean(uploading)} onChange={(e) => { const file = e.target.files?.[0]; e.target.value = ""; void upload(field, file); }} /></span>}</label>;
-  })}{sessionForm && <AdminSessionSpeakers choices={lookups.speakers ?? []} selected={speakerIds} ready={speakersReady} onChange={setSpeakerIds} />}</fieldset>{sessionForm && reviewNote?.issue && <div className="session-review-notice"><strong>Source question: {reviewNote.issue}</strong><p>Changing session details sends a confirmed or excluded decision back to review. After saving, check <Link href="/admin/launch">Launch readiness</Link> before opening the event.</p></div>}{error && <ErrorState message={error} />}<div className="dialog-actions"><button type="submit" className="button button-red" disabled={busy || Boolean(uploading) || (sessionForm && !speakersReady)}>{busy ? <Busy /> : "Save changes"}</button></div></form>;
+  })}{sessionForm && <AdminSessionSpeakers choices={lookups.speakers ?? []} selected={speakerIds} ready={speakersReady} onChange={setSpeakerIds} />}</fieldset>{resource === 'agenda_sponsor_placements' && <><SponsorCreative key={String(values.image_url)} preview sponsorName={lookups.sponsors?.find(sponsor => sponsor.id === values.sponsor_id)?.label ?? 'Selected sponsor'} placement={{ image_url: String(values.image_url ?? ''), image_alt: String(values.image_alt ?? ''), image_format: values.image_format === 'square' ? 'square' : 'banner', headline: String(values.headline ?? ''), body: String(values.body ?? '') }} /><p className="creative-preview-note">Upload sets the image in this form. Select Save changes to persist it. {values.surface === 'agenda' ? 'Published ads appear on the selected day, after the selected session; leave the session unset to place the ad at the start of the day.' : 'Published ads appear on the selected page, in display order. Page advertisements do not need an agenda day or session.'} Banner images keep their original proportions; square previews fit the whole image without cropping.</p></>}{sessionForm && reviewNote?.issue && <div className="session-review-notice"><strong>Source question: {reviewNote.issue}</strong><p>Changing session details sends a confirmed or excluded decision back to review. After saving, check <Link href="/admin/launch">Launch readiness</Link> before opening the event.</p></div>}{error && <ErrorState message={error} />}<div className="dialog-actions"><button type="submit" className="button button-red" disabled={busy || Boolean(uploading) || (sessionForm && !speakersReady)}>{busy ? <Busy /> : "Save changes"}</button></div></form>;
 }
 
 interface AttendeeRow { id: string; registration_name: string; registration_email: string; status: "approved" | "pending" | "disabled"; directory_allowed: boolean; user_id: string | null }

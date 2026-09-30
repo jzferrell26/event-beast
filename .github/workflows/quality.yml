@@ -34,4 +34,5 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
+      - run: npm run test:e2e:legacy -- --output test-results/legacy
       - run: npm run test:mobile:webkit

@@ -36,7 +36,7 @@ export function SpeakerDetail({ id }: { id: string }) {
     <section className="speaker-profile-hero"><SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} priority />
       <div className="speaker-profile-copy"><span className="eyebrow">MOMENTUM BUILDER SPEAKER</span><h1>{speaker.full_name}</h1>{speaker.title && <p className="speaker-profile-title">{speaker.title}</p>}
         <div className="speaker-biography"><h2>About {speaker.full_name}</h2><p>{speaker.bio || 'The event team is preparing this speaker’s biography.'}</p></div>
-        {httpsUrl(speaker.source_url) && <a href={speaker.source_url} className="text-button speaker-source-link" target="_blank" rel="noopener noreferrer">Official speaker information<ArrowUpRight size={15} aria-hidden="true" /></a>}
+        {!guide.publicSite && httpsUrl(speaker.source_url) && <a href={speaker.source_url} className="text-button speaker-source-link" target="_blank" rel="noopener noreferrer">Official speaker information<ArrowUpRight size={15} aria-hidden="true" /></a>}
       </div>
     </section>
     <SectionTitle title="Catch them on the agenda" />{sessions.length ? <div className="agenda-list">{sessions.map(session => <SessionCard key={session.id} session={session} />)}</div> : <EmptyState title="Session details are being finalized." icon={<CalendarDays size={26} />}>Check back as the organizer updates the working program.</EmptyState>}

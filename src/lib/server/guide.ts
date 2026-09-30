@@ -5,6 +5,7 @@ import { demoGuide } from "../demo";
 import type { Guide } from "../types";
 import { publicSupabase } from "../supabase/server";
 import { databaseError } from "./http";
+import { publicSiteEnabled, publicSiteGuide } from '../public-site';
 
 export const isDemo = () => process.env.EVENT_BEAST_DEMO_MODE === "true";
 export const eventSlug = () => process.env.EVENT_BEAST_EVENT_SLUG || process.env.NEXT_PUBLIC_EVENT_SLUG || "momentum-builder-live-2026";
@@ -39,7 +40,7 @@ const loadPublicGuide = async (slug: string): Promise<Guide | null> => {
     mode: "live", event, settings: settings.data,
     days: days.data ?? [], sessions: (sessions.data ?? []).filter((s) => publishedDays.has(s.day_id)),
     speakers: speakers.data ?? [], sessionSpeakers: links.data ?? [], sponsors: sponsors.data ?? [], tiers: tiers.data ?? [],
-    placements: (placements.data ?? []).filter((p) => publishedDays.has(p.day_id) && publishedSponsors.has(p.sponsor_id)),
+    placements: (placements.data ?? []).filter((p) => (p.surface && p.surface !== 'agenda' || publishedDays.has(p.day_id)) && publishedSponsors.has(p.sponsor_id)),
     lunches: lunches.data ?? [], venues: venues.data ?? [], announcements: announcements.data ?? [], fetchedAt: new Date().toISOString(),
   } as Guide;
 };
@@ -47,4 +48,7 @@ const loadPublicGuide = async (slug: string): Promise<Guide | null> => {
 // Only the cookie-free, RLS-limited public guide enters shared server cache.
 // Registration, profiles, messages and Admin reads remain uncached.
 const cachedPublicGuide = unstable_cache(loadPublicGuide, ['public-guide-v2', process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'unconfigured'], { revalidate: 15, tags: [PUBLIC_GUIDE_TAG] });
-export const getGuide = cache(async (): Promise<Guide | null> => isDemo() ? demoGuide : cachedPublicGuide(eventSlug()));
+export const getGuide = cache(async (): Promise<Guide | null> => {
+  const guide = isDemo() ? demoGuide : await cachedPublicGuide(eventSlug());
+  return guide ? publicSiteGuide(guide, publicSiteEnabled()) : null;
+});
