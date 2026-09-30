@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-09-30T02:53:03.798Z",
+  "recipient": "team@momentumbuilder.com",
+  "role": "admin",
+  "status": "approved",
+  "invitationSentFrom": "jonathan@cuantico.us",
+  "invitationSent": true,
+  "sentCopyVerified": true,
+  "recipientEmailVerified": true,
+  "registrationClaimed": false,
+  "manualIdentityVerificationByAgent": false,
+  "automatedEmailGateOpen": false,
+  "temporaryTestRegistrationsRemaining": 0,
+  "productionRevision": "5e297df3d6e93eeba1b36168c7e7fff1e3c8856f",
+  "privateActivationLinkStoredInRepository": false
+}

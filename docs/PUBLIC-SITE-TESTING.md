@@ -1,5 +1,7 @@
 # Public event guide: testing handoff
 
+> **Current live status:** PRs #8 and #9 are released; the migrations are applied, the official sponsor lineup and all six supplied ads are loaded, and actual hosted organizer checks pass. Sonia's private activation email was sent and verified in Sent Items. The candidate-only limitations below are historical. Use [LIVE-ORGANIZER-HANDOFF.md](./LIVE-ORGANIZER-HANDOFF.md), `live-organizer-qualification.json` and `sonia-access-handoff.json` for the current testing handoff. Automated SMTP, final organizer content decisions and physical-device acceptance are still separate.
+
 ## Scope and source of truth
 
 This candidate implements Sonia's September 28-29 Outlook requests. Don's latest request is the **full agenda**, not the earlier condensed sponsor-slot proposal. The existing published program is retained. No held session or unconfirmed schedule question is silently approved.
