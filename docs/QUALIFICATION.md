@@ -2,6 +2,12 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## Pressure Monkey qualification — authored, not run
+
+[PRD-002](../library/requirements/backlog/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md) defines the next capacity/resilience/recovery gate for the 500-attendee event: realistic concurrent traffic, arrival/soak/reconnection profiles, controlled failure injection and separate database/Storage recovery. It is in backlog and does not change the application or certify a new load result. Current source inspection used `869d9120bbfc8ee89436e9d003516b0475b7b589`.
+
+The prior 500-registration import and September 23 synthetic authentication burst are narrower evidence, not proof of 500 concurrent full-app users. The older sign-in phase includes 998 throttled attempts and p95 29.37 seconds. Keep account-email, physical-device and venue-network readiness independent. Hosted execution requires an explicitly approved target, numeric resource/cost ceilings, monitoring and cleanup; no production stress, infrastructure changes or account mail is authorized by the new specification.
+
 ## September 30 social-wall and source-content release
 
 The newest scope, guarded content import, activation-link hardening and precise remaining rollout gates are recorded in `SEPTEMBER-30-EVENT-HUB-RELEASE.md`. Associated JSON reports record the actual import, sponsor-link updates and hosted qualification when those actions complete. Older production revisions and account-delivery reports below remain historical; they do not certify this release or automatic email delivery.

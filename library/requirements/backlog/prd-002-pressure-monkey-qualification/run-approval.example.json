@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "example_not_approved_not_executable",
+  "run_id": null,
+  "approved_by": null,
+  "approval_reference": null,
+  "approved_at_utc": null,
+  "expires_at_utc": null,
+  "operator": null,
+  "rollback_owner": null,
+  "target": {
+    "environment": "isolated_required",
+    "app_origin": null,
+    "deployment_id": null,
+    "application_sha": null,
+    "harness_sha": null,
+    "supabase_project_ref": null,
+    "event_id": null,
+    "allowed_hosts": [],
+    "allowed_paths": [],
+    "verified_isolated_from_production": false
+  },
+  "permissions": {
+    "allow_production": false,
+    "allow_faults": false,
+    "allow_external_email": false,
+    "allow_paid_provisioning": false,
+    "allow_provider_or_dns_changes": false
+  },
+  "profile": null,
+  "random_seed": null,
+  "limits": {
+    "max_active_sessions": null,
+    "max_open_sockets": null,
+    "max_http_requests_per_second": null,
+    "max_total_http_attempts_including_retries": null,
+    "max_writes_including_fixture_setup": null,
+    "max_transfer_bytes": null,
+    "max_duration_seconds": null,
+    "max_estimated_cost_usd": null,
+    "max_fault_affected_sessions": 0,
+    "max_fault_duration_seconds": 0
+  },
+  "preflight": {
+    "effective_provider_limits_evidence": null,
+    "capacity_headroom_verified": false,
+    "safety_telemetry_verified": false,
+    "watchdog_verified": false,
+    "normal_auth_sessions_verified": false,
+    "rollback_compatibility_verified": false,
+    "fixture_manifest_reference": null,
+    "credentials_reference": null,
+    "cleanup_verified_locally": false
+  },
+  "notes": "All null approval, target and budget fields must fail validation. This file must never start traffic. It contains no credentials and authorizes no work."
+}

@@ -50,6 +50,8 @@ After Momentum Builder:
 
 ## Product packaging questions to decide after the event
 
+Reliability work starts with the event-specific [Pressure Monkey PRD-002](../library/requirements/backlog/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md). After Momentum Builder, reuse its workload, integrity, failure and recovery evidence as a configurable qualification suite for future events. Event count, enabled modules, plan limits and actual measured concurrency must be part of each report; passing one event does not certify every tenant size. This is a testing/product-operations track, not an additional launch-week feature or an already completed capacity benchmark.
+
 - Pricing unit: per event, annual organization subscription, attendee bands, or hybrid.
 - Which modules belong in the base plan versus paid add-ons.
 - Whether messaging is native, community-integrated, or both.
