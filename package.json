@@ -18,7 +18,12 @@
     "test:e2e:legacy": "playwright test --config playwright.config.ts",
     "test:mobile:webkit": "playwright test --config playwright.mobile-webkit.config.ts",
     "check": "npm run lint && npm run typecheck && npm test && npm run build",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "pressure:preflight": "node scripts/pressure-monkey/cli.mjs preflight",
+    "pressure:validate": "node scripts/pressure-monkey/cli.mjs validate",
+    "pressure:dry-run": "node scripts/pressure-monkey/cli.mjs dry-run",
+    "pressure:self-test": "node scripts/pressure-monkey/cli.mjs self-test",
+    "test:pressure": "vitest run tests/pressure-monkey.test.ts"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "5.3.0",

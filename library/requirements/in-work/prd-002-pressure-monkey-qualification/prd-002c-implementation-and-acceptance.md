@@ -1,9 +1,11 @@
 # PRD-002C: Implementation backlog and execution handoff
 
-> **Status:** Authored only. None of the paths marked proposed below exist as a completed harness.
+> **Status:** In work. Local preflight/guards/watchdog are implemented; hosted fixtures, workload drivers, provider telemetry and recovery remain unimplemented.
 > Parent: [PRD-002](./prd-002-pressure-monkey-qualification-index.md).
 
 ## Ordered work
+
+First implementation slice: `scripts/pressure-monkey/` supplies read-only source and bounded public inspection, mechanical manifest review, fresh target/headroom checks, finite budget primitives and seven IPC-only local watchdog drills. `tests/pressure-monkey.test.ts` covers these guards. PM-001 is still blocked on an approved isolated target and effective quota inventory; PM-002 still needs hosted adapter integration and independent provider/rolling-window telemetry. PM-003 onward is not started. No 500-session workload result is implied by the local control tests.
 
 | Task | Implementation and acceptance | Dependency |
 |---|---|---|
@@ -30,7 +32,7 @@ test-results/pressure-monkey/     ignored raw artifacts and private runtime stat
 <this PRD>/qa/                   sanitized run evidence only after execution
 ```
 
-These are planned paths, not ready-to-run commands. Implement a dry-run-default CLI with separate `preflight`, `prepare`, `run`, `abort`, `audit` and `cleanup` operations. Input must bind the manifest to a specific scenario revision and immutable deployment. A convenience production URL or a single `--force` flag must not override safety checks.
+Only `scripts/pressure-monkey/` and its local tests exist in this first slice. The available `preflight`, `validate`, `dry-run` and `self-test` commands are described in the [operator guide](../../../../docs/PRESSURE-MONKEY.md). `prepare`, hosted `run`, `abort`, `audit` and `cleanup` refuse execution until their adapters are implemented and qualified. Input must bind the manifest to a specific scenario revision and immutable deployment. A convenience production URL or a single `--force` flag must not override safety checks.
 
 The provider admin credential is available only to setup/audit/cleanup, never to scenario workers. Scenarios use normal least-privilege tokens and maintain per-user cookies/refresh state. Tokens and credentials stay in ignored local state or an approved secret store; reports contain references rather than secrets.
 

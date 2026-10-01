@@ -1,11 +1,11 @@
 # PRD-002: Pressure Monkey — event capacity and recovery qualification
 
-> **Status:** Authored / backlog. Implementation and new load experiments have not started.
+> **Status:** In work — local preflight/guardrails implemented; hosted capacity, fixtures and recovery not yet run.
 > **Priority:** P0 before the full attendee invitation wave; not a blocker on drafting other launch work.
 > **Owner / execution approver:** Jonathan Ferrell.
 > **Scope:** Momentum Builder LIVE 2026 first; reusable product qualification after the event.
 > **Source baseline:** `869d9120bbfc8ee89436e9d003516b0475b7b589`, inspected September 30, 2026.
-> **Authorization:** Author the work. This document does not authorize infrastructure changes, paid resources, load generation, failure injection, bulk email or a production restore.
+> **Authorization:** Jonathan approved starting implementation after authoring PR #16. This permits local tooling/tests and read-only inspection; it does not approve a hosted load window, paid resources, provider fault injection, bulk email or a production restore.
 
 ## Outcome
 
@@ -28,9 +28,9 @@ Preserve these reports. New measurements must identify their own exact deploymen
 
 | Package | Deliverable | Initial state |
 |---|---|---|
-| [002A: capacity](./prd-002a-capacity-and-workload.md) | Repeatable smoke, ramp, arrival, soak, Realtime and asset workload | Not implemented / not run |
+| [002A: capacity](./prd-002a-capacity-and-workload.md) | Repeatable smoke, ramp, arrival, soak, Realtime and asset workload | Read-only source inventory implemented; hosted workload not implemented/run |
 | [002B: failure and recovery](./prd-002b-failure-and-recovery.md) | Controlled disconnect/timeout drills and a practiced restore/rollback runbook | Not implemented / not run |
-| [002C: implementation backlog](./prd-002c-implementation-and-acceptance.md) | Task IDs, acceptance gates, evidence contract and execution handoff | Authored only |
+| [002C: implementation backlog](./prd-002c-implementation-and-acceptance.md) | Task IDs, acceptance gates, evidence contract and execution handoff | PM-001/002 first local slice implemented; later tasks remain |
 | [Run-approval example](./run-approval.example.json) | Inert, deliberately incomplete safety contract | Not valid for execution |
 
 ## Non-negotiable boundaries
@@ -44,6 +44,8 @@ No terminating services, dropping tables, deleting projects, disabling RLS, weak
 The load generator uses real synthetic **Member sessions**, with only explicitly assigned synthetic Admin/Sponsor canaries. Service/admin credentials belong only in a separate, bounded fixture provisioner and read-only auditor; they must not replace attendee authorization on measured requests. No real attendee conversations, invitations, contact exports or headshots are used as test data.
 
 ## Approval and automatic stop contract
+
+Implementation note: `scripts/pressure-monkey/` now provides the read-only CLI, strict manifest/target validation, budget primitives and a local separate-process watchdog rehearsal. Hosted traffic dispatch is still disabled even for a mechanically valid manifest. The clauses below remain the full acceptance contract, not claims that fixture cleanup, provider telemetry or every abort rule has been implemented. See [operator guide](../../../../docs/PRESSURE-MONKEY.md).
 
 Before any hosted run, a named operator reviews a manifest containing exact app/backend/event identifiers, deployment SHA, workload profile, UTC start/expiry, allowed paths/hosts, credential references, concurrency and request/byte/write caps, numeric estimated-cost ceiling, infrastructure limits and rollback owner. Missing/null limits or missing approval mean **refuse to start**, never “unlimited.” The example JSON is a specification, not an implemented control.
 

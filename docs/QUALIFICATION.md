@@ -2,9 +2,9 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
-## Pressure Monkey qualification — authored, not run
+## Pressure Monkey qualification — first implementation slice
 
-[PRD-002](../library/requirements/backlog/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md) defines the next capacity/resilience/recovery gate for the 500-attendee event: realistic concurrent traffic, arrival/soak/reconnection profiles, controlled failure injection and separate database/Storage recovery. It is in backlog and does not change the application or certify a new load result. Current source inspection used `869d9120bbfc8ee89436e9d003516b0475b7b589`.
+[PRD-002](../library/requirements/in-work/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md) is now in work. Read-only source/public preflight, strict manifest review, exact target/host/path protections, resource-budget primitives and separate-process local watchdog tests are implemented in `scripts/pressure-monkey/`. See [Pressure Monkey](./PRESSURE-MONKEY.md) for exact commands and observed configuration limits. No hosted load, paid environment, account mail or provider change is performed by this slice. The full 500-session workload, fixture lifecycle and recovery tests remain blocked/not run.
 
 The prior 500-registration import and September 23 synthetic authentication burst are narrower evidence, not proof of 500 concurrent full-app users. The older sign-in phase includes 998 throttled attempts and p95 29.37 seconds. Keep account-email, physical-device and venue-network readiness independent. Hosted execution requires an explicitly approved target, numeric resource/cost ceilings, monitoring and cleanup; no production stress, infrastructure changes or account mail is authorized by the new specification.
 
