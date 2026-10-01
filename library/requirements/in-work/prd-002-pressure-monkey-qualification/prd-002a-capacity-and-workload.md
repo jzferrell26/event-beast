@@ -1,6 +1,6 @@
 # PRD-002A: Capacity and realistic workload
 
-> **Status:** Planned. All profiles, ceilings and performance targets below are proposed acceptance criteria, not measured results or vendor guarantees.
+> **Status:** Read-only inventory implemented; hosted workloads planned/not run. All profiles, ceilings and performance targets below are proposed acceptance criteria, not measured results or vendor guarantees.
 > Parent: [PRD-002](./prd-002-pressure-monkey-qualification-index.md).
 
 ## Test the app we actually ship

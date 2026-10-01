@@ -16,6 +16,6 @@ Current plans:
 
 | PRD | Module |
 |---|---|
-| [PRD-002](./prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md) | Pressure Monkey: 500-session capacity, controlled failures and recovery; authored only, no new load runs |
+| None | [PRD-002 moved to in-work](../in-work/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md); local preflight and guardrails are implemented, hosted workloads remain blocked |
 
 PRD-001 moved to [in-work](../in-work/prd-001-event-operator-console/prd-001-event-operator-console-index.md) on 2026-09-29.
