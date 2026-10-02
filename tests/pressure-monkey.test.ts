@@ -32,7 +32,7 @@ describe('Pressure Monkey manifest: refuse before traffic', () => {
   it('rejects typos, unapproved/example status, stale approval, future approval and an overlong run', () => {
     for (const patch of [{ unknownForce: true }, { status: 'example_not_approved_not_executable' }, { expires_at_utc: '2026-09-30T00:00:00Z' }, { approved_at_utc: '2026-10-02T00:00:00Z' }, { expires_at_utc: '2026-10-01T00:00:01Z' }]) expect(validateApproval({ ...approval(), ...patch }, now).valid).toBe(false);
   });
-  it.each(['https://event-beast.vercel.app', 'https://eventapp.momentumbuilder.com', 'https://live2026.momentumbuilder.com', 'https://event-beast-preview-cuantico.vercel.app'])('protects %s', app_origin => {
+  it.each(['https://event-beast.vercel.app', 'https://eventapp.momentumbuilder.com', 'https://2026live.momentumbuilder.com', 'https://event-beast-preview-cuantico.vercel.app'])('protects %s', app_origin => {
     const m = approval(); m.target.app_origin = app_origin; m.target.allowed_hosts = [new URL(app_origin).host]; expect(validateApproval(m, now).valid).toBe(false);
   });
   it('protects the backend and event even behind a different preview hostname', () => {
