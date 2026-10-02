@@ -19,7 +19,7 @@ Admins have full event-management privileges. Private conversations remain parti
 
 Use `/admin/users` to add a single user or edit an existing registration. Choose Admin, Sponsor or Member and its approved/pending/disabled status. Sponsor roles require at least one page from this event. Create the sponsor record in `/admin/sponsors` first if it does not exist, then assign the relevant user to it. Multiple users may edit the same sponsor page; one user may have multiple assigned pages.
 
-Adding users prepares private event registration. It does not send an invitation email automatically. Share the sign-up link through the approved event communication channel; the user must verify the matching registration email before their permissions become effective. CSV imports continue to create Member registrations, and re-importing does not change existing roles.
+Adding users prepares private event registration and special-role assignment. It does not send an invitation email automatically. Normal attendees may also self-register as Members with any verified email while self-service access is enabled. CSV imports continue to create Member registration records, and re-importing does not change existing roles. Admin and Sponsor permissions remain organizer-assigned.
 
 The original bootstrap admin receives a private attendee profile on first verified access so they can use attendee features as well as the console. Previously bootstrapped `event_admins` entries retain access; new administration uses the registration's `access_role` and approved status. The final active verified admin cannot be demoted, disabled or deleted through the app. Another verified active admin must exist first.
 

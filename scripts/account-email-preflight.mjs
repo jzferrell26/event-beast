@@ -20,7 +20,7 @@ for(const template of accountTemplates){
 }
 check('canonical_auth_origin',config?config.site_url===site.origin:null,'Hosted Auth and deployed application must use the same approved origin.');
 check('email_confirmation',config?config.mailer_autoconfirm===false:null,'Email ownership verification must remain enabled.');
-check('password_minimum',config?Number(config.password_min_length)>=12:null,'Require at least 12 characters.');
+check('password_minimum',config?Number(config.password_min_length)>=8:null,'Require at least 8 characters.');
 check('smtp_configured',config?!!(config.smtp_host&&config.smtp_user&&config.smtp_admin_email):null,'A verified sending domain alone does not configure custom SMTP.');
 check('email_send_capacity',config?Number(config.rate_limit_email_sent)>=500:null,'Plan enough account-email capacity for the expected cohort, plus retries; this is not a deliverability guarantee.');
 check('approved_from_address',null,'The exact From and Reply-To addresses still require owner confirmation.');

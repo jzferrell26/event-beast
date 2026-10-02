@@ -6,8 +6,8 @@ import {fileURLToPath} from 'node:url';
 // defaults. Supabase expands these variables only at actual account delivery.
 export const accountTemplates=[
  {key:'confirmation',type:'signup',subject:'Verify your Momentum Builder event account',heading:'Your event starts here.',intro:'Use this code on the event website to verify your email. You can also open the secure link below.',button:'Verify my email',next:'&amp;next=/account-ready',code:true},
- {key:'invite',type:'invite',subject:'Activate your Momentum Builder event account',heading:'You’re invited to the event hub.',intro:'The organizer has invited this email address. Open the secure link, press Continue securely, then choose a password with at least 12 characters.',button:'Activate my account',next:'',code:false},
- {key:'recovery',type:'recovery',subject:'Reset your Momentum Builder event password',heading:'Let’s get you back in.',intro:'Open the secure link, press Continue securely, then choose a new password with at least 12 characters. Your password stays unchanged until you finish.',button:'Reset my password',next:'',code:false},
+ {key:'invite',type:'invite',subject:'Activate your Momentum Builder event account',heading:'You’re invited to the event hub.',intro:'The organizer has invited this email address. Open the secure link, press Continue securely, then choose a password with at least 8 characters.',button:'Activate my account',next:'',code:false},
+ {key:'recovery',type:'recovery',subject:'Reset your Momentum Builder event password',heading:'Let’s get you back in.',intro:'Open the secure link, press Continue securely, then choose a new password with at least 8 characters. Your password stays unchanged until you finish.',button:'Reset my password',next:'',code:false},
 ];
 export function renderAccountTemplate(t){
  return `<!DOCTYPE html>
@@ -22,7 +22,7 @@ export function renderAccountTemplate(t){
 ${t.code?'<p style="font-family:Arial,Helvetica,sans-serif;font-size:32px;line-height:44px;color:#17171b;font-weight:bold;letter-spacing:5px;">{{ .Token }}</p>':''}
 <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#bc182c" style="background-color:#bc182c;padding-top:14px;padding-right:20px;padding-bottom:14px;padding-left:20px;"><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=${t.type}${t.next}" style="font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;color:#ffffff;font-weight:bold;text-decoration:none;">${t.button}</a></td></tr></table>
 <p style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#555560;">Opening the link does not use it. Press Continue securely once on the event website. Confirm the email shown before setting a password.</p>
-<p style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#555560;">Access is matched to the organizer’s registration list. The public agenda needs no account. Your directory profile remains private until you choose to share it.</p>
+<p style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:22px;color:#555560;">After email verification, attendees can join the event community. Organizer-assigned Admin and Sponsor permissions remain separate. Your directory profile stays private until you choose to share it.</p>
 <p style="font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;color:#555560;">This link is time-limited and private. Do not forward it. If you did not request or expect this email, ignore it or contact the event organizer.</p>
 </td></tr></table></td></tr></table></body></html>
 `;
