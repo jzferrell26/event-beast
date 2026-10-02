@@ -2,7 +2,7 @@
 
 ## Separate the three actions
 
-An import creates private event registrations. It does not create login accounts, publish profiles, send invitations, or subscribe anyone to marketing. The attendee subsequently verifies their email and chooses profile visibility. An organizer-approved invitation rollout is a separate action after account-email delivery is qualified.
+An import creates private organizer registration records. It does not create login accounts, publish profiles, send invitations, or subscribe anyone to marketing. For Momentum Builder LIVE, verified self-service signup is also open: an attendee may create a Member account with a verified email even when that exact address was not preloaded in the roster. Explicitly disabled registrations remain blocked, and Admin/Sponsor roles remain organizer-assigned.
 
 The September 30 live event currently contains four approved registrations, not the complete attendee cohort. The reviewed organizer emails have not supplied the full roster or Fun Stuff content. Do not substitute an unrelated mailing list or infer attendance from a CRM marketing segment.
 
@@ -22,9 +22,9 @@ Schema: `20260930222710_attendee_import_preflight.sql` and `20260930224400_atten
 
 The source now includes the missing invitation template. A source file or a generated patch is **not** proof of deployed email configuration. `scripts/account-email-preflight.mjs` is read-only: it validates the source templates, probes the public release, and optionally compares a privately fetched hosted Auth configuration via `--hosted-config`. It writes a template-only Management API patch under ignored `test-results/account-email/`; it does not apply that patch, set a sender, or send mail.
 
-Before opening `EVENT_BEAST_EMAIL_READY`, confirm the exact From and Reply-To addresses, install the three templates, configure domain-scoped SMTP credentials without logging them, verify canonical origins and confirmation settings, review provider/Auth send limits for the attendee wave, and test real signup, invitation and recovery in independent inboxes. Keep click/open tracking disabled for account mail. Retain the 12-character password rule and review hosted leaked-password protection.
+Before opening EVENT_BEAST_EMAIL_READY, confirm the exact From and Reply-To addresses, install the three templates, configure domain-scoped SMTP credentials without logging them, verify canonical origins and confirmation settings, review provider/Auth send limits for the attendee wave, and test real signup, invitation and recovery in independent inboxes. Keep click/open tracking disabled for account mail. The organizer-approved password minimum is 8 characters.
 
-The account-mail sender is **Momentum Builder LIVE 2026 <accounts@noreply.momentumbuilder.com>** using the verified `noreply.momentumbuilder.com` Resend sending domain. Production Auth uses `https://2026live.momentumbuilder.com` as its canonical site URL so new activation and recovery links remain on Sonia's final event host; `eventapp.momentumbuilder.com` and the former Vercel callbacks remain temporarily allowlisted only for already-issued links. Custom SMTP can be configured without opening the attendee email gate. Keep bulk invitations paused until real signup, invitation and recovery delivery are proven in independent inboxes.
+The account-mail sender is **Momentum Builder LIVE 2026 <accounts@noreply.momentumbuilder.com>** using the verified noreply.momentumbuilder.com Resend sending domain. Production Auth uses https://2026live.momentumbuilder.com as its canonical site URL. Self-service verification email is enabled for attendees; roster import still sends no mail. Bulk invitation sends remain a separate organizer-controlled action.
 
 Primary references: [Supabase email templates and prefetch behavior](https://supabase.com/docs/guides/auth/auth-email-templates), [custom SMTP restrictions and configuration](https://supabase.com/docs/guides/auth/auth-smtp), and [local template configuration](https://supabase.com/docs/guides/local-development/customizing-email-templates).
 

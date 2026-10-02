@@ -12,7 +12,7 @@ describe('safe transactional templates',()=>{
  });
 });
 
-it('production Auth is branded to Momentum Builder without opening the email gate',async()=>{
+it('production Auth is branded to Momentum Builder and uses the approved password floor',async()=>{
  const config=await readFile('supabase/config.toml','utf8');
  expect(config).toContain('site_url = "https://2026live.momentumbuilder.com"');
  expect(config).toContain('host = "smtp.resend.com"');
@@ -20,6 +20,7 @@ it('production Auth is branded to Momentum Builder without opening the email gat
  expect(config).toContain('pass = "env(RESEND_SMTP_PASSWORD)"');
  expect(config).toContain('admin_email = "accounts@noreply.momentumbuilder.com"');
  expect(config).toContain('sender_name = "Momentum Builder LIVE 2026"');
+ expect(config).toContain('minimum_password_length = 8');
  const env=await readFile('.env.example','utf8');
  expect(env).toContain('EVENT_BEAST_EMAIL_READY=false');
  expect(env).toContain('EVENT_BEAST_RECOVERY_READY=false');

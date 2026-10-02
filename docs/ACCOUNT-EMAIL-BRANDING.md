@@ -6,7 +6,7 @@ The account-email templates and canonical link host are branded for Momentum Bui
 
 The October 2 recovery probe to the project owner succeeded and arrived with the correct Momentum Builder subject/template, but its sender was still `Supabase Auth <noreply@mail.app.supabase.io>`. It did not appear in Resend's outbound log. This proves custom SMTP is the remaining sender-branding step.
 
-Keep `EVENT_BEAST_EMAIL_READY=false` until a post-SMTP recovery/invitation test arrives through Resend and the recipient link opens on the Momentum Builder host.
+Production self-service verification email is approved to run through the branded Resend SMTP path. Roster import itself still sends no email.
 
 ## Approved SMTP configuration
 
@@ -33,6 +33,6 @@ After SMTP is saved:
 4. Confirm the activation/reset link begins with `https://2026live.momentumbuilder.com/auth/confirm`.
 5. Complete the recipient-click flow and confirm password setup/login still works.
 6. Repeat with one invitation to a separate test inbox.
-7. Only after those checks and send-capacity review, change `EVENT_BEAST_EMAIL_READY` to `true` and redeploy.
+7. Keep the signup gate open only while branded SMTP, the event-domain callback and provider/Auth capacity remain healthy.
 
 This email configuration is transactional account mail only. It does not enable marketing email or the attendee invitation wave.

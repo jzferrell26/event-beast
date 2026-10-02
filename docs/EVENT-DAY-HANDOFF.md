@@ -33,7 +33,7 @@ No missing event detail should be replaced with an invented room, time, sponsor 
 
 ## Attendee arrival flow
 
-The event link or QR code opens `/join`. Attendees use their registration email, choose a password of at least 12 characters, and verify the email code or link. A matching approved registration claims event access. They then complete the walkthrough and choose whether to appear in the directory and receive private messages.
+The event link or QR code opens /join. Attendees use the email they want tied to their event account, choose a password of at least 8 characters, and verify the email code or link. Verified self-service users join as Members unless that email/account was explicitly disabled. They then choose whether to appear in the directory and receive private messages.
 
 Normal-browser sessions persist. Private browsing, clearing browser data, sign-out or revoked access can require another sign-in. The attendee's own device is the recommended place to stay signed in.
 

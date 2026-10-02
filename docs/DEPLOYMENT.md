@@ -30,9 +30,9 @@ Set the Supabase Site URL to the production HTTPS origin. Add the exact local an
 
 Email templates can direct users to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup&next=/more/profile` for verification, `type=recovery` for password recovery, and `type=invite` for invitations. The recovery handler always routes to the password-reset page. Verify each template against the selected Supabase email flow before launch.
 
-Organizer CSV import creates eligibility records, not auth accounts. Share `/join` through the event QR code or registration channel. Attendees enter the registration email, choose a password, and verify by an eight-digit code or secure link. No mass email or SMS is sent by import. A missing roster match goes to a pending access request; it does not gain automatic access.
+Organizer CSV import creates private registration records, not auth accounts. Share /join through the event QR code or organizer-controlled registration channel. Attendees choose the email they want tied to their account, use a password of at least 8 characters, and verify by code or secure link. Verified self-service users join as Members even without a preloaded roster match. No mass email or SMS is sent by import.
 
-Keep `EVENT_BEAST_EMAIL_READY=false` until a custom SMTP sender is configured and real inbox delivery/recovery are tested. The built-in provider's two-email/hour allowance cannot serve the event. Configure the custom provider and the Supabase email-sending quota for the launch burst (at least 500 initial messages plus resend/recovery headroom), then measure actual public signup and delivery. The 500-account verification/login report is not proof of 500 successful public signups or emails.
+Custom Momentum Builder SMTP and the Supabase Auth email quota must remain healthy for self-service signup. Production is configured for the branded sender and a 1,000-email/hour Auth limit; roster import does not itself trigger an email wave.
 
 ## Vercel
 

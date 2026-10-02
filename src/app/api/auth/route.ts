@@ -9,11 +9,11 @@ export const maxDuration = 60;
 
 const schema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("sign-in"), email: z.email(), password: z.string().min(1).max(256), next: z.string().optional() }),
-  z.object({ action: z.literal("sign-up"), email: z.email(), password: z.string().min(12, "Use at least 12 characters").max(256) }),
+  z.object({ action: z.literal("sign-up"), email: z.email(), password: z.string().min(8, "Use at least 8 characters").max(256) }),
   z.object({ action: z.literal("recover"), email: z.email() }),
   z.object({ action: z.literal('resend'), email: z.email() }),
   z.object({ action: z.literal('verify-email'), email: z.email(), token: z.string().regex(/^\d{6,10}$/) }),
-  z.object({ action: z.literal("update-password"), password: z.string().min(12, "Use at least 12 characters").max(256), expectedUserId: z.uuid() }),
+  z.object({ action: z.literal("update-password"), password: z.string().min(8, "Use at least 8 characters").max(256), expectedUserId: z.uuid() }),
   z.object({ action: z.literal("sign-out") }),
 ]);
 export const POST = (request: Request) => handle(async () => {
@@ -45,7 +45,7 @@ export const POST = (request: Request) => handle(async () => {
     const { error } = await db.auth.signUp({ email: body.email.trim().toLowerCase(), password: body.password,
       options: { emailRedirectTo: `${site}/auth/callback?next=${verifiedNext}` } });
     checkedAuthError(error, 'We could not create your account. Please try signing in or use password recovery.');
-    return json({ message: "Check your email to verify your account. Event access will be matched to the registration email supplied by the organizer." });
+    return json({ message: "Check your email to verify your account. After verification, you can join the attendee community with this email." });
   }
   if (body.action === "recover") {
     const { error } = await db.auth.resetPasswordForEmail(body.email.trim().toLowerCase(), { redirectTo: `${site}/auth/callback?next=/reset-password` });

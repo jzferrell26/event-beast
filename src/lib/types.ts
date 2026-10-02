@@ -9,6 +9,7 @@ export interface EventSettings {
   support_location: string; technology_attribution: boolean; directory_enabled: boolean; messaging_enabled: boolean;
   agenda_notice?: string;
   community_enabled?: boolean; feed_enabled?: boolean; announcements_enabled?: boolean;
+  self_service_access_enabled?: boolean;
   sponsor_page_title?: string; sponsor_page_description?: string;
   wifi_network?: string; wifi_password?: string; support_sms?: string; venue_floor_plan_url?: string;
 }

@@ -10,7 +10,7 @@ Dedicated Supabase and Vercel projects belong under Cuantico. Existing applicati
 
 ## Identity and privacy
 
-Auth proves control of an email account. An organizer-approved attendee record grants event access. Claiming a record requires a confirmed email match from auth.users. Profile visibility and messaging consent are separate opt-in fields. Imported registration email/name are private; only the attendee's chosen profile fields are exposed to eligible directory viewers. Disabled attendees lose directory, messaging, storage and realtime access.
+Auth proves control of an email account. Momentum Builder LIVE allows verified self-service users to join as Members even when their email was not preloaded by the organizer. Preloaded Admin/Sponsor roles remain organizer-controlled, explicitly disabled registrations stay blocked, and profile visibility/messaging remain separate opt-ins. Imported registration email/name are private; only attendee-chosen profile fields are exposed to eligible directory viewers.
 
 Attendee emails, phone numbers and personal contact links are stored outside directory records in Admin-only registration/contact tables. Members and sponsors receive an explicit allowlist of profile fields, including when fetching sponsor representatives. There is no contact opt-in that can expose attendee email/phone data. An attendee can voluntarily type information into chat; the platform does not provide contact exports or directory contact fields.
 
