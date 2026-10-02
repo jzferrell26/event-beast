@@ -22,4 +22,5 @@ it('production Auth is branded to Momentum Builder without opening the email gat
  expect(config).toContain('sender_name = "Momentum Builder LIVE 2026"');
  const env=await readFile('.env.example','utf8');
  expect(env).toContain('EVENT_BEAST_EMAIL_READY=false');
+ expect(env).toContain('EVENT_BEAST_RECOVERY_READY=false');
 });

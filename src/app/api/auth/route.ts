@@ -25,9 +25,12 @@ export const POST = (request: Request) => handle(async () => {
   if (!configuredSite) throw new ApiError(503, "Event sign-in is being configured.");
   const site = authenticationOrigin(configuredSite);
   const verifiedNext = '/account-ready';
-  if (['sign-up', 'recover', 'resend'].includes(body.action) && process.env.EVENT_BEAST_EMAIL_READY !== 'true') {
+  const emailReady = process.env.EVENT_BEAST_EMAIL_READY === 'true';
+  const recoveryReady = emailReady || process.env.EVENT_BEAST_RECOVERY_READY === 'true';
+  if (['sign-up', 'resend'].includes(body.action) && !emailReady) {
     throw new ApiError(503, 'Account email delivery is being prepared by the event team. The public agenda is available now.');
   }
+  if (body.action === 'recover' && !recoveryReady) throw new ApiError(503, 'Password recovery email is being prepared by the event team. Please contact event support.');
   const checkedAuthError = (error: { status?: number; code?: string } | null, fallback: string) => {
     if (!error) return;
     if (error.code === 'over_email_send_rate_limit') throw new ApiError(503, 'Verification email delivery is busy. Check your inbox and try again later, or visit the welcome desk.');

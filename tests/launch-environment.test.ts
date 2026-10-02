@@ -6,7 +6,7 @@ import { demoGuide } from "../src/lib/demo";
 const ready: LaunchEnvironment = {
   demo: false, backendUrl: `https://${EVENT_BEAST_PROJECT_REF}.supabase.co`,
   backendKeyConfigured: true, siteUrl: "https://event-beast.vercel.app",
-  emailReady: true, activeAdmins: 1,
+  emailReady: true, recoveryReady: true, activeAdmins: 1,
 };
 
 describe("deployment launch checks", () => {
@@ -23,6 +23,7 @@ describe("deployment launch checks", () => {
     ["secure_origin", { siteUrl: "https://user:password@example.test" }],
     ["secure_origin", { siteUrl: "not a URL" }],
     ["email_gate", { emailReady: false }],
+    ["recovery_email", { recoveryReady: false }],
     ["active_admin", { activeAdmins: 0 }],
   ] as const)("fails closed for %s", (key, override) => {
     expect(evaluateEnvironment({ ...ready, ...override }).find((item) => item.key === key)?.status).toBe("needs_attention");

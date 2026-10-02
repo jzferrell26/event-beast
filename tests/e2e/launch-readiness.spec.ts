@@ -17,9 +17,9 @@ test("recorded manual checks cannot hide a closed deployment email gate", async 
   await page.route("**/api/admin/launch", (route) => route.fulfill({ json: report }));
   await page.goto("/admin/launch");
   await expect(page.getByText("6 of 6 live checks recorded.", { exact: false })).toBeVisible();
-  await expect(page.getByText("4 of 5 deployment checks ready.", { exact: false })).toBeVisible();
+  await expect(page.getByText("5 of 6 deployment checks ready.", { exact: false })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Your recorded checks are complete." })).toHaveCount(0);
-  await expect(page.locator(".launch-runtime-item").filter({ hasText: "Verification and recovery email" })).toContainText("Needs attention");
+  await expect(page.locator(".launch-runtime-item").filter({ hasText: "New-account and verification email" })).toContainText("Needs attention");
 });
 
 test("organizers can inspect a held source question without publishing it or writing demo decisions", async ({ page, request }) => {

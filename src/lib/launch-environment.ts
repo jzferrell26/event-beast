@@ -8,6 +8,7 @@ export interface LaunchEnvironment {
   backendKeyConfigured: boolean;
   siteUrl?: string;
   emailReady: boolean;
+  recoveryReady: boolean;
   activeAdmins: number;
 }
 
@@ -27,8 +28,10 @@ export function evaluateEnvironment(environment: LaunchEnvironment): ReadinessIt
       dedicatedBackend ? "This deployment uses the approved Event Beast project and a configured public client key." : "Configure the dedicated Event Beast project. Do not reuse another application's database."),
     item("secure_origin", "Authentication uses a configured HTTPS website", secureSite,
       secureSite ? "An HTTPS website origin is configured. Verify its email callbacks during the delivery check." : "Configure the attendee website's HTTPS origin before opening registration."),
-    item("email_gate", "Verification and recovery email are enabled", !environment.demo && environment.emailReady,
-      environment.emailReady && !environment.demo ? "The email gate is open. The independent-inbox delivery check below must still be recorded." : "Account creation, resend and password-recovery email remain paused. Configure and qualify transactional email before enabling EVENT_BEAST_EMAIL_READY."),
+    item("recovery_email", "Password recovery email is enabled", !environment.demo && environment.recoveryReady,
+      environment.recoveryReady && !environment.demo ? "Recovery email is enabled and can be tested independently of attendee signup." : "Keep recovery closed until branded SMTP and an independent inbox reset are verified."),
+    item("email_gate", "New-account and verification email are enabled", !environment.demo && environment.emailReady,
+      environment.emailReady && !environment.demo ? "The new-account email gate is open. The independent-inbox delivery check below must still be recorded." : "New-account creation and verification/resend email remain paused until the attendee rollout gate opens."),
     item("active_admin", "An Admin has claimed event access", environment.activeAdmins > 0,
       environment.activeAdmins > 0 ? `${environment.activeAdmins} active Admin account(s). Confirm an organizer can sign in and manage the event.` : "An unclaimed Admin registration is not working organizer access. Verify and sign in with the designated Admin email.", "/admin/users"),
   ];
