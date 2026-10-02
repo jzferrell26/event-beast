@@ -3,7 +3,7 @@ const mocks = vi.hoisted(() => ({ server: vi.fn(), verify: vi.fn(), signOut: vi.
 vi.mock('server-only', () => ({}));
 vi.mock('../src/lib/supabase/server', () => ({ serverSupabase: mocks.server }));
 import { GET, POST } from '../src/app/auth/confirm/route';
-const site = 'https://event-beast.vercel.app';
+const site = 'https://eventapp.momentumbuilder.com';
 const hash = 'a'.repeat(64);
 const link = `${site}/auth/confirm?token_hash=${hash}&type=invite&next=/admin`;
 const post = (origin=site) => new Request(site+'/auth/confirm', { method:'POST', headers:{ Origin:origin,'Content-Type':'application/x-www-form-urlencoded' }, body:new URLSearchParams({token_hash:hash,type:'invite',next:'/admin'}) });
@@ -14,7 +14,7 @@ describe('recipient-confirmed email activation', () => {
   expect(mocks.server).not.toHaveBeenCalled();expect(mocks.verify).not.toHaveBeenCalled();expect(mocks.signOut).not.toHaveBeenCalled();
  });
  it('moves to the canonical host before issuing cookies or consuming the token',async()=>{
-  const response=await GET(new Request(link.replace('event-beast.vercel.app','eventapp.momentumbuilder.com')));expect(response.status).toBe(307);expect(response.headers.get('location')).toBe(link);expect(mocks.server).not.toHaveBeenCalled();
+  const response=await GET(new Request(link.replace('eventapp.momentumbuilder.com','event-beast.vercel.app')));expect(response.status).toBe(307);expect(response.headers.get('location')).toBe(link);expect(mocks.server).not.toHaveBeenCalled();
  });
  it('consumes the link only from an explicit same-origin confirmation and forces password setup',async()=>{
   const response=await POST(post());expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(site+'/reset-password');expect(mocks.verify).toHaveBeenCalledOnce();expect(mocks.signOut).not.toHaveBeenCalled();

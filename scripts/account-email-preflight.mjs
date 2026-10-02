@@ -6,7 +6,7 @@ import {accountTemplates,renderAccountTemplate} from './build-account-email-temp
 // Read-only readiness report. Optional --hosted-config points to a privately
 // fetched Management API auth-config JSON; never print that file or SMTP secrets.
 const args=process.argv.slice(2),get=flag=>{const at=args.indexOf(flag);return at<0?null:args[at+1];};
-const site=new URL(get('--site')??'https://event-beast.vercel.app');
+const site=new URL(get('--site')??'https://eventapp.momentumbuilder.com');
 assert.ok(site.protocol==='https:'&&!site.username&&!site.password&&site.pathname==='/','Use the configured HTTPS origin, without path or credentials.');
 const hostedPath=get('--hosted-config');const config=hostedPath?JSON.parse(await readFile(hostedPath,'utf8')):null;
 const checks=[];const check=(key,passed,detail)=>checks.push({key,status:passed===null?'unknown':passed?'pass':'blocked',detail});
