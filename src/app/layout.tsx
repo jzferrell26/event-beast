@@ -19,11 +19,24 @@ import './thread-viewport.css';
 import './organizer-polish.css';
 
 export const metadata: Metadata = {
-  title: { default: "Momentum Builder LIVE 2026 | Event Beast", template: "%s | Momentum Builder LIVE" },
-  description: "Your agenda, speakers, sponsors and event essentials. Momentum Builder LIVE 2026, no attendee account required.",
-  applicationName: "Momentum Builder LIVE",
+  metadataBase: new URL("https://2026live.momentumbuilder.com"),
+  title: { default: "Momentum Builder LIVE 2026", template: "%s | Momentum Builder LIVE 2026" },
+  description: "The official Momentum Builder LIVE 2026 event hub for the agenda, speakers, Impact Partners, networking and event essentials.",
+  applicationName: "Momentum Builder LIVE 2026",
   manifest: "/manifest.webmanifest",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "MB LIVE" },
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "MB LIVE 2026" },
+  openGraph: {
+    type: "website",
+    url: "https://2026live.momentumbuilder.com",
+    siteName: "Momentum Builder LIVE 2026",
+    title: "Momentum Builder LIVE 2026",
+    description: "The official event hub for Momentum Builder LIVE 2026."
+  },
+  twitter: {
+    card: "summary",
+    title: "Momentum Builder LIVE 2026",
+    description: "The official event hub for Momentum Builder LIVE 2026."
+  },
   formatDetection: { telephone: false },
   icons: { icon: [{url:'/icons/momentum-mark-32.png',sizes:'32x32',type:'image/png'},{url:'/icons/momentum-mark-192.png',sizes:'192x192',type:'image/png'}], apple: '/icons/momentum-mark-180.png', shortcut: '/icons/momentum-mark-32.png' },
   robots: { index: false, follow: false },

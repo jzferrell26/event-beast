@@ -70,6 +70,14 @@ describe('original compact logo',()=>{
     expect(layout).toContain('/icons/momentum-mark-32.png');expect(layout).toContain('/icons/momentum-mark-180.png');
     expect(manifest).toContain('/icons/momentum-mark-maskable-512.png');
   });
+  it('keeps the public browser and install metadata free of the internal Event Beast name',()=>{
+    const layout=readFileSync('src/app/layout.tsx','utf8');
+    const manifest=readFileSync('src/app/manifest.ts','utf8');
+    expect(layout).toContain('Momentum Builder LIVE 2026');
+    expect(layout).toContain('https://2026live.momentumbuilder.com');
+    expect(layout).not.toContain('Event Beast');
+    expect(manifest).not.toContain('Event Beast');
+  });
 });
 
 describe('organizer-owned public details',()=>{
