@@ -1,0 +1,103 @@
+{
+  "source": "Sonia October 1 08:13:02 UTC review email and its supplied Special Partners screenshot",
+  "project": "nyhzmazbfctuttizwnxp",
+  "event": "a9bdf080-f47f-538e-94f7-38e4ff996116",
+  "settingsChanged": [
+    "sponsor_page_title",
+    "wifi_network",
+    "wifi_password",
+    "support_sms",
+    "venue_floor_plan_url"
+  ],
+  "captions": [
+    {
+      "id": "b059f0b1-8b4f-55a8-a9eb-120e7b604291",
+      "name": "Xactus",
+      "note": "Kickoff Party"
+    },
+    {
+      "id": "7c26e465-56ea-534c-adcb-ec61fe988b7f",
+      "name": "EA Appraisal",
+      "note": "Kickoff Party"
+    },
+    {
+      "id": "8b3f8052-ab5b-5d58-a8c2-f95706b90a66",
+      "name": "A1 AMC",
+      "note": "Registration & Charging Stations"
+    },
+    {
+      "id": "7f2e4873-9645-5870-aad6-402aaed3527b",
+      "name": "Lendware",
+      "note": "VIP Lunch"
+    },
+    {
+      "id": "c883801f-4d09-5fb6-a650-d581e03fee26",
+      "name": "Mack Financial Services",
+      "note": "VIP Lunch"
+    },
+    {
+      "id": "cbd37b02-fc9f-5ceb-a46d-07820cec5e5f",
+      "name": "LoanBot+",
+      "note": "Closing Party"
+    },
+    {
+      "id": "4c60aa83-ec29-5086-a65e-53cacfe8686c",
+      "name": "Uplist",
+      "note": "Breakfast"
+    },
+    {
+      "id": "8f11580d-2335-53ac-a77b-fdfcefab1954",
+      "name": "Rize",
+      "note": "Breakfast"
+    },
+    {
+      "id": "f4485582-25c8-58a9-a3d7-0edc590a319c",
+      "name": "Model Match",
+      "note": "Books"
+    },
+    {
+      "id": "0a0797e4-cf17-5901-aad3-7a2b48c91b9b",
+      "name": "Halo",
+      "note": "Inner Circle Dinner"
+    },
+    {
+      "id": "2c7fdd7c-58f4-5a27-a274-958ee18de5a3",
+      "name": "SHREDIT",
+      "note": "Closing Party"
+    }
+  ],
+  "adChanges": [
+    {
+      "id": "ed27f7ed-7ebc-5dee-a85d-618fd9130c74",
+      "name": "Braincode Centers",
+      "url": "https://braincodecenters.com/",
+      "imageChanged": false
+    },
+    {
+      "id": "a2fed32d-4480-590c-a9ac-f24d64359f08",
+      "name": "Auto Appointment Engine",
+      "url": "https://autoappointmentengine.com/",
+      "imageChanged": false
+    },
+    {
+      "id": "8c3c988c-1b9a-5922-a6ab-bdd1f38fa100",
+      "name": "NFTYDoor",
+      "url": "https://nftydoor.com/",
+      "imageChanged": true
+    }
+  ],
+  "nftySource": {
+    "sha256": "177f27736568192e2aa159cae7390a1f84d7f66a46f4c42608cd5ffd1feb6298",
+    "width": 700,
+    "height": 1500,
+    "storedSha256": "f1552c470e1ab4355f17b1a170deeccf08b62d0fc3fd3a08da5cfa162db9d228",
+    "storagePath": "a9bdf080-f47f-538e-94f7-38e4ff996116/organizer/sponsor-ads/nftydoor-approved-still-177f27736568192e.webp"
+  },
+  "repeatedPlacementsCreated": 0,
+  "repeatContracts": "Sponsor names and counts still need organizer confirmation; Copy placement is available in the editor.",
+  "agendaRowsChanged": 0,
+  "committed": true,
+  "committedAt": "2026-10-02T13:16:00.203Z",
+  "programUnchanged": true,
+  "unlinkedPublishedAds": 0
+}

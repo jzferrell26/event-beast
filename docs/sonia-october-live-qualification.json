@@ -1,0 +1,33 @@
+{
+  "verifiedAt": "2026-10-02T13:38:06.294Z",
+  "revision": "c468b6fa5fa21d61a3b60499f16d7ec2eec85e88",
+  "pr": 18,
+  "passed": true,
+  "checks": [
+    {
+      "name": "Source-backed public settings, captions and six linked sponsor ads are live",
+      "passed": true
+    },
+    {
+      "name": "Favicon and home-screen metadata serve exact generated icon bytes",
+      "passed": true
+    },
+    {
+      "name": "chromium: public phone navigation, all-day search, speaker dates and support render correctly",
+      "passed": true
+    },
+    {
+      "name": "webkit: public phone navigation, all-day search, speaker dates and support render correctly",
+      "passed": true
+    },
+    {
+      "name": "Actual Admin API saves bold markup and partner captions in unpublished test records; Member is refused",
+      "passed": true
+    }
+  ],
+  "cleanedUp": true,
+  "realAttendeeUsed": false,
+  "automaticEmailTested": false,
+  "physicalPhoneInstallationTested": false,
+  "externalFloorPlanContentsVerified": false
+}
