@@ -36,4 +36,6 @@ Need the exact sponsors/counts for repeat ad placement. Missing Mack Financial/H
 
 ## Qualification
 
-Source checks and browser fixtures verify the requested behavior; migration, real data sync and deployed verification are recorded separately. An updated source file alone is not a live sign-off. Keep existing role/privacy/message/keyboard regressions passing. A physical iPhone re-add-to-home-screen and final organizer review are not replaced by browser emulation.
+PR #18 is merged and production aliases resolve to merge commit `c468b6fa5fa21d61a3b60499f16d7ec2eec85e88`. The hosted Sonia-specific verification passes five checks against that exact revision: source-backed public settings/partner captions/six linked ads, exact favicon/home-screen icon bytes, Chromium phone UI, WebKit phone UI, and real Admin-vs-Member authorization for unpublished organizer edits. Synthetic users/records were removed. See `sonia-october-live-qualification.json` and `october-organizer-content-sync.json`.
+
+The broader source/CI regressions also passed before merge. A physical iPhone re-add-to-home-screen and final organizer review are not replaced by browser emulation. Automatic account-email delivery, the final attendee roster/invitation wave, `2026live.momentumbuilder.com`, exact repeat-ad contracts, Fun Stuff content, and missing Mack Financial/Halo website destinations remain separate coordination items.
