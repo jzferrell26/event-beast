@@ -20,3 +20,4 @@
 .session-location,.session-duration,.session-end{color:#62626d}
 .app-footer{color:#62626d}
 .quick-arrow,.small-feature>svg:last-child{color:#686873}
+.session-lunch-link{position:relative;z-index:2;display:inline-flex;align-items:center;gap:7px;margin-top:12px;color:var(--red);font-size:10px;font-weight:750;text-decoration:none}.session-lunch-link:hover{text-decoration:underline}.lunch-day-section[id]{scroll-margin-top:90px}

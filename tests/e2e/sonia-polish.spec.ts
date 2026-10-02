@@ -6,18 +6,22 @@ import { adminDefaults, adminResources } from '../../src/lib/admin-resources';
 
 test.use({serviceWorkers:'block'});
 const mapUrl='https://assets.hyatt.com/content/dam/hyatt/hyattdam/documents/2020/01/02/1234/Hyatt-Regency-Dallas-Floor-Plan-English.pdf';
-function fixtureGuide(){
+function fixtureGuide(withLunch=false){
   const guide=publicSiteGuide(structuredClone(demoGuide),true);
   guide.settings={...guide.settings,sponsor_page_title:'Impact Partners',sponsor_page_description:'The partners making this event possible.',wifi_network:'Test-Meeting',wifi_password:'Test2026',support_email:'support@example.test',support_sms:'747-213-2155',venue_floor_plan_url:mapUrl};
   guide.days=[0,1,2].map(i=>({...demoGuide.days[0],id:`40000000-0000-4000-8000-00000000000${i+1}`,date:`2026-10-0${6+i}`,label:`Day ${i+1}`}));
   guide.sessions=[0,1,2].map(i=>({...demoGuide.sessions[0],id:`50000000-0000-4000-8000-00000000000${i+1}`,day_id:guide.days[i].id,title:'Networking session '+(i+1),description:'Bring **your questions** and <img src=x onerror=alert(1)>',starts_at:`2026-10-0${6+i}T15:00:00Z`,ends_at:`2026-10-0${6+i}T16:00:00Z`}));
+  if(withLunch){
+    guide.sessions.push({...demoGuide.sessions[0],id:'50000000-0000-4000-8000-000000000010',day_id:guide.days[1].id,title:'Lunch Break',description:'See lunch options.',starts_at:'2026-10-07T17:30:00Z',ends_at:'2026-10-07T18:30:00Z'});
+    guide.lunches=[{...demoGuide.lunches[0],id:'80000000-0000-4000-8000-000000000001',event_date:'2026-10-07',published:true,is_demo:false}];
+  }
   guide.sessionSpeakers=guide.sessions.map(session=>({event_id:guide.event.id,session_id:session.id,speaker_id:guide.speakers[0].id}));
   guide.sponsors=[{...demoGuide.sponsors[0],id:'60000000-0000-4000-8000-000000000099',name:'Test Impact Partner',logo_url:'https://assets.example/partner.png',cta_url:'https://partner.example/',sponsorship_note:'Kickoff Party'}];
   guide.placements=[{...demoGuide.placements[0],sponsor_id:guide.sponsors[0].id,day_id:null,after_session_id:null,surface:'lunch',image_url:'https://assets.example/creative.png',image_alt:'Approved test creative',image_format:'banner',link_url:'',published:true}];
   return guide;
 }
-async function wire(page:Page){
-  const guide=fixtureGuide();
+async function wire(page:Page,withLunch=false){
+  const guide=fixtureGuide(withLunch);
   await page.route('https://assets.example/**',route=>route.fulfill({path:'public/icons/momentum-mark-192.png',contentType:'image/png'}));
   await page.route('**/api/guide',route=>route.fulfill({json:guide}));
   return guide;
@@ -37,6 +41,16 @@ test('agenda searches all three days, shows dates and restores chosen-day naviga
   await expect(page.locator('.type-pill:visible')).toHaveCount(0);
   await page.getByRole('tab',{name:/Day 2/}).click();await expect(page.getByRole('textbox',{name:'Search sessions'})).toHaveValue('');
   await expect(page.getByRole('heading',{name:'Networking session 2'})).toBeVisible();await expect(page.locator('.session-title:visible')).toHaveCount(1);
+});
+
+test('Lunch Break links to the matching date on the Lunch page',async({page})=>{
+  await wire(page,true);await page.goto('/agenda');await settle(page);
+  await page.getByRole('tab',{name:/Day 2/}).click();
+  const lunch=page.locator('.session-card',{hasText:'Lunch Break'});
+  await expect(lunch.getByRole('link',{name:'View lunch options'})).toHaveAttribute('href','/more/lunch#lunch-2026-10-07');
+  await lunch.getByRole('link',{name:'View lunch options'}).click();
+  await expect(page).toHaveURL(/\/more\/lunch#lunch-2026-10-07$/);
+  await expect(page.locator('#lunch-2026-10-07')).toBeVisible();
 });
 
 test('speaker sessions include dates and descriptions render only safe bold text',async({page},info)=>{

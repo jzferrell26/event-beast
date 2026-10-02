@@ -5,6 +5,7 @@ vi.mock('../src/lib/supabase/server', () => ({ serverSupabase: mocks.server }));
 import { GET, POST } from '../src/app/auth/confirm/route';
 const site = 'https://2026live.momentumbuilder.com';
 const hash = 'a'.repeat(64);
+const pkceHash = 'pkce_'+'b'.repeat(64);
 const link = `${site}/auth/confirm?token_hash=${hash}&type=invite&next=/admin`;
 const post = (origin=site) => new Request(site+'/auth/confirm', { method:'POST', headers:{ Origin:origin,'Content-Type':'application/x-www-form-urlencoded' }, body:new URLSearchParams({token_hash:hash,type:'invite',next:'/admin'}) });
 describe('recipient-confirmed email activation', () => {
@@ -18,6 +19,11 @@ describe('recipient-confirmed email activation', () => {
  });
  it('consumes the link only from an explicit same-origin confirmation and forces password setup',async()=>{
   const response=await POST(post());expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(site+'/reset-password');expect(mocks.verify).toHaveBeenCalledOnce();expect(mocks.signOut).not.toHaveBeenCalled();
+ });
+ it('accepts Supabase PKCE recovery token hashes and passes them through unchanged',async()=>{
+  const get=await GET(new Request(`${site}/auth/confirm?token_hash=${pkceHash}&type=recovery`));expect(get.status).toBe(200);expect(await get.text()).toContain(pkceHash);
+  const response=await POST(new Request(site+'/auth/confirm',{method:'POST',headers:{Origin:site,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({token_hash:pkceHash,type:'recovery'})}));
+  expect(response.status).toBe(303);expect(response.headers.get('location')).toBe(site+'/reset-password');expect(mocks.verify).toHaveBeenCalledWith({token_hash:pkceHash,type:'recovery'});
  });
  it('rejects cross-origin submission without using the credential',async()=>{expect((await POST(post('https://untrusted.example'))).status).toBe(403);expect(mocks.verify).not.toHaveBeenCalled();});
  it('a used link is actionable but cannot sign out the existing account',async()=>{mocks.verify.mockResolvedValue({error:{code:'otp_expired'}});const response=await POST(post());expect(response.headers.get('location')).toBe(site+'/auth?error=link&force=1');expect(mocks.signOut).not.toHaveBeenCalled();});

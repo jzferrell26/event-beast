@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Bookmark, Clock3, MapPin, ArrowUpRight, CalendarDays } from "lucide-react";
+import { Bookmark, Clock3, MapPin, ArrowUpRight, CalendarDays, Utensils } from "lucide-react";
 import type { AgendaSession, SponsorPlacement } from "@/lib/types";
 import { eventTime, eventDay, sessionSpeakers, sessionState, sessionTimeRange } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
@@ -13,6 +13,9 @@ export function SessionCard({ session, compact = false, showDay = false }: { ses
   const speakers = sessionSpeakers(guide, session.id);
   const isSaved = saved.sessions.includes(session.id);
   const day = showDay ? guide.days.find(item => item.id === session.day_id) : null;
+  const sessionDay = guide.days.find(item => item.id === session.day_id);
+  const lunchDate = sessionDay?.date;
+  const hasLunchOptions = Boolean(lunchDate && /\blunch\b/i.test(session.title));
   return <article className={`session-card${current ? " session-live" : ""}${compact ? " compact" : ""}`}>
     {!compact && <div className="session-time"><strong>{eventTime(session.starts_at, guide.event.timezone).replace(/ [AP]M/, "")}</strong><span>{eventTime(session.starts_at, guide.event.timezone).slice(-2)}</span><span className="time-line" /></div>}
     <div className="session-body">{day && <p className="session-date"><CalendarDays size={14} />{eventDay(day.date,{weekday:'short',month:'short',day:'numeric'})}</p>}{(!guide.publicSite || current) && <div className="session-meta">{!guide.publicSite && <span className={`type-pill type-${session.session_type.toLowerCase()}`}>{session.session_type}</span>}{current && <span className="live-label"><span className="live-dot" />LIVE NOW</span>}</div>}
@@ -20,6 +23,7 @@ export function SessionCard({ session, compact = false, showDay = false }: { ses
       {compact && <p className="session-duration"><Clock3 size={14} />{sessionTimeRange(session, guide.event.timezone)}</p>}
       {!compact && speakers.length > 0 && <p className="session-speakers">{speakers.map((s) => s.full_name).join(" · ")}</p>}
       <p className="session-location"><MapPin size={14} />{session.room || "Location to be announced"}{!compact && session.end_time_confirmed !== false && <span className="session-end">Until {eventTime(session.ends_at, guide.event.timezone)}</span>}</p>
+      {!compact && hasLunchOptions && <Link className="session-lunch-link" href={`/more/lunch#lunch-${lunchDate}`}><Utensils size={15} />View lunch options<ArrowUpRight size={15} /></Link>}
     </div><button type="button" className={`icon-button bookmark-button${isSaved ? " is-saved" : ""}`} aria-label={`${isSaved ? "Unsave" : "Save"} ${session.title}`} aria-pressed={isSaved} onClick={() => void toggleSave("session", session.id)}><Bookmark size={20} fill={isSaved ? "currentColor" : "none"} /></button>
   </article>;
 }

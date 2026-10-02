@@ -10,6 +10,7 @@ import { assertSameOrigin, handle, ApiError } from '@/lib/server/http';
 const headers = { 'Cache-Control': 'private, no-store, max-age=0', 'Referrer-Policy': 'strict-origin', 'X-Robots-Tag': 'noindex, nofollow', 'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'" };
 const validTypes = ['signup', 'recovery', 'invite', 'email_change', 'email'];
 const escape = (value: string) => value.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]!));
+const validTokenHash = (value: string) => /^(?:pkce_)?[a-fA-F0-9]{32,256}$/.test(value);
 const origin = () => authenticationOrigin(process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL);
 const fail = () => NextResponse.redirect(new URL('/auth?error=link&force=1', origin()), { status: 303, headers });
 
@@ -19,7 +20,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const hash = url.searchParams.get('token_hash') ?? '';
   const type = url.searchParams.get('type') ?? '';
-  if (!/^[a-fA-F0-9]{32,256}$/.test(hash) || !validTypes.includes(type)) return fail();
+  if (!validTokenHash(hash) || !validTypes.includes(type)) return fail();
   const canonical = new URL('/auth/confirm', origin());
   canonical.search = url.search;
   const browserHost = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? url.host;
@@ -37,7 +38,7 @@ export const POST = (request: Request) => handle(async () => {
   if (new TextEncoder().encode(raw).length > 4096) throw new ApiError(413, 'The link is too large.');
   const form = new URLSearchParams(raw);
   const hash = form.get('token_hash') ?? '', type = form.get('type') ?? '';
-  if (!/^[a-fA-F0-9]{32,256}$/.test(hash) || !validTypes.includes(type)) return fail();
+  if (!validTokenHash(hash) || !validTypes.includes(type)) return fail();
   const db = await serverSupabase();
   if (!db) throw new ApiError(503, 'Event sign-in is temporarily unavailable. Your link was not used.');
   // verifyOtp replaces the local session on success. A bad link must not sign

@@ -117,6 +117,7 @@
   .session-card .session-speakers{font-size:13px;line-height:1.6;overflow-wrap:anywhere;min-width:0}
   .session-card .session-location,.session-card .session-duration{font-size:13px;line-height:1.55;align-items:flex-start;overflow-wrap:anywhere}
   .session-card .session-location>svg{width:15px;height:17px}
+  .session-card .session-lunch-link{font-size:13px;min-height:44px;margin-top:8px}
   .session-card .session-end{display:block;flex-basis:100%;border:0;padding:0;margin:4px 0 0 20px;font-size:12px}
   .session-card .type-pill{font-size:10px;letter-spacing:.4px}
   .session-card .live-label{font-size:10px}
