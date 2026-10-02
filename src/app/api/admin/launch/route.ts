@@ -55,7 +55,8 @@ export const GET = () => handle(async () => {
   const runtime = evaluateEnvironment({ demo: isDemo(), backendUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     backendKeyConfigured: Boolean(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
     siteUrl: process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL,
-    emailReady: process.env.EVENT_BEAST_EMAIL_READY === "true", activeAdmins });
+    emailReady: process.env.EVENT_BEAST_EMAIL_READY === "true",
+    recoveryReady: process.env.EVENT_BEAST_EMAIL_READY === "true" || process.env.EVENT_BEAST_RECOVERY_READY === "true", activeAdmins });
   const contentReady = items.every((item) => item.status === "ready");
   const runtimeReady = runtime.every((item) => item.status === "ready");
   const organizerChecksRecorded = definitions.every((definition) => checks.some((check) => check.check_key === definition.key && check.verified));

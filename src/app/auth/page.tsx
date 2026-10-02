@@ -14,5 +14,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
     const identity = await db?.auth.getUser();
     if (identity?.data.user?.email_confirmed_at && !forceAuth) redirect(next);
   }
-  return <AuthScreen organizerOnly={organizerOnly} initialMode={query.mode === "recover" ? "recover" : query.mode === "sign-up" ? "sign-up" : "sign-in"} demo={isDemo()} emailReady={process.env.EVENT_BEAST_EMAIL_READY === 'true'} next={next} linkError={query.error === "link"} />;
+  const emailReady = process.env.EVENT_BEAST_EMAIL_READY === 'true';
+  const recoveryReady = emailReady || process.env.EVENT_BEAST_RECOVERY_READY === 'true';
+  return <AuthScreen organizerOnly={organizerOnly} initialMode={query.mode === "recover" ? "recover" : query.mode === "sign-up" ? "sign-up" : "sign-in"} demo={isDemo()} emailReady={emailReady} recoveryReady={recoveryReady} next={next} linkError={query.error === "link"} />;
 }
