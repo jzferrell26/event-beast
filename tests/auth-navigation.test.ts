@@ -4,8 +4,8 @@ import { safeNext } from '../src/lib/format';
 
 describe('same-origin authentication redirects', () => {
   it('uses the configured website, independent of an internal proxy hostname', () => {
-    const destination = new URL(safeNext('/more/profile'), authenticationOrigin('https://event-beast.vercel.app/'));
-    expect(destination.href).toBe('https://event-beast.vercel.app/more/profile');
+    const destination = new URL(safeNext('/more/profile'), authenticationOrigin('https://eventapp.momentumbuilder.com/'));
+    expect(destination.href).toBe('https://eventapp.momentumbuilder.com/more/profile');
   });
   it('preserves the exact local test host so confirmation cookies stay available', () => {
     expect(authenticationOrigin('http://127.0.0.1:3101')).toBe('http://127.0.0.1:3101');
@@ -17,6 +17,6 @@ describe('same-origin authentication redirects', () => {
     }
   });
   it('never uses an external next parameter as a redirect destination', () => {
-    expect(new URL(safeNext('//evil.example'), authenticationOrigin('https://event-beast.vercel.app')).href).toBe('https://event-beast.vercel.app/');
+    expect(new URL(safeNext('//evil.example'), authenticationOrigin('https://eventapp.momentumbuilder.com')).href).toBe('https://eventapp.momentumbuilder.com/');
   });
 });
