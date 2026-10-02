@@ -7,6 +7,6 @@ export function PageSponsorAds({ surface }: { surface: Exclude<SponsorPlacement[
   const { guide } = useApp();
   return <>{guide.placements.filter(placement => placement.published && placement.surface === surface).map(placement => {
     const sponsor = guide.sponsors.find(item => item.id === placement.sponsor_id && item.published);
-    return sponsor ? <SponsorCreative key={`${placement.id}:${placement.image_url}`} placement={placement} sponsorName={sponsor.name} /> : null;
+    return sponsor ? <SponsorCreative key={`${placement.id}:${placement.image_url}`} placement={placement} sponsorName={sponsor.name} sponsorUrl={sponsor.cta_url} /> : null;
   })}</>;
 }

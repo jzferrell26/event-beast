@@ -1,14 +1,15 @@
 "use client";
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Bookmark, CalendarDays, CircleHelp, Clock3, MapPin, Mic2, ShieldCheck, Smartphone, Trophy, Utensils, WifiOff, Zap } from 'lucide-react';
-import { activeAnnouncements, eventDay, httpsUrl, sessionState } from '@/lib/format';
+import { ArrowRight, ArrowUpRight, Bookmark, CalendarDays, CircleHelp, Clock3, MapPin, Mic2, ShieldCheck, Smartphone, Handshake, Utensils, Zap } from 'lucide-react';
+import { activeAnnouncements, eventDay, sessionState } from '@/lib/format';
 import { useApp, useNow } from './app-provider';
-import { EmptyState, PageTitle, SectionTitle } from './ui';
+import { PageTitle, SectionTitle } from './ui';
 import { MobileEventAlerts, MobileEventMoment } from './mobile-event';
 import { SessionCard } from './session-card';
 import { HubMoreScreen } from './hub-more';
+import { ImpactPartnersScreen } from './impact-partners';
+import { EventSupport, EventWifi } from './event-support';
 
 export function PublicHomeScreen() {
   const { guide, saved } = useApp();
@@ -18,7 +19,7 @@ export function PublicHomeScreen() {
   const quickLinks = [
     { href: '/agenda', label: 'Full agenda', caption: 'Your day, at a glance', icon: CalendarDays },
     { href: '/more/speakers', label: 'The speakers', caption: 'Meet the voices', icon: Mic2 },
-    { href: '/sponsors', label: 'Our sponsors', caption: 'The event partners', icon: Trophy },
+    { href: '/sponsors', label: 'Impact Partners', caption: 'The event partners', icon: Handshake },
     { href: '/more/lunch', label: 'Lunch', caption: 'Find your next stop', icon: Utensils },
   ];
   return <div className="home-screen public-home">
@@ -48,21 +49,14 @@ export function PublicMoreScreen() {
 }
 
 export function PublicSponsorsScreen() {
-  const { guide } = useApp();
-  const groups = [...[...guide.tiers].sort((a, b) => a.sort_order - b.sort_order).map(tier => ({ id: tier.id, name: tier.name })), { id: null, name: 'Event partners' }];
-  return <><PageTitle eyebrow="THE PARTNERS BEHIND THE MOMENTUM" title="Better, together." description="Thank you to the partners making Momentum Builder LIVE possible." />{!guide.sponsors.length && <EmptyState title="Meet our partners soon." icon={<Trophy size={30} />}>The event team will publish the sponsor lineup here.</EmptyState>}{groups.map(group => {
-    const sponsors = guide.sponsors.filter(sponsor => sponsor.tier_id === group.id).sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name));
-    if (!sponsors.length) return null;
-    return <section key={group.id ?? 'other'} className="sponsor-tier public-sponsor-tier"><h2 className="tier-heading"><span />{group.name}<span /></h2><div className="public-sponsor-grid">{sponsors.map(sponsor => <article className="public-sponsor-logo-card" key={sponsor.id}><div className="public-sponsor-logo">{httpsUrl(sponsor.logo_url) ? <Image src={sponsor.logo_url} alt={`${sponsor.name} logo`} fill sizes="(max-width: 600px) 44vw, (max-width: 1000px) 30vw, 260px" unoptimized /> : <span>{sponsor.name}</span>}</div><h3>{sponsor.name}</h3>{httpsUrl(sponsor.cta_url) && <a href={sponsor.cta_url} target="_blank" rel="noopener noreferrer" className="text-button">{sponsor.cta_label || "Visit website"}<ArrowUpRight size={15} /></a>}{sponsor.is_demo && <small>Sample sponsor</small>}</article>)}</div></section>;
-  })}</>;
+  return <ImpactPartnersScreen />;
 }
 
 export function PublicHelpScreen() {
-  const { guide } = useApp();
-  return <><PageTitle eyebrow="A LITTLE HELP GOES A LONG WAY" title="You’re in good hands." description="Your event essentials, without another account or app download." /><div className="help-grid">
-    <section className="help-topic"><CalendarDays size={26} /><h2>Start with the agenda.</h2><p>Choose an event day, search for a session or speaker, and tap a session for its details. Times use the event timezone, even when your phone is set to another zone.</p><p>Use the bookmark to save sessions on this device. These favorites do not sync to other browsers and are removed when you clear site data.</p><Link href="/agenda" className="text-button">Open the agenda<ArrowRight size={15} /></Link></section>
+  return <><PageTitle eyebrow="A LITTLE HELP GOES A LONG WAY" title="You’re in good hands." description="Event information, Wi-Fi and a real person when you need one." /><div className="help-grid">
+    <section className="help-topic"><CalendarDays size={26} /><h2>Start with the agenda.</h2><p>Choose an event day or search across all event days for a session, speaker or topic. Tap a session for its details. Times use the event timezone, even when your phone is set to another zone.</p><p>Use the bookmark to save sessions on this device. These favorites do not sync to other browsers and are removed when you clear site data.</p><Link href="/agenda" className="text-button">Open the agenda<ArrowRight size={15} /></Link></section>
     <section className="help-topic"><Smartphone size={26} /><h2>Keep the guide handy.</h2><p><strong>On iPhone:</strong> open this site in Safari, tap Share, then Add to Home Screen.</p><p><strong>On Android:</strong> use your browser menu to choose Install app or Add to Home screen when available.</p><p>Installation is optional. Event information is public; sign in for the social wall and private messages.</p></section>
-    <section className="help-topic"><WifiOff size={26} /><h2>A little less dependent on Wi-Fi.</h2><p>Load the guide while connected before the event. Your saved offline guide includes the last loaded public agenda, sponsors, lunch and venue details. The social wall, private messages and organizer editing require a connection.</p><p>Offline details can be out of date. Reconnect and refresh for schedule changes. Some external images need a connection.</p><a href="/offline.html" className="text-button">Open the offline guide<ArrowRight size={15} /></a></section>
-    <section className="help-topic"><CircleHelp size={26} /><h2>A real person can help.</h2><p>{guide.settings.support_location || 'Ask the event team for help with locations or schedule updates.'}</p>{guide.settings.support_email && <a className="text-button" href={`mailto:${encodeURIComponent(guide.settings.support_email)}`}>Contact the event team<ArrowRight size={15} /></a>}<p>Use your registered email to sign in for the event social wall and private messages. Your profile is hidden until you choose to appear in People. Posting shares your profile name with other verified attendees.</p><Link className="text-button" href="/auth">Attendee sign in<ArrowRight size={15} /></Link><Link className="text-button" href="/admin">Organizer sign in<ArrowRight size={15} /></Link></section>
+    <EventWifi />
+    <section className="help-topic"><CircleHelp size={26} /><h2>A real person can help.</h2><EventSupport /></section>
   </div></>;
 }

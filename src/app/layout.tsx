@@ -16,6 +16,7 @@ import './public-site.css';
 import './hub.css';
 import './message-attention.css';
 import './thread-viewport.css';
+import './organizer-polish.css';
 
 export const metadata: Metadata = {
   title: { default: "Momentum Builder LIVE 2026 | Event Beast", template: "%s | Momentum Builder LIVE" },
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "MB LIVE" },
   formatDetection: { telephone: false },
-  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  icons: { icon: [{url:'/icons/momentum-mark-32.png',sizes:'32x32',type:'image/png'},{url:'/icons/momentum-mark-192.png',sizes:'192x192',type:'image/png'}], apple: '/icons/momentum-mark-180.png', shortcut: '/icons/momentum-mark-32.png' },
   robots: { index: false, follow: false },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#111113" };

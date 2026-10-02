@@ -15,6 +15,9 @@ export async function verifyWebKitOfflineOrigin(page: Page, browser: Browser, gu
     ['/branding/momentum-builder-live-2026.png', 'image/png'],
     ['/icons/icon-192.png', 'image/png'], ['/icons/icon-512.png', 'image/png'],
     ['/icons/apple-touch-icon.png', 'image/png'],
+    ['/icons/momentum-mark-32.png', 'image/png'], ['/icons/momentum-mark-180.png', 'image/png'],
+    ['/icons/momentum-mark-192.png', 'image/png'], ['/icons/momentum-mark-512.png', 'image/png'],
+    ['/icons/momentum-mark-maskable-512.png', 'image/png'],
   ].map(([path, type]) => [path, { type, bytes: readFileSync(new URL(`../../../public${path}`, import.meta.url)) }]));
   const server = createServer((request, response) => {
     const path = new URL(request.url ?? '/', 'http://localhost').pathname;

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { House, CalendarDays, Users, MessageCircle, MoreHorizontal, Bell, ArrowUpRight, MapPin, Trophy, Mic2, MessagesSquare } from 'lucide-react';
+import { House, CalendarDays, Users, MessageCircle, MoreHorizontal, Bell, ArrowUpRight, MapPin, Handshake, Mic2, MessagesSquare } from 'lucide-react';
 import { useApp } from './app-provider';
 import { Avatar, Brand } from './ui';
 import { MemberBoundary } from './member-boundary';
@@ -14,7 +14,7 @@ import { messageCountLabel } from '@/lib/message-attention';
 
 const home = { href: '/', label: 'Home', icon: House }, agenda = { href: '/agenda', label: 'Agenda', icon: CalendarDays }, more = { href: '/more', label: 'More', icon: MoreHorizontal };
 const people = { href: '/people', label: 'People', icon: Users }, inbox = { href: '/inbox', label: 'Inbox', icon: MessageCircle };
-const wall = { href: '/feed', label: 'Feed', icon: MessagesSquare }, sponsors = { href: '/sponsors', label: 'Sponsors', icon: Trophy }, speakers = { href: '/more/speakers', label: 'Speakers', icon: Mic2 };
+const wall = { href: '/feed', label: 'Feed', icon: MessagesSquare }, sponsors = { href: '/sponsors', label: 'Sponsors', icon: Handshake }, speakers = { href: '/more/speakers', label: 'Speakers', icon: Mic2 };
 export function AppShell({ children }: { children: ReactNode }) {
   return <InboxSignalProvider><MessageAttentionProvider><ShellBody>{children}</ShellBody></MessageAttentionProvider></InboxSignalProvider>;
 }

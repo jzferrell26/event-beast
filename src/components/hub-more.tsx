@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, BookOpen, Bookmark, CalendarDays, CircleHelp, LogOut, MapPin, MessagesSquare, ShieldCheck, Sparkles, Trophy, UserRound, Users, Utensils } from 'lucide-react';
+import { ArrowRight, BookOpen, Bookmark, CalendarDays, CircleHelp, LogOut, MapPin, MessagesSquare, ShieldCheck, Sparkles, Handshake, UserRound, Users, Utensils } from 'lucide-react';
 import { useApp } from './app-provider';
 import { errorMessage, mutate } from '@/lib/client';
 import { PageTitle } from './ui';
@@ -19,7 +19,7 @@ export function HubMoreScreen() {
     ] : []),
     { href: '/agenda', title: 'Full agenda', text: 'The program for every event day', icon: CalendarDays },
     { href: '/more/speakers', title: 'Meet the speakers', text: 'The voices and ideas behind the program', icon: BookOpen },
-    { href: '/sponsors', title: 'Our sponsors', text: 'The partners behind the momentum', icon: Trophy },
+    { href: '/sponsors', title: 'Impact Partners', text: 'The partners behind the momentum', icon: Handshake },
     { href: '/more/lunch', title: 'Lunch & breakouts', text: 'VIP lunch, breakout rooms, seating and food trucks', icon: Utensils },
     { href: '/more/fun-stuff', title: 'Fun Stuff', text: 'The extra event moments, as the organizer publishes them', icon: Sparkles },
     { href: '/more/venue', title: 'Find your way', text: 'Venue, directions and help', icon: MapPin },

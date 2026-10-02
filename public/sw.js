@@ -1,9 +1,9 @@
 /* Event Beast: cache only the explicitly public guide and its offline reader.
  * Never cache navigated app HTML, RSC, auth, private API data or admin pages.
- * Reader revision: 2026-09-30 event hub (no notifications, confirmed times).
+ * Reader revision: 2026-10-02 original M icons and organizer polish.
  * Changing this worker refreshes existing installations as well as new ones. */
 const CACHE = "event-beast-public-v1";
-const CORE = ["/offline.html", "/offline.js", "/offline-base.css", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png", "/branding/momentum-builder-live-2026.png"];
+const CORE = ["/offline.html", "/offline.js", "/offline-base.css", "/icons/icon-192.png", "/icons/icon-512.png", "/icons/apple-touch-icon.png", "/icons/momentum-mark-32.png", "/icons/momentum-mark-192.png", "/icons/momentum-mark-512.png", "/icons/momentum-mark-180.png", "/icons/momentum-mark-maskable-512.png", "/branding/momentum-builder-live-2026.png"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(CORE.map(url => new Request(url, { cache: 'reload' })))).then(() => self.skipWaiting()));

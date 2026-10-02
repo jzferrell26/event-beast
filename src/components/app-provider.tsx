@@ -155,7 +155,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   }, [guide.mode, guide.event.id, guide.sessions, me, notify, pathname, router, saved, publicVisitor]);
 
   return <Context.Provider value={{ guide, me, saved, online, meError, refreshMe, refreshGuide, toggleSave, notify }}>
-    {!online && <div className="offline-banner" role="status"><WifiOff size={16} /><span>You’re offline. Previously loaded event essentials are available.</span><a href="/offline.html">Open guide</a></div>}
+    {!online && <div className="offline-banner" role="status"><WifiOff size={16} /><span>{guide.publicSite ? "You’re offline. Reconnect for the latest event information." : "You’re offline. Previously loaded event essentials are available."}</span>{!guide.publicSite && <a href="/offline.html">Open guide</a>}</div>}
     {children}
     {toast && <div className={`toast${toast.error ? " toast-error" : ""}`} role={toast.error ? "alert" : "status"}>{toast.error ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}<span>{toast.message}</span><button type="button" onClick={() => setToast(null)} aria-label="Dismiss notification"><X size={18} /></button></div>}
   </Context.Provider>;

@@ -2,6 +2,10 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## October 2 — Sonia’s organizer review
+
+The current refinement is documented in [SONIA-OCTOBER-REVIEW.md](./SONIA-OCTOBER-REVIEW.md): original compact icons, Impact Partners controls, all-days agenda search, speaker-session dates, safe bold descriptions, ad links/creative, Wi-Fi and exact help copy. It preserves live program edits and keeps the domain, bulk email and additional sponsor-contract placements as separate gates. Source, data-sync and deployment results must be recorded independently.
+
 ## Pressure Monkey qualification — first implementation slice
 
 [PRD-002](../library/requirements/in-work/prd-002-pressure-monkey-qualification/prd-002-pressure-monkey-qualification-index.md) is now in work. Read-only source/public preflight, strict manifest review, exact target/host/path protections, resource-budget primitives and separate-process local watchdog tests are implemented in `scripts/pressure-monkey/`. See [Pressure Monkey](./PRESSURE-MONKEY.md) for exact commands and observed configuration limits. No hosted load, paid environment, account mail or provider change is performed by this slice. The full 500-session workload, fixture lifecycle and recovery tests remain blocked/not run.
