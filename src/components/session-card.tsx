@@ -1,20 +1,21 @@
 "use client";
 import Link from "next/link";
-import { Bookmark, Clock3, MapPin, ArrowUpRight } from "lucide-react";
+import { Bookmark, Clock3, MapPin, ArrowUpRight, CalendarDays } from "lucide-react";
 import type { AgendaSession, SponsorPlacement } from "@/lib/types";
-import { eventTime, sessionSpeakers, sessionState, sessionTimeRange } from "@/lib/format";
+import { eventTime, eventDay, sessionSpeakers, sessionState, sessionTimeRange } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
 import { SponsorCreative } from './sponsor-creative';
 
-export function SessionCard({ session, compact = false }: { session: AgendaSession; compact?: boolean }) {
+export function SessionCard({ session, compact = false, showDay = false }: { session: AgendaSession; compact?: boolean; showDay?: boolean }) {
   const { guide, saved, toggleSave } = useApp();
   const now = useNow();
   const current = sessionState(session, now) === "now";
   const speakers = sessionSpeakers(guide, session.id);
   const isSaved = saved.sessions.includes(session.id);
+  const day = showDay ? guide.days.find(item => item.id === session.day_id) : null;
   return <article className={`session-card${current ? " session-live" : ""}${compact ? " compact" : ""}`}>
     {!compact && <div className="session-time"><strong>{eventTime(session.starts_at, guide.event.timezone).replace(/ [AP]M/, "")}</strong><span>{eventTime(session.starts_at, guide.event.timezone).slice(-2)}</span><span className="time-line" /></div>}
-    <div className="session-body"><div className="session-meta"><span className={`type-pill type-${session.session_type.toLowerCase()}`}>{session.session_type}</span>{current && <span className="live-label"><span className="live-dot" />LIVE NOW</span>}</div>
+    <div className="session-body">{day && <p className="session-date"><CalendarDays size={14} />{eventDay(day.date,{weekday:'short',month:'short',day:'numeric'})}</p>}{(!guide.publicSite || current) && <div className="session-meta">{!guide.publicSite && <span className={`type-pill type-${session.session_type.toLowerCase()}`}>{session.session_type}</span>}{current && <span className="live-label"><span className="live-dot" />LIVE NOW</span>}</div>}
       <Link href={`/agenda/${session.id}`} className="session-title"><h3>{session.title}</h3></Link>
       {compact && <p className="session-duration"><Clock3 size={14} />{sessionTimeRange(session, guide.event.timezone)}</p>}
       {!compact && speakers.length > 0 && <p className="session-speakers">{speakers.map((s) => s.full_name).join(" · ")}</p>}
@@ -27,6 +28,6 @@ export function AgendaPlacement({ placement }: { placement: SponsorPlacement }) 
   const sponsor = guide.sponsors.find((s) => s.id === placement.sponsor_id);
   if (!sponsor) return null;
   const tier = guide.tiers.find((t) => t.id === sponsor.tier_id)?.name;
-  if (placement.image_url || guide.publicSite) return <SponsorCreative key={placement.image_url} placement={placement} sponsorName={sponsor.name} />;
+  if (placement.image_url || guide.publicSite) return <SponsorCreative key={placement.image_url} placement={placement} sponsorName={sponsor.name} sponsorUrl={sponsor.cta_url} />;
   return <Link href={`/more/sponsors/${sponsor.id}`} className="agenda-ad"><div><span className="eyebrow">SPONSOR SPOTLIGHT {tier && ` / ${tier}`}</span><h3>{placement.headline || sponsor.name}</h3><p>{placement.body || sponsor.description}</p><strong>{sponsor.name}</strong></div><ArrowUpRight size={26} aria-hidden="true" /></Link>;
 }

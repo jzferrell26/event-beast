@@ -9,6 +9,8 @@ export interface EventSettings {
   support_location: string; technology_attribution: boolean; directory_enabled: boolean; messaging_enabled: boolean;
   agenda_notice?: string;
   community_enabled?: boolean; feed_enabled?: boolean; announcements_enabled?: boolean;
+  sponsor_page_title?: string; sponsor_page_description?: string;
+  wifi_network?: string; wifi_password?: string; support_sms?: string; venue_floor_plan_url?: string;
 }
 export interface AgendaDay { id: string; event_id: string; label: string; date: string; sort_order: number; published: boolean }
 export interface AgendaSession {
@@ -24,6 +26,7 @@ export interface Sponsor {
   logo_url: string; booth: string; cta_label: string; cta_url: string; featured: boolean;
   sort_order: number; published: boolean; is_demo: boolean;
   content_version?: number; updated_at?: string;
+  sponsorship_note?: string;
 }
 export interface SponsorPlacement {
   id: string; event_id: string; day_id: string | null; after_session_id: string | null; sponsor_id: string;

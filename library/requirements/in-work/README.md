@@ -1,5 +1,7 @@
 # Requirements in work
 
+Current organizer review: [PRD-003 — Sonia’s event polish](./prd-003-sonia-event-polish/prd-003-sonia-event-polish-index.md), with the implementation and operator controls in [Sonia October review](../../../docs/SONIA-OCTOBER-REVIEW.md).
+
 Implementation has started. Keep the entire PRD folder here until the release is shipped and its production handoff is recorded.
 
 | PRD | Scope |
