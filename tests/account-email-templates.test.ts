@@ -14,7 +14,7 @@ describe('safe transactional templates',()=>{
 
 it('production Auth is branded to Momentum Builder without opening the email gate',async()=>{
  const config=await readFile('supabase/config.toml','utf8');
- expect(config).toContain('site_url = "https://eventapp.momentumbuilder.com"');
+ expect(config).toContain('site_url = "https://2026live.momentumbuilder.com"');
  expect(config).toContain('host = "smtp.resend.com"');
  expect(config).toContain('user = "resend"');
  expect(config).toContain('pass = "env(RESEND_SMTP_PASSWORD)"');

@@ -9,7 +9,7 @@ const backend = backendEnvironment();
 const settings = [
   ['NEXT_PUBLIC_SUPABASE_URL', 'production', backend.NEXT_PUBLIC_SUPABASE_URL],
   ['NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'production', backend.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY],
-  ['NEXT_PUBLIC_SITE_URL', 'production', 'https://eventapp.momentumbuilder.com'],
+  ['NEXT_PUBLIC_SITE_URL', 'production', 'https://2026live.momentumbuilder.com'],
   ['NEXT_PUBLIC_EVENT_SLUG', 'production', 'momentum-builder-live-2026'],
   ['EVENT_BEAST_EMAIL_READY', 'production,preview,development', 'false'],
   ['EVENT_BEAST_DEMO_MODE', 'production', 'false'],

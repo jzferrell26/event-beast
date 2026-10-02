@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { SafetyError, PRODUCTION_PROJECT, PRODUCTION_EVENT } from './policy.mjs';
 
-export const PUBLIC_ORIGINS = ['https://eventapp.momentumbuilder.com', 'https://event-beast.vercel.app'];
+export const PUBLIC_ORIGINS = ['https://2026live.momentumbuilder.com', 'https://eventapp.momentumbuilder.com', 'https://event-beast.vercel.app'];
 const digest = content => createHash('sha256').update(content).digest('hex');
 
 /** At most one credential-free GET per exact public endpoint. Redirects are
