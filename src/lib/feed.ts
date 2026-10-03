@@ -7,3 +7,4 @@ export const feedEditInput = z.object({ version: z.number().int().nonnegative(),
 export const replyInput = z.object({ clientId: z.uuid(), body: z.string().trim().min(1).max(2000) }).strict();
 export const reportInput = z.object({ reason: z.string().trim().min(3).max(1000) }).strict();
 export const photoUploadMaxBytes = 3 * 1024 * 1024;
+export const photoDerivativeMaxBytes = 1024 * 1024;

@@ -16,10 +16,11 @@ export function SessionCard({ session, compact = false, showDay = false }: { ses
   const sessionDay = guide.days.find(item => item.id === session.day_id);
   const lunchDate = sessionDay?.date;
   const hasLunchOptions = Boolean(lunchDate && /\blunch\b/i.test(session.title));
+  const sessionHref = hasLunchOptions ? `/more/lunch#lunch-${lunchDate}` : `/agenda/${session.id}`;
   return <article className={`session-card${current ? " session-live" : ""}${compact ? " compact" : ""}`}>
     {!compact && <div className="session-time"><strong>{eventTime(session.starts_at, guide.event.timezone).replace(/ [AP]M/, "")}</strong><span>{eventTime(session.starts_at, guide.event.timezone).slice(-2)}</span><span className="time-line" /></div>}
     <div className="session-body">{day && <p className="session-date"><CalendarDays size={14} />{eventDay(day.date,{weekday:'short',month:'short',day:'numeric'})}</p>}{(!guide.publicSite || current) && <div className="session-meta">{!guide.publicSite && <span className={`type-pill type-${session.session_type.toLowerCase()}`}>{session.session_type}</span>}{current && <span className="live-label"><span className="live-dot" />LIVE NOW</span>}</div>}
-      <Link href={`/agenda/${session.id}`} className="session-title"><h3>{session.title}</h3></Link>
+      <Link href={sessionHref} className="session-title"><h3>{session.title}</h3></Link>
       {compact && <p className="session-duration"><Clock3 size={14} />{sessionTimeRange(session, guide.event.timezone)}</p>}
       {!compact && speakers.length > 0 && <p className="session-speakers">{speakers.map((s) => s.full_name).join(" · ")}</p>}
       <p className="session-location"><MapPin size={14} />{session.room || "Location to be announced"}{!compact && session.end_time_confirmed !== false && <span className="session-end">Until {eventTime(session.ends_at, guide.event.timezone)}</span>}</p>
