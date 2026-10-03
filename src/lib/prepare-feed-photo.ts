@@ -2,6 +2,25 @@
 import { photoDerivativeMaxBytes } from './feed';
 import { convertHeicPhoto } from './heic-photo';
 
+const photoReadError = 'We could not read this photo from your device. Choose it again; if it still fails, save a copy to your device and select it from Files.';
+
+/** Read the entire original once while the picker still owns its permission.
+ * Sniffing a slice or decoding its object URL must not re-open a temporary
+ * Android content-provider handle. All later work uses this in-memory copy. */
+export async function snapshotFeedPhoto(file: File, signal?: AbortSignal): Promise<File> {
+  signal?.throwIfAborted();
+  if (!file.size || file.size > 25 * 1024 * 1024) throw new Error('Choose a photo under 25 MB.');
+  let bytes: ArrayBuffer;
+  try { bytes = await file.arrayBuffer(); }
+  catch {
+    signal?.throwIfAborted();
+    throw new Error(photoReadError);
+  }
+  signal?.throwIfAborted();
+  if (bytes.byteLength !== file.size) throw new Error(photoReadError);
+  return new File([bytes], file.name, { type: file.type, lastModified: file.lastModified });
+}
+
 /** Keep full-resolution camera originals on the device. The server independently
  * decodes the derivative and strips metadata; this is a transport optimization. */
 export async function isHeicPhoto(file: Blob): Promise<boolean> {
@@ -10,7 +29,7 @@ export async function isHeicPhoto(file: Blob): Promise<boolean> {
   return text.slice(4, 8) === 'ftyp' && /heic|heix|hevc|hevx|mif1|msf1/.test(text.slice(8));
 }
 export async function prepareFeedPhoto(file: File, signal?: AbortSignal): Promise<File> {
-  if (!file.size || file.size > 25 * 1024 * 1024) throw new Error('Choose a photo under 25 MB.');
+  file = await snapshotFeedPhoto(file, signal);
   const heic = await isHeicPhoto(file);
   if (!heic && !['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())
     && !/\.(jpe?g|png|webp)$/i.test(file.name)) throw new Error('Choose a JPG, JPEG, PNG, WebP or HEIC photo, not a video or document.');

@@ -2,6 +2,14 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## October 3 — Sonia's agenda return and Android photo-read regressions
+
+See [SONIA-OCTOBER-3-REGRESSIONS.md](./SONIA-OCTOBER-3-REGRESSIONS.md) for the two late October 2 emails, screenshot evidence and bounded fix. The agenda day now survives browser Back/reload, detail Back links use the session's actual day/anchor, and the photo picker retains device-file access until preparation finishes. A single in-memory copy prevents subsequent sniffing/decoding from reopening a temporary Android provider handle. Read failures retain the caption and give recovery guidance.
+
+`npm run check` passes: lint, TypeScript, **333 tests in 46 files**, and the production build. All **12 focused browser checks** pass across desktop Chromium, phone Chromium and phone WebKit. The four new tests first failed against the previous build at the expected day-reset/file-read assertions. Coverage includes keyboard selection, invalid-day fallback, lunch return, cold detail links, a generated 3072 x 4096 JPEG above the server transport ceiling, same-file reselection, local resizing, posting and revoked-read recovery. Mobile screenshots were inspected. A broader public-site run was started and the first nine desktop checks passed before it was intentionally stopped because it duplicates the required GitHub Actions run; CI and preview evidence are recorded on the release pull request as they complete.
+
+No production data, schema, authorization, settings or SMS changes are included. These are local production-build tests with mocked attendee APIs, not a live upload or physical-phone certification. Sonia supplied screenshots, not her original collage; her exact phone/file needs a post-release retest. Production publishing requires approval and is not implied by a passing local build or preview.
+
 ## October 2 — Social Wall interactions and visible sign-out
 
 PRD-004 covers single-photo posts, replies, desired-state likes, reply/photo moderation and visible local-browser sign-out. See `SOCIAL-WALL-INTERACTIONS.md` for the exact scope, privacy boundary and hosted qualification command. Lint, TypeScript, the production build and 323 source tests pass. The 12 focused browser checks pass across desktop Chromium, phone Chromium and phone WebKit, including lost-response retry, reply pagination, moderation, logout across tabs, accessible controls and 320px layout. The serialized photo-publication/cleanup guard was separately rechecked with 27 focused tests. The additive production migration `20261003000258_social_wall_interactions` is applied; application release and hosted qualification are not implied by that schema change. No 500-user load claim, physical-phone certification or outbound attendee email is implied by this work. Release-specific hosted results are recorded on the pull request after deployment.

@@ -1,6 +1,7 @@
 "use client";
 import { useState, type KeyboardEvent } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ArrowLeft, Bookmark, CalendarDays, Clock3, MapPin, Search, X } from "lucide-react";
 import { currentAgendaDay, eventDay, eventZoneLabel, sessionSpeakers, sessionTimeRange } from "@/lib/format";
 import { useApp, useNow } from "./app-provider";
@@ -12,7 +13,16 @@ import { DescriptionText } from './description-text';
 
 export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
   const { guide, saved } = useApp();
-  const [selected, setSelected] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const selected = searchParams.get('day');
+  const selectDay = (id: string) => {
+    // Replace this list's history entry, rather than creating a Back step for
+    // every tab. Next synchronizes native history with useSearchParams.
+    const url = new URL(window.location.href);
+    url.searchParams.set('day', id); url.hash = '';
+    window.history.replaceState(null, '', url.pathname + url.search);
+    setQuery('');
+  };
   const now = useNow();
   const [query, setQuery] = useState("");
   const [onlySaved, setOnlySaved] = useState(savedOnly);
@@ -30,7 +40,7 @@ export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
     const size = guide.days.length;
     const next = event.key === 'ArrowRight' ? (index + 1) % size : event.key === 'ArrowLeft' ? (index + size - 1) % size : event.key === 'Home' ? 0 : event.key === 'End' ? size - 1 : -1;
     if (next < 0) return;
-    event.preventDefault(); setQuery(''); setSelected(guide.days[next].id);
+    event.preventDefault(); selectDay(guide.days[next].id);
     const tab = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next];
     tab?.focus();
     if (window.matchMedia('(max-width: 900px)').matches) tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
@@ -39,7 +49,7 @@ export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
     {guide.settings.agenda_notice && <p className="agenda-working-notice">{guide.settings.agenda_notice}</p>}
     {savedOnly && guide.publicSite && <p className="fine-print">Saved on this device only. No account needed. Clearing browser data removes these favorites.</p>}
     <div className="agenda-controls">
-      {!savedOnly && <div className="day-tabs" role="tablist" aria-label="Event day">{guide.days.map((d, index) => <button key={d.id} type="button" role="tab" aria-selected={!searching && day?.id === d.id} tabIndex={day?.id === d.id ? 0 : -1} className={!searching && day?.id === d.id ? "active" : ""} onKeyDown={(event) => moveDay(event, index)} onClick={() => { setQuery(''); setSelected(d.id); }}><strong>{d.label}</strong><span>{eventDay(d.date, { weekday: "short", month: "short", day: "numeric" })}</span></button>)}</div>}
+      {!savedOnly && <div className="day-tabs" role="tablist" aria-label="Event day">{guide.days.map((d, index) => <button key={d.id} type="button" role="tab" aria-selected={!searching && day?.id === d.id} tabIndex={day?.id === d.id ? 0 : -1} className={!searching && day?.id === d.id ? "active" : ""} onKeyDown={(event) => moveDay(event, index)} onClick={() => selectDay(d.id)}><strong>{d.label}</strong><span>{eventDay(d.date, { weekday: "short", month: "short", day: "numeric" })}</span></button>)}</div>}
       <div className="agenda-toolbar"><label className="search-field"><Search size={20} /><input aria-label="Search sessions" placeholder="Find a session, speaker or topic" enterKeyHint="search" value={query} onChange={(e) => setQuery(e.target.value)} />{query && <button type="button" aria-label="Clear search" onClick={() => setQuery("")}><X size={18} /></button>}</label>{!savedOnly && <button type="button" className={`filter-button${onlySaved ? " selected" : ""}`} onClick={() => setOnlySaved((s) => !s)} aria-pressed={onlySaved}><Bookmark size={17} />Saved</button>}</div>
     </div>
     <div className="mobile-only mobile-agenda-actions"><span>{onlySaved ? 'Your saved agenda' : 'Find your place in the day'}</span><button type="button" className="text-button" disabled={!nextSession} onClick={jump}><Clock3 size={16} />{nextSession && Date.parse(nextSession.starts_at) <= now && Date.parse(nextSession.ends_at) > now ? 'Jump to now' : nextSession && Date.parse(nextSession.starts_at) > now ? 'Jump to next' : 'First session'}</button></div>
@@ -57,7 +67,7 @@ export function SessionDetail({ id }: { id: string }) {
   const sponsor = guide.sponsors.find((s) => s.id === session.sponsor_id);
   const isSaved = saved.sessions.includes(session.id);
   return <div className="detail-page">
-    <Link href="/agenda" className="back-link"><ArrowLeft size={17} />Back to agenda</Link>
+    <Link href={`/agenda?day=${encodeURIComponent(session.day_id)}#agenda-session-${encodeURIComponent(session.id)}`} className="back-link"><ArrowLeft size={17} />Back to agenda</Link>
     <div className="detail-hero">{!guide.publicSite && <span className="type-pill">{session.session_type}</span>}<h1>{session.title}</h1>
       <div className="detail-facts"><span><CalendarDays size={18} />{day ? `${day.label} · ${eventDay(day.date)}` : "Event session"}</span><span><Clock3 size={18} />{sessionTimeRange(session, guide.event.timezone)}</span><span><MapPin size={18} />{session.room || "Location to be announced"}</span></div>
       {session.is_demo && <span className="sample-note">Sample session · final details will be supplied by the organizer</span>}

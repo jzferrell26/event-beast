@@ -43,6 +43,42 @@ test('agenda searches all three days, shows dates and restores chosen-day naviga
   await expect(page.getByRole('heading',{name:'Networking session 2'})).toBeVisible();await expect(page.locator('.session-title:visible')).toHaveCount(1);
 });
 
+test('Sonia agenda regression: browser back, detail back and reload retain the selected day',async({page},info)=>{
+  const guide=await wire(page);await page.goto('/agenda');await settle(page);
+  const day2=page.getByRole('tab',{name:/Day 2/});
+  await day2.click();
+  await page.getByRole('link',{name:'Networking session 2',exact:true}).click();
+  await expect(page.getByRole('heading',{level:1,name:'Networking session 2'})).toBeVisible();
+  await page.goBack();
+  await expect(day2).toHaveAttribute('aria-selected','true');
+  await expect(page.getByRole('link',{name:'Networking session 2',exact:true})).toBeVisible();
+  await page.reload();await settle(page);
+  await expect(day2).toHaveAttribute('aria-selected','true');
+  await page.getByRole('link',{name:'Networking session 2',exact:true}).click();
+  await page.getByRole('link',{name:'Back to agenda',exact:true}).click();
+  await expect(day2).toHaveAttribute('aria-selected','true');
+  await expect(page).toHaveURL(new RegExp(`/agenda\\?day=${guide.days[1].id}`));
+  await expect(page.locator(`#agenda-session-${guide.sessions[1].id}`)).toBeInViewport();
+  await page.evaluate(()=>(document.activeElement as HTMLElement)?.blur());
+  await page.screenshot({path:info.outputPath('agenda-day-2-restored.png')});
+  // A cold session link has no previous list state; use the session's own day.
+  await page.goto('/agenda/'+guide.sessions[2].id);await settle(page);
+  await page.getByRole('link',{name:'Back to agenda',exact:true}).click();
+  await expect(page.getByRole('tab',{name:/Day 3/})).toHaveAttribute('aria-selected','true');
+});
+
+test('Sonia agenda regression: keyboard day choice survives lunch navigation and invalid days are safe',async({page})=>{
+  await page.clock.setFixedTime(new Date('2026-10-03T12:00:00Z'));
+  await wire(page,true);await page.goto('/agenda?day=not-an-event-day');await settle(page);
+  await expect(page.getByRole('tab',{name:/Day 1/})).toHaveAttribute('aria-selected','true');
+  await page.getByRole('tab',{name:/Day 1/}).focus();await page.keyboard.press('ArrowRight');
+  await expect(page.getByRole('tab',{name:/Day 2/})).toHaveAttribute('aria-selected','true');
+  await page.getByRole('link',{name:'Lunch Break',exact:true}).click();
+  await expect(page.locator('#lunch-2026-10-07')).toBeVisible();
+  await page.goBack();
+  await expect(page.getByRole('tab',{name:/Day 2/})).toHaveAttribute('aria-selected','true');
+});
+
 test('Lunch Break links to the matching date on the Lunch page',async({page})=>{
   await wire(page,true);await page.goto('/agenda');await settle(page);
   await page.getByRole('tab',{name:/Day 2/}).click();
