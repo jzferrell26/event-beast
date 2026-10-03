@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/server/auth';
 import { isDemo } from '@/lib/server/guide';
 import { databaseError, handle, json, parseBody } from '@/lib/server/http';
 import { feedSelect } from '@/lib/feed';
+import { enrichFeedPosts } from '@/lib/server/feed';
 export const GET = (request: Request) => handle(async () => {
   if (isDemo()) return json({ posts: [], reports: [], hasMore: false });
   const { db, event } = await requireAdmin();
@@ -15,7 +16,8 @@ export const GET = (request: Request) => handle(async () => {
   const missingIds = [...new Set((reports.data ?? []).map(report => report.post_id))].filter(id => !(posts.data ?? []).some(post => post.id === id));
   const reported = missingIds.length ? await db.from('feed_posts').select(feedSelect).eq('event_id', event.id).in('id', missingIds) : { data: [], error: null };
   databaseError(reported.error);
-  return json({ posts: (posts.data ?? []).slice(0, 50), reportedPosts: reported.data, reports: reports.data, hasMore: (posts.data?.length ?? 0) > 50 });
+  const enriched = await enrichFeedPosts(db, event.id, [...(posts.data ?? []).slice(0,50), ...(reported.data ?? [])]);
+  return json({ posts: enriched.slice(0, Math.min(posts.data?.length ?? 0,50)), reportedPosts: enriched.slice(Math.min(posts.data?.length ?? 0,50)), reports: reports.data, hasMore: (posts.data?.length ?? 0) > 50 });
 });
 export const PATCH = (request: Request) => handle(async () => {
   const body = await parseBody(request, z.object({ postId: z.uuid(), status: z.enum(['visible','hidden','deleted']), reportId: z.uuid().nullable().default(null), reportStatus: z.enum(['reviewed','dismissed']).default('reviewed') }).strict());

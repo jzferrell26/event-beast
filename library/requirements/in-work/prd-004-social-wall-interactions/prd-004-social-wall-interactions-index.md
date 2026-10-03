@@ -8,6 +8,7 @@ Source: Sonia Le’s October 2, 2026 “big thing needed” email and 23:18 UTC 
 2. Replies: one-level comment threads on posts, with name/avatar/time, durable paginated history, create, own edit/remove, report and organizer hide/restore. No change to private messaging. Preserve a failed draft; repeat requests must not create duplicate replies.
 3. Likes: explicit like/unlike and count, one like per event member per post. A retry sets the desired state rather than toggling twice. No follower system or public list of liker contact details.
 4. Moderation: existing post reporting/hide/restore includes attached photos; add equivalent reply moderation in Admin. Hiding a post suppresses its photo, replies and interactions for members. An author cannot undo moderator hiding. Keep audit records and existing member block/disable rules.
+5. Jonathan's follow-up: make Sign out discoverable in the shared header, at the top of More and on My Profile. Confirm server-side local-session sign-out, clear private client state, notify other tabs and use a fresh document so back navigation cannot reuse the prior private React view. Failed sign-out remains visibly unconfirmed.
 
 ## Security and operational boundaries
 

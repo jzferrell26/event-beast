@@ -9,6 +9,7 @@ import { networkingInterests, DEMO_EVENT_ID } from "@/lib/demo";
 import { profileSchema } from "@/lib/validation";
 import { errorMessage, mutate, request } from "@/lib/client";
 import { useResource } from "@/lib/hooks";
+import { SignOutButton } from './sign-out';
 
 const sampleProfile: Profile = { event_id: DEMO_EVENT_ID, attendee_id: "30000000-0000-4000-8000-000000000999", full_name: "Your name · Sample", company: "", title: "", city: "", state: "", bio: "", interests: [], headshot_path: null, directory_visible: false, messaging_available: false };
 
@@ -18,7 +19,7 @@ export function ProfileScreen() {
   if (meError) return <ErrorState message={meError} retry={() => void refreshMe()} />;
   if (!me) return <LoadingCards />;
   if (!me.eligible || !me.profile) return <EmptyState title="Your profile starts with event access." action={<Link href="/access" className="button button-dark">Check my registration<ArrowRight size={17} /></Link>}>The organizer needs to match your account to your event registration.</EmptyState>;
-  return <ProfileForm key={me.attendeeId} initial={me.profile} />;
+  return <><div className="profile-account-tools"><SignOutButton /></div><ProfileForm key={me.attendeeId} initial={me.profile} /></>;
 }
 function ProfileForm({ initial }: { initial: Profile }) {
   const { guide, me, notify, refreshMe } = useApp();
