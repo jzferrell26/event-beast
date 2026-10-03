@@ -1,6 +1,7 @@
 import { test, expect, type BrowserContext } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 import sharp from 'sharp';
+import { randomFillSync } from 'node:crypto';
 import { demoGuide, demoMe } from '../../src/lib/demo';
 import { publicSiteGuide } from '../../src/lib/public-site';
 import type { FeedPost, FeedReply } from '../../src/lib/types';
@@ -105,6 +106,71 @@ test('an Android-style HEIC camera photo converts locally and can be posted as t
   await expect(page.locator('.wall-photo-picker')).toContainText('One photo per post');
   await page.getByRole('button',{name:'Post',exact:true}).click();
   await expect(page.locator('.wall-post')).toHaveCount(1);
+});
+
+test('Sonia photo regression: a large Android JPEG remains readable until preparation finishes',async({page,context},info)=>{
+  const f=await fixture(context);
+  // Model Android's temporary content-provider permission: resetting the input
+  // during an asynchronous read invalidates the selected File and its slices.
+  await page.addInitScript(()=>{
+    const read=Blob.prototype.arrayBuffer;
+    Blob.prototype.arrayBuffer=async function(){
+      const picker=document.querySelector<HTMLInputElement>('input[aria-label="Choose a photo for your post"]');
+      const selected=picker?.files?.[0];
+      if(selected){
+        await new Promise(resolve=>setTimeout(resolve,80));
+        if(picker?.files?.[0]!==selected) throw new DOMException('The requested file could not be read.','NotReadableError');
+      }
+      return read.call(this);
+    };
+  });
+  await page.goto('/feed');
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
+  // Match the reported 3072 x 4096 collage class, exceeding the server transport
+  // ceiling so the test also proves local resizing, not a raw-file upload.
+  const image=await sharp(randomFillSync(Buffer.alloc(3072*4096*3)),{raw:{width:3072,height:4096,channels:3}}).jpeg({quality:70}).toBuffer();
+  expect(image.length).toBeGreaterThan(3.5*1024*1024);
+  const picker=page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post');
+  await picker.setInputFiles({name:'InCollage.jpg',mimeType:'image/jpeg',buffer:image});
+  await expect(page.getByAltText('Your selected photo preview')).toBeVisible();
+  await expect(page.locator('.wall-composer [role="alert"]')).toHaveCount(0);
+  await expect(picker).toHaveValue('');
+  await page.getByAltText('Your selected photo preview').scrollIntoViewIfNeeded();
+  await page.screenshot({path:info.outputPath('android-jpeg-prepared.png')});
+  // Reset after preparation still allows the same original to be reselected.
+  await page.getByRole('button',{name:'Remove photo',exact:true}).click();
+  await picker.setInputFiles({name:'InCollage.jpg',mimeType:'image/jpeg',buffer:image});
+  await expect(page.getByAltText('Your selected photo preview')).toBeVisible();
+  const upload=page.waitForRequest(request=>request.url().endsWith('/api/feed/photos')&&request.method()==='POST');
+  await page.getByRole('button',{name:'Post',exact:true}).click();
+  expect((await upload).postDataBuffer()!.length).toBeLessThan(3*1024*1024);
+  await expect(page.locator('.wall-post')).toHaveCount(1);expect(f.uploadKeys).toHaveLength(1);
+});
+
+test('Sonia photo regression: revoked device access gives recovery guidance and retains the draft',async({page,context})=>{
+  const f=await fixture(context);
+  await page.addInitScript(()=>{
+    const read=Blob.prototype.arrayBuffer;
+    Blob.prototype.arrayBuffer=async function(){
+      const picker=document.querySelector<HTMLInputElement>('input[aria-label="Choose a photo for your post"]');
+      if(picker?.files?.[0]?.name==='unavailable.jpg') throw new DOMException('The requested file could not be read.','NotReadableError');
+      return read.call(this);
+    };
+  });
+  await page.goto('/feed');
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
+  await page.getByRole('textbox',{name:'Share with the event'}).fill('Keep my caption');
+  const picker=page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post');
+  await picker.setInputFiles({name:'unavailable.jpg',mimeType:'image/jpeg',buffer:f.image});
+  await expect(page.locator('.wall-composer [role="alert"]')).toContainText('select it from Files');
+  await expect(page.getByRole('textbox',{name:'Share with the event'})).toHaveValue('Keep my caption');
+  await expect(picker).toBeEnabled();await expect(picker).toHaveValue('');
+  expect(f.uploadKeys).toHaveLength(0);expect(f.postKeys).toHaveLength(0);
+  await picker.setInputFiles({name:'local-copy.png',mimeType:'image/png',buffer:f.image});
+  await expect(page.getByAltText('Your selected photo preview')).toBeVisible();
+  await expect(page.locator('.wall-composer [role="alert"]')).toHaveCount(0);
+  await page.getByRole('button',{name:'Post',exact:true}).click();
+  await expect(page.locator('.wall-post')).toContainText('Keep my caption');
 });
 
 test('reply pagination retains loaded history and a typed draft on refresh',async({page,context})=>{
