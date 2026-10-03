@@ -2,6 +2,14 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## October 3 — consolidated Sonia release and production visual check
+
+PR #30 merged as `cf5cfc67c252bb9281f60dcb773452ca06e5e64b` after GitHub run `37147970669` passed lint, TypeScript, 333 source/database tests, the build, 135 public-site browser tests, 123 legacy browser tests and 27 mobile WebKit tests. The production release endpoint on `2026live.momentumbuilder.com`, `eventapp.momentumbuilder.com` and `event-beast.vercel.app` returned that exact revision at 19:46 UTC. Read-only live Chromium checks verified the ordered Home tiles, updated navigation, combined Help/Venue with nested floor-plan link, clipboard success, old Venue redirect, More/Sponsors cleanup, filled directory portraits, inline sponsor ads, Day 2 session return and desktop reflow; no page errors were observed.
+
+The live screenshot comparison with Sonia's supplied mockup caught a remaining three-button shortcut row below Coming Up. The narrow follow-up omits those duplicate shortcuts on the public homepage, retaining them in the legacy attendee home. Its regression asserts that Home has exactly the requested eight-tile block without the additional row. Clipboard-denial and 320px long-venue-label coverage now live with the public Help tests, rather than being lost when the legacy Venue page was removed. Follow-up test and release results are recorded on its pull request.
+
+The JPG change in PR #30 avoids the initial `Blob.arrayBuffer()` read for browser-decodable JPG/PNG/WebP files; mocked cross-browser tests demonstrate preparation/posting when that method rejects. This is **not** proof of the exact underlying behavior on Sonia's physical phone. Her original collage was not supplied and she has not yet confirmed this release on that device. No production attendee post, new account, private-message action, roster edit, load test or broad launch communication was performed by the read-only check. Don's final agenda/content approval remains separate.
+
 ## October 3 — Sonia's agenda return and Android photo-read regressions
 
 See [SONIA-OCTOBER-3-REGRESSIONS.md](./SONIA-OCTOBER-3-REGRESSIONS.md) for the two late October 2 emails, screenshot evidence and bounded fix. The agenda day now survives browser Back/reload, detail Back links use the session's actual day/anchor, and the photo picker retains device-file access until preparation finishes. A single in-memory copy prevents subsequent sniffing/decoding from reopening a temporary Android provider handle. Read failures retain the caption and give recovery guidance.

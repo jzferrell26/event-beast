@@ -38,10 +38,10 @@ export function MobileEventMoment() {
       <span className="mobile-moment-time">{moment.phase === 'ended' ? guide.publicSite ? 'No more sessions are scheduled. Browse the full program anytime.' : 'No more sessions are scheduled. Visit People to reconnect.' : 'Open the agenda for the latest published details.'}</span>
     </Link>}
     {moment.current.length > 0 && moment.next && <Link prefetch={false} href={`/agenda/${moment.next.id}`} className="mobile-following-session"><span>Up next · {mobileSessionDate(moment.next.starts_at, now, guide.event.timezone)} · {eventTime(moment.next.starts_at, guide.event.timezone)}</span><strong>{moment.next.title}</strong><ArrowRight size={17} aria-hidden="true" /></Link>}
-    <nav className="mobile-day-shortcuts" aria-label="Event-day shortcuts">
+    {!guide.publicSite && <nav className="mobile-day-shortcuts" aria-label="Event-day shortcuts">
       <Link prefetch={false} href="/more/help"><MapPin size={19} aria-hidden="true" /><span>Venue & help</span></Link>
       <Link prefetch={false} href="/more/saved"><Bookmark size={19} aria-hidden="true" /><span>Saved{saved.sessions.length > 0 ? ` (${saved.sessions.length})` : ' sessions'}</span></Link>
       <Link prefetch={false} href="/more/speakers"><UserRound size={19} aria-hidden="true" /><span>Speakers</span></Link>
-    </nav>
+    </nav>}
   </section>;
 }

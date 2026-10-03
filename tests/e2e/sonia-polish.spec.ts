@@ -127,6 +127,7 @@ test('Sonia consolidated home layout uses eight matching shortcuts and the revis
   await expect(links.locator('strong')).toHaveText(['Full agenda','Saved sessions','Impact Partners','Our Speakers','Venue & help','Social wall','Lunch','Fun Stuff']);
   await expect(page.locator('.public-home .hub-welcome')).toHaveCount(0);
   await expect(page.locator('.public-home .home-grid')).toHaveCount(0);
+  await expect(page.locator('.public-home .mobile-day-shortcuts')).toHaveCount(0);
   await expect(page.locator('.hero-bottom svg')).toHaveCount(0);
   if(info.project.name!=='public-desktop'){const nav=page.getByRole('navigation',{name:'Mobile navigation'});await expect(nav.getByRole('link')).toHaveText(['Home','Agenda','Feed','Partners','Fun Stuff','More']);}
   await page.screenshot({path:info.outputPath('sonia-home-polish.png'),fullPage:true});
@@ -149,6 +150,26 @@ test('Sonia consolidated More removes duplicate venue/admin rows and uses a dist
   await expect(page.getByText('Find your way, save this site, etc.')).toBeVisible();
   await expect(page.getByText('Organizer console',{exact:true})).toHaveCount(0);
   const privateRow=page.locator('.more-menu a',{hasText:'Private messages'});await expect(privateRow.locator('.lucide-message-circle')).toHaveCount(1);
+});
+
+test('combined Help preserves venue reflow and honest clipboard success and failure', async ({ page }) => {
+  const guide = await wire(page);
+  const long = 'ExtraordinarilyLongUnbrokenVenueAndLocationName'.repeat(3);
+  guide.venues = [{ ...guide.venues[0], title: long, location: long, is_demo: false, directions_url: 'https://example.test/directions' }];
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto('/more/help'); await settle(page);
+  await expect(page.getByRole('heading', { name: long, exact: true })).toBeVisible();
+  expect(await page.evaluate(() => ({ viewport: innerWidth, width: document.documentElement.scrollWidth }))).toEqual({ viewport: 320, width: 320 });
+  const copy = page.getByRole('button', { name: `Copy address for ${long}`, exact: true });
+  await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text: string) => { document.documentElement.dataset.copiedTest = text; } } }));
+  await copy.click();
+  await expect(page.getByText('Venue address copied.', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.dataset.copiedTest)).toBe(long);
+  await page.getByRole('button', { name: 'Dismiss notification' }).click();
+  await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new Error('Clipboard permission denied'); } } }));
+  await copy.click();
+  await expect(page.locator('.toast[role="alert"]')).toContainText('Copy is unavailable');
+  await expect(page.getByRole('link', { name: 'Get directions', exact: false })).toHaveAttribute('href', guide.venues[0].directions_url);
 });
 
 test('ad CTA uses the sponsor website fallback and has no visible advertisement heading',async({page})=>{
