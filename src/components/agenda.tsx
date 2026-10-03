@@ -63,7 +63,7 @@ export function SessionDetail({ id }: { id: string }) {
       {session.is_demo && <span className="sample-note">Sample session · final details will be supplied by the organizer</span>}
     </div>
     <button type="button" className={`button ${isSaved ? "button-outline" : "button-red"}`} onClick={() => void toggleSave("session", id)} aria-pressed={isSaved}><Bookmark size={19} fill={isSaved ? "currentColor" : "none"} />{isSaved ? "Saved to your agenda" : "Save this session"}</button>
-    <section className="detail-section"><h2>In this session</h2><p><DescriptionText text={session.description || "Session details will be added by the event team."} /></p></section>
+    {session.description?.trim() && <section className="detail-section"><h2>In this session</h2><p><DescriptionText text={session.description} /></p></section>}
     {speakers.length > 0 && <section className="detail-section"><h2>In the room with you</h2>{speakers.map((speaker) =>
       <Link className="speaker-card session-speaker-card" href={`/more/speakers/${speaker.id}`} key={speaker.id}>
         <SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} />

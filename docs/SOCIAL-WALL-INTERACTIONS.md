@@ -4,7 +4,9 @@ Source request: Sonia's October 2 **big thing needed** email thread, followed by
 
 ## Attendee experience
 
-The Social Wall supports text posts, a single photo with an optional caption, one-level replies, and like/unlike counts. A camera/library photo is prepared on the device and previewed before posting. Selecting a photo never publishes it. The server re-encodes supported image bytes to WebP, bounds dimensions to 1920 pixels, strips metadata, and refuses disguised or unsupported content. JPG, PNG and WebP are supported; HEIC/HEIF works only when the browser can decode it and otherwise shows a JPG-export instruction. This release does not include video, multiple-photo albums or replies to replies.
+The Social Wall supports text posts, **one photo per post** with an optional caption, one-level replies, and like/unlike counts. Sonia explicitly confirmed on October 2 that one photo is enough; multiple-photo albums are not part of the launch release. Camera/library photos are prepared on the device and previewed before posting. Selecting a photo never publishes it. JPG/JPEG, PNG, WebP and HEIC/HEIF are accepted. When a browser cannot decode HEIC natively, a pinned same-origin decoder worker converts it locally before upload; the original never goes to an external conversion service. The server re-encodes the bounded derivative to WebP, strips metadata and rejects disguised content.
+
+Client preparation targets at most 1 MiB and 1920px. Server image work is concurrency/queue bounded and authenticated photo responses use a small in-process byte-bounded cache only after authorization; browser/CDN responses remain private and no-store. This release does not include video, multiple-photo albums or replies to replies.
 
 Photo/post/reply retries reuse their original request identity. Like retries set the desired state rather than toggling. Failed drafts remain in memory while the user stays on the page; they are not promised to survive closing/reloading the browser. Replies load newest history first, display chronologically and allow earlier pages without losing a typed draft on refresh.
 

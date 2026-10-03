@@ -96,6 +96,17 @@ test('photo-only post, lost-response retries, replies and likes are usable on a 
   await page.getByRole('button',{name:'Remove reply',exact:true}).click();await page.getByRole('dialog').getByRole('button',{name:'Remove reply',exact:true}).click();await expect(page.locator('.wall-reply')).toHaveCount(0);
 });
 
+test('an Android-style HEIC camera photo converts locally and can be posted as the one allowed photo',async({page,context})=>{
+  await fixture(context);await page.goto('/feed');
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
+  const chooser=page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post');
+  await chooser.setInputFiles('tests/fixtures/photos/example.heic');
+  await expect(page.getByAltText('Your selected photo preview')).toBeVisible({timeout:30000});
+  await expect(page.locator('.wall-photo-picker')).toContainText('One photo per post');
+  await page.getByRole('button',{name:'Post',exact:true}).click();
+  await expect(page.locator('.wall-post')).toHaveCount(1);
+});
+
 test('reply pagination retains loaded history and a typed draft on refresh',async({page,context})=>{
   await fixture(context,{replyRows:31});await page.goto('/feed');await page.getByRole('button',{name:'Reply 31',exact:true}).click();await expect(page.locator('.wall-reply')).toHaveCount(30);await page.getByRole('button',{name:'Earlier replies'}).click();await expect(page.locator('.wall-reply')).toHaveCount(31);
   await page.getByRole('textbox',{name:'Write a reply'}).fill('Keep this draft');await page.getByRole('button',{name:'Refresh replies'}).click();await expect(page.locator('.wall-reply')).toHaveCount(31);await expect(page.getByRole('textbox',{name:'Write a reply'})).toHaveValue('Keep this draft');

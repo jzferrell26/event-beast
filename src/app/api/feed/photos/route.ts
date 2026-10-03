@@ -4,15 +4,29 @@ import { ApiError, assertSameOrigin, handle, json, parseBody } from '@/lib/serve
 import { requireOpenWall } from '@/lib/server/feed';
 import { normalizeFeedPhoto } from '@/lib/server/feed-photo';
 import { photoUploadMaxBytes } from '@/lib/feed';
+import { runPhotoUpload } from '@/lib/server/photo-work';
 
 export const maxDuration = 30;
 export const POST = (request: Request) => handle(async () => {
   assertSameOrigin(request);
   const { db, event, attendee } = await requireMember();
   await requireOpenWall(db, event.id);
+  return runPhotoUpload(async () => {
   if (Number(request.headers.get('content-length') ?? 0) > 3.5 * 1024 * 1024) throw new ApiError(413, 'Choose a smaller photo.');
-  const form = await request.formData();
+  const reader = request.body?.getReader();
+  if (!reader) throw new ApiError(400, 'Choose a photo.');
+  const chunks: Uint8Array[] = []; let length = 0;
+  try {
+    for (;;) {
+      const part = await reader.read(); if (part.done) break;
+      length += part.value.length;
+      if (length > 3.5 * 1024 * 1024) { await reader.cancel(); throw new ApiError(413, 'Choose a smaller photo.'); }
+      chunks.push(part.value);
+    }
+  } finally { reader.releaseLock(); }
+  const form = await new Response(Buffer.concat(chunks), { headers: { 'Content-Type': request.headers.get('content-type') ?? '' } }).formData();
   const clientId = z.uuid().parse(form.get('clientId'));
+  if (form.getAll('file').length !== 1) throw new ApiError(400, 'Upload one photo at a time.');
   const file = form.get('file');
   if (!(file instanceof File) || !file.size || file.size > photoUploadMaxBytes || !['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
     throw new ApiError(400, 'Choose a JPG, PNG or WebP photo under 3 MB after resizing.');
@@ -29,6 +43,7 @@ export const POST = (request: Request) => handle(async () => {
   if (!stored.equals(bytes)) throw new ApiError(409, 'This request already contains a different photo. Choose the photo again.');
   if (upload.error && !stored.length) throw new ApiError(503, 'The photo upload was not confirmed.');
   return json({ uploaded: true, clientId });
+  });
 });
 export const DELETE = (request: Request) => handle(async () => {
   const { clientId } = await parseBody(request, z.object({ clientId: z.uuid() }).strict());

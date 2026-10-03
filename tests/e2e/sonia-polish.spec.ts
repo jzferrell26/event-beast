@@ -47,10 +47,20 @@ test('Lunch Break links to the matching date on the Lunch page',async({page})=>{
   await wire(page,true);await page.goto('/agenda');await settle(page);
   await page.getByRole('tab',{name:/Day 2/}).click();
   const lunch=page.locator('.session-card',{hasText:'Lunch Break'});
+  await expect(lunch.getByRole('link',{name:'Lunch Break',exact:true})).toHaveAttribute('href','/more/lunch#lunch-2026-10-07');
   await expect(lunch.getByRole('link',{name:'View lunch options'})).toHaveAttribute('href','/more/lunch#lunch-2026-10-07');
-  await lunch.getByRole('link',{name:'View lunch options'}).click();
+  await lunch.getByRole('link',{name:'Lunch Break',exact:true}).click();
   await expect(page).toHaveURL(/\/more\/lunch#lunch-2026-10-07$/);
   await expect(page.locator('#lunch-2026-10-07')).toBeVisible();
+});
+
+test('a session with no description omits the In this session placeholder entirely',async({page})=>{
+  const guide=fixtureGuide();guide.sessions[0].description='   ';
+  await page.route('https://assets.example/**',route=>route.fulfill({path:'public/icons/momentum-mark-192.png',contentType:'image/png'}));
+  await page.route('**/api/guide',route=>route.fulfill({json:guide}));
+  await page.goto('/agenda/'+guide.sessions[0].id);await settle(page);
+  await expect(page.getByRole('heading',{name:'In this session'})).toHaveCount(0);
+  await expect(page.getByText('Session details will be added by the event team.')).toHaveCount(0);
 });
 
 test('speaker sessions include dates and descriptions render only safe bold text',async({page},info)=>{

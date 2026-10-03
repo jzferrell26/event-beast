@@ -1,0 +1,14 @@
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+const require = createRequire(import.meta.url);
+const root = path.dirname(require.resolve('libheif-js/package.json'));
+const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
+if (pkg.version !== '1.23.2') throw new Error('Review decoder assets before changing the pinned version.');
+const target = 'public/vendor/libheif-1.23.2';
+await mkdir(target, { recursive: true });
+await copyFile(path.join(root, 'libheif-wasm/libheif-bundle.js'), target + '/decoder.js');
+await copyFile(path.join(root, 'libheif-wasm/LICENSE'), target + '/LICENSE.txt');
+await copyFile(path.join(root, 'LICENSE'), target + '/WRAPPER-LICENSE.txt');
+await writeFile(target + '/SOURCE.txt', 'Unmodified libheif-js 1.23.2 WASM bundle.\nSource and build instructions: https://github.com/catdad-experiments/libheif-js/tree/v1.23.2\nUpstream libheif: https://github.com/strukturag/libheif\nLicense notices accompany this separately loaded decoder.\n');
+console.log('Prepared pinned, same-origin HEIC decoder assets.');
