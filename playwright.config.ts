@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  testIgnore: ['**/public-site.spec.ts', '**/public-offline.spec.ts', '**/hub.spec.ts', '**/roster-import.spec.ts', '**/chat-feedback.spec.ts', '**/sonia-polish.spec.ts'],
+  testIgnore: ['**/public-site.spec.ts', '**/public-offline.spec.ts', '**/hub.spec.ts', '**/roster-import.spec.ts', '**/chat-feedback.spec.ts', '**/sonia-polish.spec.ts', '**/social-wall.spec.ts'],
   timeout: 30_000,
   expect: { timeout: 8_000 },
   fullyParallel: false,

@@ -17,6 +17,7 @@ import './hub.css';
 import './message-attention.css';
 import './thread-viewport.css';
 import './organizer-polish.css';
+import './social-wall.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://2026live.momentumbuilder.com"),

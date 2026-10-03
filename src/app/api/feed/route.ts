@@ -2,7 +2,7 @@ import { requireMember } from '@/lib/server/auth';
 import { isDemo } from '@/lib/server/guide';
 import { ApiError, databaseError, handle, json, parseBody } from '@/lib/server/http';
 import { feedCursor, feedPostInput, feedSelect } from '@/lib/feed';
-import { attendeeAvatarUrls } from '@/lib/server/avatar-urls';
+import { enrichFeedPosts } from '@/lib/server/feed';
 
 export const GET = (request: Request) => handle(async () => {
   if (isDemo()) return json({ posts: [], nextCursor: null, demo: true });
@@ -16,14 +16,13 @@ export const GET = (request: Request) => handle(async () => {
   const result = await search;
   databaseError(result.error);
   const posts = (result.data ?? []).slice(0, 30);
-  const avatars = await attendeeAvatarUrls(db, event.id, posts.map(post => post.author_id));
   const last = posts.at(-1);
-  return json({ posts: posts.map(post => ({ ...post, avatar_url: avatars.get(post.author_id) })), nextCursor: result.data?.length === 31 && last ? JSON.stringify({ at: last.created_at, id: last.id }) : null });
+  return json({ posts: await enrichFeedPosts(db, event.id, posts), nextCursor: result.data?.length === 31 && last ? JSON.stringify({ at: last.created_at, id: last.id }) : null });
 });
 export const POST = (request: Request) => handle(async () => {
   const body = await parseBody(request, feedPostInput);
   const { db, event } = await requireMember();
-  const result = await db.rpc('publish_feed_post', { p_event: event.id, p_client: body.clientId, p_body: body.body });
+  const result = await db.rpc('publish_feed_post_with_photo', { p_event: event.id, p_client: body.clientId, p_body: body.body, p_image: body.image });
   databaseError(result.error);
   return json({ saved: true, id: result.data?.id }, 201);
 });

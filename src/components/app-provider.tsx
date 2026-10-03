@@ -16,6 +16,7 @@ const serverOnlineSnapshot = () => true;
 interface AppContext {
   guide: Guide; me: Me | null; saved: SavedItems; online: boolean; meError: string;
   refreshMe: () => Promise<void>; refreshGuide: () => Promise<void>;
+  signOut: () => Promise<void>;
   toggleSave: (kind: "session" | "attendee", id: string) => Promise<void>;
   notify: (message: string, error?: boolean) => void;
 }
@@ -40,6 +41,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const inflight = useRef(new Set<string>());
   const identityGeneration = useRef(0);
   const identityRequest = useRef<Promise<void> | null>(null);
+  const signOutRequest = useRef<Promise<void> | null>(null);
   const online = useSyncExternalStore(subscribeOnline, onlineSnapshot, serverOnlineSnapshot);
   const router = useRouter();
   const pathname = usePathname();
@@ -48,6 +50,33 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
   const publicVisitor = Boolean(initialGuide.publicSite) && !communityRoute && !pathname.startsWith('/admin') && !pathname.startsWith('/sponsor/');
   const skipIdentity = publicVisitor && !initialGuide.communityEnabled;
   const notify = useCallback((message: string, error = false) => setToast({ message, error }), []);
+  const clearIdentity = useCallback(() => {
+    identityGeneration.current++; identityRequest.current = null;
+    setMe({ mode: 'live', authenticated: false, eligible: false, isAdmin: false, attendeeId: null, profile: null, preferences: null });
+    setSaved({ sessions: [], attendees: [] });
+  }, []);
+  const signOut = useCallback((): Promise<void> => {
+    if (signOutRequest.current) return signOutRequest.current;
+    const pending = (async () => {
+      await mutate('/api/auth', 'POST', { action: 'sign-out' });
+      clearIdentity();
+      // Other tabs share these cookies. Notify them without putting any account
+      // information in localStorage, then drop this document's private UI state.
+      try { localStorage.setItem('event-beast:sign-out', crypto.randomUUID()); } catch { /* Cookies remain authoritative. */ }
+      window.location.replace('/auth?force=1&signedOut=1');
+    })();
+    signOutRequest.current = pending;
+    void pending.catch(() => { if (signOutRequest.current === pending) signOutRequest.current = null; });
+    return pending;
+  }, [clearIdentity]);
+  useEffect(() => {
+    const signedOut = (event: StorageEvent) => {
+      if (event.key === 'event-beast:sign-out' && event.newValue) { clearIdentity(); window.location.replace('/auth?force=1&signedOut=1'); }
+    };
+    const restored = (event: PageTransitionEvent) => { if (event.persisted) window.location.reload(); };
+    window.addEventListener('storage', signedOut); window.addEventListener('pageshow', restored);
+    return () => { window.removeEventListener('storage', signedOut); window.removeEventListener('pageshow', restored); };
+  }, [clearIdentity]);
   const refreshMe = useCallback((): Promise<void> => {
     if (skipIdentity) return Promise.resolve();
     if (identityRequest.current) return identityRequest.current;
@@ -154,7 +183,7 @@ export function AppProvider({ initialGuide, children }: { initialGuide: Guide; c
     finally { inflight.current.delete(key); }
   }, [guide.mode, guide.event.id, guide.sessions, me, notify, pathname, router, saved, publicVisitor]);
 
-  return <Context.Provider value={{ guide, me, saved, online, meError, refreshMe, refreshGuide, toggleSave, notify }}>
+  return <Context.Provider value={{ guide, me, saved, online, meError, refreshMe, refreshGuide, toggleSave, notify, signOut }}>
     {!online && <div className="offline-banner" role="status"><WifiOff size={16} /><span>{guide.publicSite ? "You’re offline. Reconnect for the latest event information." : "You’re offline. Previously loaded event essentials are available."}</span>{!guide.publicSite && <a href="/offline.html">Open guide</a>}</div>}
     {children}
     {toast && <div className={`toast${toast.error ? " toast-error" : ""}`} role={toast.error ? "alert" : "status"}>{toast.error ? <AlertCircle size={20} /> : <CheckCircle2 size={20} />}<span>{toast.message}</span><button type="button" onClick={() => setToast(null)} aria-label="Dismiss notification"><X size={18} /></button></div>}
