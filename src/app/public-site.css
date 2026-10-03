@@ -3,6 +3,8 @@
 .public-guide-note p { margin:0; line-height:1.6; color:#414147; }
 .public-organizer-link { margin:30px 0; min-height:44px; }
 .public-home .connection-card > svg { margin:28px 0 4px; }
+.help-venue { min-width:0; overflow-wrap:anywhere; }
+.help-venue .text-button { max-width:100%; white-space:normal; }
 .public-sponsor-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
 .public-sponsor-logo-card { padding:24px 18px; border:1px solid #dedee3; background:#fff; border-radius:16px; text-align:center; min-width:0; }
 .public-sponsor-logo { position:relative; height:130px; margin:0 auto 16px; max-width:260px; }
