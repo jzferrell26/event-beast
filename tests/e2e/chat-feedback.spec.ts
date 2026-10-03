@@ -45,7 +45,8 @@ test('new message is visible outside Inbox, read receipts clear badges, and logo
   state.unread = 2; state.latestId = '9007199254740995';
   await page.evaluate(() => window.dispatchEvent(new Event('event-beast:inbox-changed')));
   await expect(page.locator('.message-shortcut')).toHaveAttribute('aria-label', 'Private messages, 2 unread messages');
-  await expect(page.locator('.bottom-nav:visible .message-count, .desktop-sidebar:visible .message-count')).toHaveText('2');
+  if(info.project.name==='public-desktop') await expect(page.locator('.desktop-sidebar:visible .message-count')).toHaveText('2');
+  else await expect(page.locator('.bottom-nav:visible a[href="/inbox"]')).toHaveCount(0);
   await expect(page.getByRole('complementary', { name: 'New private message' })).toBeVisible();
   await expect(page.locator('a[href="/more/notifications"]')).toHaveCount(0);
   await page.screenshot({ path: info.outputPath('message-alert-away-from-inbox.png') });

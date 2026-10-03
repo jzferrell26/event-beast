@@ -128,7 +128,7 @@ test('Sonia consolidated home layout uses eight matching shortcuts and the revis
   await expect(page.locator('.public-home .hub-welcome')).toHaveCount(0);
   await expect(page.locator('.public-home .home-grid')).toHaveCount(0);
   await expect(page.locator('.hero-bottom svg')).toHaveCount(0);
-  const nav=page.getByRole('navigation',{name:'Mobile navigation'});await expect(nav.getByRole('link')).toHaveText(['Home','Agenda','Feed','Partners','Fun Stuff','More']);
+  if(info.project.name!=='public-desktop'){const nav=page.getByRole('navigation',{name:'Mobile navigation'});await expect(nav.getByRole('link')).toHaveText(['Home','Agenda','Feed','Partners','Fun Stuff','More']);}
   await page.screenshot({path:info.outputPath('sonia-home-polish.png'),fullPage:true});
 });
 
