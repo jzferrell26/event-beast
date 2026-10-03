@@ -46,7 +46,7 @@ export function AgendaScreen({ savedOnly = false }: { savedOnly?: boolean }) {
     if (window.matchMedia('(max-width: 900px)').matches) tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   };
   return <><PageTitle eyebrow="MAKE THE MOST OF EVERY MOMENT" title={savedOnly ? "Your saved sessions." : "Your next move."} description={savedOnly ? "The sessions you want to be in the room for." : "Big ideas, practical takeaways, and space to connect."} />
-    {guide.settings.agenda_notice && <p className="agenda-working-notice">{guide.settings.agenda_notice}</p>}
+    {!guide.publicSite && guide.settings.agenda_notice && <p className="agenda-working-notice">{guide.settings.agenda_notice}</p>}
     {savedOnly && guide.publicSite && <p className="fine-print">Saved on this device only. No account needed. Clearing browser data removes these favorites.</p>}
     <div className="agenda-controls">
       {!savedOnly && <div className="day-tabs" role="tablist" aria-label="Event day">{guide.days.map((d, index) => <button key={d.id} type="button" role="tab" aria-selected={!searching && day?.id === d.id} tabIndex={day?.id === d.id ? 0 : -1} className={!searching && day?.id === d.id ? "active" : ""} onKeyDown={(event) => moveDay(event, index)} onClick={() => selectDay(d.id)}><strong>{d.label}</strong><span>{eventDay(d.date, { weekday: "short", month: "short", day: "numeric" })}</span></button>)}</div>}

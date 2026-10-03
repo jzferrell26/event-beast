@@ -147,7 +147,7 @@ test('Sonia photo regression: a large Android JPEG remains readable until prepar
   await expect(page.locator('.wall-post')).toHaveCount(1);expect(f.uploadKeys).toHaveLength(1);
 });
 
-test('Sonia photo regression: revoked device access gives recovery guidance and retains the draft',async({page,context})=>{
+test('Sonia live regression: Android JPEG can preview even when Blob.arrayBuffer is unavailable',async({page,context})=>{
   const f=await fixture(context);
   await page.addInitScript(()=>{
     const read=Blob.prototype.arrayBuffer;
@@ -162,12 +162,8 @@ test('Sonia photo regression: revoked device access gives recovery guidance and 
   await page.getByRole('textbox',{name:'Share with the event'}).fill('Keep my caption');
   const picker=page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post');
   await picker.setInputFiles({name:'unavailable.jpg',mimeType:'image/jpeg',buffer:f.image});
-  await expect(page.locator('.wall-composer [role="alert"]')).toContainText('select it from Files');
-  await expect(page.getByRole('textbox',{name:'Share with the event'})).toHaveValue('Keep my caption');
-  await expect(picker).toBeEnabled();await expect(picker).toHaveValue('');
-  expect(f.uploadKeys).toHaveLength(0);expect(f.postKeys).toHaveLength(0);
-  await picker.setInputFiles({name:'local-copy.png',mimeType:'image/png',buffer:f.image});
   await expect(page.getByAltText('Your selected photo preview')).toBeVisible();
+  await expect(page.getByRole('textbox',{name:'Share with the event'})).toHaveValue('Keep my caption');
   await expect(page.locator('.wall-composer [role="alert"]')).toHaveCount(0);
   await page.getByRole('button',{name:'Post',exact:true}).click();
   await expect(page.locator('.wall-post')).toContainText('Keep my caption');

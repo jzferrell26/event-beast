@@ -29,8 +29,17 @@ export async function isHeicPhoto(file: Blob): Promise<boolean> {
   return text.slice(4, 8) === 'ftyp' && /heic|heix|hevc|hevx|mif1|msf1/.test(text.slice(8));
 }
 export async function prepareFeedPhoto(file: File, signal?: AbortSignal): Promise<File> {
-  file = await snapshotFeedPhoto(file, signal);
-  const heic = await isHeicPhoto(file);
+  if (!file.size || file.size > 25 * 1024 * 1024) throw new Error('Choose a photo under 25 MB.');
+  const declaredHeic = ['image/heic', 'image/heif'].includes(file.type.toLowerCase()) || /\.(heic|heif)$/i.test(file.name);
+  // Samsung/Android gallery providers can expose a usable JPEG to an object URL
+  // while rejecting Blob.arrayBuffer(). Do not byte-read ordinary browser-
+  // decodable photos. Keep the picker alive until decode/canvas work finishes.
+  let heic = declaredHeic;
+  if (declaredHeic) file = await snapshotFeedPhoto(file, signal);
+  else if (!['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type.toLowerCase()) && !/\.(jpe?g|png|webp)$/i.test(file.name)) {
+    file = await snapshotFeedPhoto(file, signal);
+    heic = await isHeicPhoto(file);
+  }
   if (!heic && !['image/jpeg', 'image/jpg', 'image/png', 'image/webp'].includes(file.type.toLowerCase())
     && !/\.(jpe?g|png|webp)$/i.test(file.name)) throw new Error('Choose a JPG, JPEG, PNG, WebP or HEIC photo, not a video or document.');
   signal?.throwIfAborted();

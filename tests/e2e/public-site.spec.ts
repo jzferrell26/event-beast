@@ -11,11 +11,11 @@ test('public essentials stay open while community navigation is discoverable wit
   const privateRequests: string[] = []; const errors: string[] = [];
   page.on('request', request => { if (/\/api\/(saved|people|inbox|profile)(\?|\/|$)/.test(request.url())) privateRequests.push(request.url()); });
   page.on('pageerror', error => errors.push(error.message));
-  for (const path of ['/', '/agenda', '/more/speakers', '/sponsors', '/more', '/more/lunch', '/more/venue', '/more/help']) {
+  for (const path of ['/', '/agenda', '/more/speakers', '/sponsors', '/more', '/more/lunch', '/more/help']) {
     await page.goto(path); await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await page.waitForLoadState('networkidle');
     const nav = page.getByRole('navigation', { name: info.project.name === 'public-desktop' ? 'Main navigation' : 'Mobile navigation', exact: true });
-    await expect(nav.getByRole('link')).toHaveText(info.project.name === 'public-desktop' ? ['Home','Agenda','Feed','People','Inbox','Speakers','Sponsors','More'] : ['Home','Agenda','Feed','Inbox','Sponsors','More']);
+    await expect(nav.getByRole('link')).toHaveText(info.project.name === 'public-desktop' ? ['Home','Agenda','Feed','People','Inbox','Speakers','Sponsors','More'] : ['Home','Agenda','Feed','Partners','Fun Stuff','More']);
     expect(await page.locator('a[href="/more/notifications"]').count()).toBe(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }

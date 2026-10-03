@@ -1,17 +1,15 @@
 "use client";
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Handshake } from 'lucide-react';
+import { ArrowUpRight, Handshake } from 'lucide-react';
 import { httpsUrl } from '@/lib/format';
 import { useApp } from './app-provider';
 import { EmptyState, PageTitle } from './ui';
 
 export function ImpactPartnersScreen() {
-  const { guide, me } = useApp();
+  const { guide } = useApp();
   const groups = [...[...guide.tiers].sort((a,b) => a.sort_order-b.sort_order).map(tier => ({id:tier.id,name:tier.name})),{id:null,name:'Event partners'}];
   return <>
     <PageTitle eyebrow="THE PARTNERS BEHIND THE MOMENTUM" title={guide.settings.sponsor_page_title || 'Impact Partners'} description={guide.settings.sponsor_page_description ?? 'Thank you to the partners making Momentum Builder LIVE possible.'} />
-    {me?.isAdmin && <Link className="text-button partner-settings-link" href="/admin/event_settings">Edit partner-page text<ArrowRight size={16} /></Link>}
     {!guide.sponsors.length && <EmptyState title="Meet our partners soon." icon={<Handshake size={30} />}>The event team will publish the sponsor lineup here.</EmptyState>}
     {groups.map(group => {
       const sponsors = guide.sponsors.filter(sponsor => sponsor.tier_id === group.id).sort((a,b) => a.sort_order-b.sort_order || a.name.localeCompare(b.name));

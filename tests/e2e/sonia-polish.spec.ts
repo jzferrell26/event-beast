@@ -121,6 +121,36 @@ test('Impact Partners has logo-only accessible arrows and regular sponsorship ca
   expect((await new AxeBuilder({page}).include('#main').analyze()).violations).toEqual([]);
 });
 
+test('Sonia consolidated home layout uses eight matching shortcuts and the revised mobile navigation',async({page},info)=>{
+  await wire(page);await page.goto('/');await settle(page);
+  const links=page.locator('.public-home .quick-links>a');await expect(links).toHaveCount(8);
+  await expect(links.locator('strong')).toHaveText(['Full agenda','Saved sessions','Impact Partners','Our Speakers','Venue & help','Social wall','Lunch','Fun Stuff']);
+  await expect(page.locator('.public-home .hub-welcome')).toHaveCount(0);
+  await expect(page.locator('.public-home .home-grid')).toHaveCount(0);
+  await expect(page.locator('.hero-bottom svg')).toHaveCount(0);
+  if(info.project.name!=='public-desktop'){const nav=page.getByRole('navigation',{name:'Mobile navigation'});await expect(nav.getByRole('link')).toHaveText(['Home','Agenda','Feed','Partners','Fun Stuff','More']);}
+  await page.screenshot({path:info.outputPath('sonia-home-polish.png'),fullPage:true});
+});
+
+test('Sonia consolidated Help owns venue details and the old Venue route redirects',async({page})=>{
+  const guide=await wire(page);guide.venues=[{...guide.venues[0],id:'90000000-0000-4000-8000-000000000001',title:'Hyatt Regency Dallas',location:'300 Reunion Boulevard, Dallas, Texas 75207',description:'Event venue.',directions_url:'https://maps.example/dallas'}];
+  await page.route('**/api/guide',route=>route.fulfill({json:guide}));
+  await page.goto('/more/help');await settle(page);
+  await expect(page.getByRole('heading',{name:'Hyatt Regency Dallas'})).toBeVisible();
+  await expect(page.getByRole('link',{name:/floor plan/})).toHaveAttribute('href',mapUrl);
+  await expect(page.getByRole('heading',{name:'Start with the agenda.'})).toHaveCount(0);
+  await page.goto('/more/venue');await expect(page).toHaveURL(/\/more\/help$/);
+});
+
+test('Sonia consolidated More removes duplicate venue/admin rows and uses a distinct private-message icon',async({page})=>{
+  await wire(page);await page.goto('/more');await settle(page);
+  await expect(page.getByRole('heading',{name:'Find your way'})).toHaveCount(0);
+  await expect(page.getByRole('heading',{name:'Help, Venue, and More'})).toBeVisible();
+  await expect(page.getByText('Find your way, save this site, etc.')).toBeVisible();
+  await expect(page.getByText('Organizer console',{exact:true})).toHaveCount(0);
+  const privateRow=page.locator('.more-menu a',{hasText:'Private messages'});await expect(privateRow.locator('.lucide-message-circle')).toHaveCount(1);
+});
+
 test('ad CTA uses the sponsor website fallback and has no visible advertisement heading',async({page})=>{
   await wire(page);await page.goto('/more/lunch');await settle(page);
   const creative=page.locator('a.sponsor-creative:visible');await expect(creative).toHaveAttribute('href','https://partner.example/');
@@ -128,16 +158,14 @@ test('ad CTA uses the sponsor website fallback and has no visible advertisement 
   await expect(creative.locator('.sponsor-creative-label')).toHaveCount(0);
 });
 
-test('event help and Find your way expose Wi-Fi and the PDF rather than offline promotion',async({page},info)=>{
+test('event help exposes venue, Wi-Fi and the PDF rather than a duplicate Venue page',async({page},info)=>{
   await wire(page);
-  for(const path of ['/more/help','/more/venue']){
-    await page.goto(path);await settle(page);await expect(page.getByText('Test-Meeting',{exact:true})).toBeVisible();await expect(page.getByText('Test2026',{exact:true})).toBeVisible();
-    await expect(page.locator('a[href="/offline.html"]:visible')).toHaveCount(0);
-    const support=page.locator('.event-support-copy:visible');await expect(support.getByRole('link',{name:'Email us at support@example.test'})).toHaveAttribute('href','mailto:support@example.test');
-    await expect(support.getByRole('link',{name:'Text us at 747-213-2155'})).toHaveAttribute('href','sms:+17472132155');
-    await expect(support.getByText('Or come to the registration table')).toBeVisible();
-    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
-  }
+  await page.goto('/more/help');await settle(page);await expect(page.getByText('Test-Meeting',{exact:true})).toBeVisible();await expect(page.getByText('Test2026',{exact:true})).toBeVisible();
+  await expect(page.locator('a[href="/offline.html"]:visible')).toHaveCount(0);
+  const support=page.locator('.event-support-copy:visible');await expect(support.getByRole('link',{name:'Email us at support@example.test'})).toHaveAttribute('href','mailto:support@example.test');
+  await expect(support.getByRole('link',{name:'Text us at 747-213-2155'})).toHaveAttribute('href','sms:+17472132155');
+  await expect(support.getByText('Or come to the registration table')).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
   await expect(page.getByRole('link',{name:/Hyatt Regency Dallas floor plan/})).toHaveAttribute('href',mapUrl);
   await page.screenshot({path:info.outputPath('venue-wifi.png'),fullPage:true});
 });

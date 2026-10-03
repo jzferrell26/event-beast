@@ -21,7 +21,7 @@ async function refresh(page: Page) {
   }).toBe(1);
 }
 
-test('speaker cards preserve the full portrait and published biography', async ({ page }) => {
+test('speaker cards fill a consistent portrait frame and preserve the published biography', async ({ page }) => {
   const guide = fixture();
   await page.route('**/api/guide', route => route.fulfill({ json: guide }));
   await page.goto('/more/speakers');
@@ -30,7 +30,7 @@ test('speaker cards preserve the full portrait and published biography', async (
   const img = card.getByRole('img', { name: 'Portrait Test Speaker portrait' });
   await img.scrollIntoViewIfNeeded();
   await expect.poll(() => img.evaluate(node => (node as HTMLImageElement).complete && (node as HTMLImageElement).naturalWidth > 0)).toBe(true);
-  await expect(img).toHaveCSS('object-fit', 'contain');
+  await expect(img).toHaveCSS('object-fit', 'cover');
   await expect(img).toHaveCSS('border-radius', '0px');
   const bounds = await img.boundingBox();
   // Phone cards deliberately use a smaller editorial canvas; desktop keeps

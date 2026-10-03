@@ -4,6 +4,7 @@
 .speaker-directory-card:hover{border-color:#b5b5c1;box-shadow:0 8px 24px #1111130a}
 .speaker-portrait{position:relative;aspect-ratio:4/5;width:100%;min-width:0;flex-shrink:0;background:#ececef;isolation:isolate}
 .speaker-portrait>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center center;border-radius:0}
+.speaker-directory-card .speaker-portrait-fill>img{object-fit:cover}
 .speaker-portrait-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#e9e9ed;color:#565663}
 .speaker-portrait-placeholder>span{font:700 78px/1 var(--display);letter-spacing:2px}
 .speaker-portrait-placeholder>small{font-size:12px}
@@ -12,6 +13,7 @@
 .speaker-card-bio{font-size:14px;line-height:1.75;color:#565663;white-space:pre-line;overflow-wrap:anywhere;padding-bottom:7px}
 .speaker-card-link{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:16px;margin-top:auto;min-height:44px;font-size:12px;font-weight:650;color:#50505d}
 .speaker-card-link>svg{flex-shrink:0;color:#d71024}
+.speaker-inline-ad{grid-column:1/-1}
 .speaker-profile-hero{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:36px;align-items:start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:32px}
 .speaker-profile-hero .speaker-portrait{border-radius:10px;overflow:hidden}
 .speaker-profile-copy{padding:14px 0;min-width:0}

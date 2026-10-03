@@ -67,7 +67,7 @@ test('attendee reports a post and organizer can hide and resolve it',async({page
 
 test('Lunch owns breakouts; Fun Stuff has its own truthful pending page and no notification UI',async({page},info)=>{
  await page.goto('/more');await expect(page.getByRole('link',{name:/Lunch & breakouts/})).toBeVisible();
- await page.getByRole('link',{name:/Fun Stuff/}).click();
+ await page.locator('.more-menu').getByRole('link',{name:/Fun Stuff/}).click();
  await expect(page.getByRole('heading',{name:'Fun Stuff.'})).toBeVisible();
  await expect(page.getByText('Sonia is preparing this page.',{exact:false})).toBeVisible();
  expect(await page.locator('a[href="/more/notifications"]').count()).toBe(0);
