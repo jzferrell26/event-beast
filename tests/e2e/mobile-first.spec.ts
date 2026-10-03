@@ -137,4 +137,3 @@ test('long session, speaker and venue labels reflow without truncating biography
     expect(reflow.document, route).toBeLessThanOrEqual(321);
   }
 });
-
