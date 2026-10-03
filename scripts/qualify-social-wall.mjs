@@ -9,6 +9,8 @@ import { backendAdmin, backendEnvironment, EVENT_ID } from './backend-cli.mjs';
 // Explicit, bounded hosted qualification. Never sends mail, never uses an
 // existing person's credentials, and cleans only IDs allocated by this run.
 const site = 'https://2026live.momentumbuilder.com';
+const album = process.argv.includes('--album');
+const photoCount = album ? 5 : 1;
 const revision = process.argv[process.argv.indexOf('--revision') + 1];
 assert.ok(process.argv.includes('--revision') && /^[a-f0-9]{40}$/.test(revision), 'Pass the full expected production commit with --revision.');
 assert.ok(process.argv.includes('--run'), 'Hosted writes require --run.');
@@ -57,16 +59,17 @@ try {
   const bytes = await sharp({ create: { width: 2500, height: 1600, channels: 3, background: '#426782' } }).png().toBuffer();
   await pageA.goto(site + '/feed', { waitUntil: 'networkidle' });
   await pageA.getByRole('textbox', { name: 'Share with the event', exact: true }).fill(caption);
-  await pageA.locator('.wall-composer:visible').getByLabel('Choose a photo for your post').setInputFiles({ name: 'qa-photo.png', mimeType: 'image/png', buffer: bytes });
-  await pageA.getByAltText('Your selected photo preview').waitFor();
+  await pageA.locator('.wall-composer:visible').getByLabel('Choose a photo for your post').setInputFiles(Array.from({length:photoCount},(_,i)=>({ name: `qa-photo-${i+1}.png`, mimeType: 'image/png', buffer: bytes })));
+  await pageA.waitForFunction(count=>document.querySelectorAll('.wall-photo-preview img').length===count,photoCount);
   const posting = pageA.waitForResponse(response => new URL(response.url()).pathname==='/api/feed' && response.request().method()==='POST');
   await pageA.getByRole('button',{name:'Post',exact:true}).click();
   const createdResponse = await posting, created = await createdResponse.json();
   assert.ok(createdResponse.ok(), 'Photo post must persist'); postIds.push(created.id);
-  const post = validate(await admin.from('feed_posts').select('id,image_path,client_id,body,version').eq('event_id',EVENT_ID).eq('id',created.id).single(), 'Read only the new QA post');
-  photoPaths.push(post.image_path);
+  const post = validate(await admin.from('feed_posts').select('id,image_path,photo_count,client_id,body,version').eq('event_id',EVENT_ID).eq('id',created.id).single(), 'Read only the new QA post');
+  assert.equal(post.photo_count,photoCount);
+  for(let slot=1;slot<=photoCount;slot++)photoPaths.push(slot===1?post.image_path:post.image_path.replace(/\.webp$/,`-${slot}.webp`));
   assert.ok(post.image_path.startsWith(`${EVENT_ID}/${a.me.attendeeId}/`));
-  const retry = await api(a.context, '/api/feed', 'POST', { clientId: post.client_id, body: caption, image: true });
+  const retry = await api(a.context, '/api/feed', 'POST', { clientId: post.client_id, body: caption, ...(album?{photoCount}:{image:true}) });
   assert.equal(retry.id, post.id);
   check('Actual browser photo upload and retry-safe publication');
   await pageB.goto(site + '/feed', { waitUntil: 'networkidle' });
@@ -76,8 +79,19 @@ try {
   await pageB.waitForFunction(id => { const image = document.querySelector(`button[aria-controls="replies-${id}"]`)?.closest('.wall-post')?.querySelector('.wall-photo img'); return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0; }, post.id);
   const photoResponse = await b.context.request.get(site + `/api/feed/${post.id}/photo`);
   assert.equal(photoResponse.status(),200); assert.match(photoResponse.headers()['cache-control'],/no-store/);
+  if(album){
+    for(let slot=1;slot<=5;slot++){
+      const response=await b.context.request.get(site+`/api/feed/${post.id}/photo?slot=${slot}`);
+      assert.equal(response.status(),200);const bytes=await response.body();assert.ok(bytes.length<=1024*1024);
+      const metadata=await sharp(bytes).metadata();assert.ok(metadata.width<=1920&&metadata.height<=1920);
+    }
+    assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo?slot=6`)).status(),400);
+    await card.getByRole('button',{name:'Next photo',exact:true}).click();
+    await card.getByText('Photo 2 of 5',{exact:true}).waitFor();
+    check('Five hosted bounded photos, album navigation and over-limit refusal');
+  }
   const anonymous = await browser.newContext();
-  assert.equal((await anonymous.request.get(site+`/api/feed/${post.id}/photo`)).status(),401);
+  assert.equal((await anonymous.request.get(site+`/api/feed/${post.id}/photo?slot=${photoCount}`)).status(),401);
   await anonymous.close();
   check('Second Member sees authenticated photo; anonymous access is denied');
   await card.getByRole('button',{name:'Like 0',exact:true}).click();
@@ -111,13 +125,14 @@ try {
   await api(organizer.context,'/api/admin/feed/replies','PATCH',{replyId:replyBody.id,status:'visible'});
   await api(organizer.context,'/api/admin/feed','PATCH',{postId:post.id,status:'hidden'});
   assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo`)).status(),404);
+  if(album)assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo?slot=5`)).status(),404);
   assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/replies`)).status(),404);
   assert.equal((await b.context.request.put(site+`/api/feed/${post.id}/like`,{headers:{Origin:site},data:{liked:true}})).status(),403);
   await api(organizer.context,'/api/admin/feed','PATCH',{postId:post.id,status:'visible'});
   assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo`)).status(),200);
   check('Real organizer reply moderation and parent photo/thread withdrawal');
   await api(a.context,'/api/moderation','POST',{action:'block',target:b.me.attendeeId,blocked:true});
-  assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo`)).status(),404);
+  assert.equal((await b.context.request.get(site+`/api/feed/${post.id}/photo?slot=${photoCount}`)).status(),404);
   await api(a.context,'/api/moderation','POST',{action:'block',target:b.me.attendeeId,blocked:false});
   validate(await admin.from('attendees').update({status:'disabled'}).eq('event_id',EVENT_ID).eq('id',b.me.attendeeId),'Disable only QA Member');
   assert.equal((await b.context.request.get(site+'/api/feed')).status(),403);
@@ -129,7 +144,7 @@ try {
   await pageA.waitForURL(/\/auth\?force=1&signedOut=1$/);await otherTab.waitForURL(/\/auth\?force=1&signedOut=1$/);
   assert.equal((await api(a.context,'/api/me')).authenticated,false);
   assert.equal((await a.context.request.get(site+'/api/feed')).status(),401);
-  assert.equal((await a.context.request.get(site+`/api/feed/${post.id}/photo`)).status(),401);
+  assert.equal((await a.context.request.get(site+`/api/feed/${post.id}/photo?slot=${photoCount}`)).status(),401);
   assert.equal((await api(b.context,'/api/me')).eligible,true);
   check('Real sign-out clears cookies, private access and the other open tab');
 } catch(error) {
@@ -146,7 +161,7 @@ try {
     for(const account of accounts.filter(item=>item.attendeeId)){
       const prefix=`${EVENT_ID}/${account.attendeeId}`;
       const files=validate(await admin.storage.from('event-feed-photos').list(prefix,{limit:200}),'List only this run\'s photo folder');
-      for(const file of files){if(/^[a-f0-9-]{36}\.webp$/.test(file.name)){const path=prefix+'/'+file.name;if(!photoPaths.includes(path))photoPaths.push(path);}}
+      for(const file of files){if(/^[a-f0-9-]{36}(-[2-5])?\.webp$/.test(file.name)){const path=prefix+'/'+file.name;if(!photoPaths.includes(path))photoPaths.push(path);}}
     }
   });
   await clean('QA posts',async()=>{if(postIds.length)validate(await admin.from('feed_posts').delete().eq('event_id',EVENT_ID).in('id',postIds),'Delete only QA posts');});
@@ -157,6 +172,7 @@ try {
   for(const account of accounts)await clean('QA Auth identity',async()=>{const user=validate(await admin.auth.admin.getUserById(account.userId),'Check identity before cleanup');assert.equal(user.user.email,account.email);validate(await admin.auth.admin.deleteUser(account.userId),'Delete only QA identity');});
   report.cleanup.completed=report.cleanup.errors.length===0;
   report.completedAt=new Date().toISOString();
-  await mkdir('test-results/social-wall-live',{recursive:true});await writeFile('test-results/social-wall-live/result.json',JSON.stringify(report,null,2)+'\n');
+  const output=album?'test-results/photo-albums-live':'test-results/social-wall-live';
+  await mkdir(output,{recursive:true});await writeFile(output+'/result.json',JSON.stringify(report,null,2)+'\n');
   console.log(JSON.stringify(report,null,2));
 }

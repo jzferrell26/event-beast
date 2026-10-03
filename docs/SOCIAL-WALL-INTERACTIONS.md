@@ -1,5 +1,7 @@
 # Social Wall interactions and sign-out
 
+**Photo behavior is extended by PRD-005:** see `BOUNDED-PHOTO-ALBUMS.md` for the five-photo limit, Android HEIC conversion, sequential uploads and resource controls. The single-photo description below records the initial PRD-004 release. Replies, likes, privacy and sign-out continue unchanged.
+
 Source request: Sonia's October 2 **big thing needed** email thread, followed by Jonathan's approval to implement and his request for an obvious logout control. Specification: `library/requirements/in-work/prd-004-social-wall-interactions/prd-004-social-wall-interactions-index.md`.
 
 ## Attendee experience

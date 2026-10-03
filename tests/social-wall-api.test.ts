@@ -65,4 +65,16 @@ describe('wall HTTP boundary',()=>{
     mocks.admin.mockRejectedValue(new ApiError(403,'Organizer access required'));
     const response=await moderateReply(json('/api/admin/feed/replies','PATCH',{replyId:post,status:'hidden'}));expect(response.status).toBe(403);expect(mocks.rpc).not.toHaveBeenCalled();
   });
+  it('rejects invalid album slots and never fetches an unlisted photo',async()=>{
+    expect((await photo(new Request(site+`/api/feed/${post}/photo?slot=6`),context)).status).toBe(400);
+    expect((await photo(new Request(site+`/api/feed/${post}/photo?slot=2`),context)).status).toBe(404);
+    expect(mocks.download).not.toHaveBeenCalled();
+    const form=new FormData();form.set('clientId',client);form.set('slot','6');form.set('file',new Blob(['fake'],{type:'image/png'}),'phone.png');
+    expect((await upload(new Request(site+'/api/feed/photos',{method:'POST',headers:{Origin:site},body:form}))).status).toBe(400);
+    expect(mocks.upload).not.toHaveBeenCalled();
+  });
+  it('bounds actual multipart bytes even when Content-Length is absent',async()=>{
+    const response=await upload(formRequest(Buffer.alloc(4*1024*1024)));
+    expect(response.status).toBe(413);expect(mocks.upload).not.toHaveBeenCalled();
+  });
 });

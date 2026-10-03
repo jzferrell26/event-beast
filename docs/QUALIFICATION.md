@@ -2,6 +2,10 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## October 2 — bounded albums and Android photo compatibility (PRD-005)
+
+The candidate adds up to five photos, sequential preparation/uploads and retry recovery, a pinned on-demand HEIC decoder worker, a byte/concurrency-bounded private photo-serving path, and removal of empty session-description placeholders. `BOUNDED-PHOTO-ALBUMS.md` documents implementation limits and separate source/hosted/device acceptance. Existing single-photo content, signup and organizer communications are unchanged. Source/CI and hosted evidence are recorded on the release PR; this entry alone is not production proof. Do not call the local noisy-photo exercise a 500-user load test or claim Sonia's unsupplied Android original has been reproduced.
+
 ## October 2 — Social Wall interactions and visible sign-out
 
 PRD-004 covers single-photo posts, replies, desired-state likes, reply/photo moderation and visible local-browser sign-out. See `SOCIAL-WALL-INTERACTIONS.md` for the exact scope, privacy boundary and hosted qualification command. Lint, TypeScript, the production build and 323 source tests pass. The 12 focused browser checks pass across desktop Chromium, phone Chromium and phone WebKit, including lost-response retry, reply pagination, moderation, logout across tabs, accessible controls and 320px layout. The serialized photo-publication/cleanup guard was separately rechecked with 27 focused tests. The additive production migration `20261003000258_social_wall_interactions` is applied; application release and hosted qualification are not implied by that schema change. No 500-user load claim, physical-phone certification or outbound attendee email is implied by this work. Release-specific hosted results are recorded on the pull request after deployment.

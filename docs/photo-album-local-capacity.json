@@ -1,0 +1,10 @@
+{
+  "scope": "Local image normalization only; not a hosted 500-user test",
+  "photos": 20,
+  "callers": 4,
+  "inputBytes": 1750961,
+  "largestOutputBytes": 415630,
+  "durationMs": 8656,
+  "initialRssBytes": 97046528,
+  "peakRssBytes": 242651136
+}

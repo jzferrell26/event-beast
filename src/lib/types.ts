@@ -56,7 +56,7 @@ export interface EventActivity {
 export interface FeedPost {
   id: string; event_id?: string; author_id: string; body: string; status: 'visible' | 'hidden' | 'deleted'; version: number;
   created_at: string; updated_at: string; author_name?: string; author_company?: string; author_title?: string; avatar_url?: string;
-  image_url?: string | null; like_count?: number; liked_by_me?: boolean; reply_count?: number;
+  image_url?: string | null; photo_count?: number; like_count?: number; liked_by_me?: boolean; reply_count?: number;
 }
 export interface FeedReply {
   id: string; post_id: string; author_id: string; author_name: string; body: string;

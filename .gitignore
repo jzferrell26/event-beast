@@ -12,3 +12,4 @@ supabase/.temp/
 supabase/.branches/
 .DS_Store
 *.log
+public/vendor/libheif-1.23.2/

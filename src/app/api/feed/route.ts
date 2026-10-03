@@ -22,7 +22,9 @@ export const GET = (request: Request) => handle(async () => {
 export const POST = (request: Request) => handle(async () => {
   const body = await parseBody(request, feedPostInput);
   const { db, event } = await requireMember();
-  const result = await db.rpc('publish_feed_post_with_photo', { p_event: event.id, p_client: body.clientId, p_body: body.body, p_image: body.image });
+  const result = body.photoCount === undefined
+    ? await db.rpc('publish_feed_post_with_photo', { p_event: event.id, p_client: body.clientId, p_body: body.body, p_image: body.image })
+    : await db.rpc('publish_feed_post_with_photos', { p_event: event.id, p_client: body.clientId, p_body: body.body, p_count: body.photoCount });
   databaseError(result.error);
   return json({ saved: true, id: result.data?.id }, 201);
 });

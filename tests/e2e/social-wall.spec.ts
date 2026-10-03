@@ -6,13 +6,15 @@ import { publicSiteGuide } from '../../src/lib/public-site';
 import type { FeedPost, FeedReply } from '../../src/lib/types';
 test.use({serviceWorkers:'block'});
 
-async function fixture(context:BrowserContext, {lostResponses=false,replyRows=0}={}) {
+async function fixture(context:BrowserContext, {lostResponses=false,replyRows=0,failedSlot=0}={}) {
   const guide={...publicSiteGuide(structuredClone(demoGuide),true),mode:'live'};
   guide.settings.announcements_enabled=false;
   const member={...demoMe,mode:'live',authenticated:true,eligible:true,isAdmin:false,attendeeId:'71000000-0000-4000-8000-000000000077'};
   const postId='71000000-0000-4000-8000-000000000042';
   let posts:FeedPost[]=[],replies:FeedReply[]=[],signedIn=true,failUpload=lostResponses,failPost=lostResponses,failLike=lostResponses,failReply=lostResponses,failSignOut=false;
   const uploadKeys:string[]=[],postKeys:string[]=[],replyKeys:string[]=[],likes:boolean[]=[];
+  const slots:number[]=[],loadedPhotos:number[]=[],requestSizes:number[]=[];
+  let failedAlbum=false,activeUploads=0,peakUploads=0;
   const image=await sharp({create:{width:2400,height:1200,channels:3,background:'#447788'}}).png().toBuffer();
   const seed=()=>{posts=[{id:postId,author_id:member.attendeeId,author_name:'Testing attendee',body:'A moment worth sharing',status:'visible',version:0,created_at:'2026-10-06T18:00:00Z',updated_at:'2026-10-06T18:00:00Z',image_url:`/api/feed/${postId}/photo`,like_count:0,liked_by_me:false,reply_count:replyRows}];};
   if(replyRows){seed();replies=Array.from({length:replyRows},(_,i)=>({id:`72000000-0000-4000-8000-${String(i+1).padStart(12,'0')}`,post_id:postId,author_id:'71000000-0000-4000-8000-000000000099',author_name:'Another attendee',body:'Reply number '+(i+1),status:'visible' as const,version:0,created_at:new Date(Date.parse('2026-10-06T18:00:00Z')+i*1000).toISOString(),updated_at:'2026-10-06T18:00:00Z'}));}
@@ -29,17 +31,20 @@ async function fixture(context:BrowserContext, {lostResponses=false,replyRows=0}
   await context.route('**/api/feed**',async r=>{
     const req=r.request(),method=req.method(),url=new URL(req.url()),path=url.pathname;
     if(!signedIn)return r.fulfill({status:401,json:{error:'Please sign in.'}});
-    if(method==='GET'&&path.endsWith('/photo'))return r.fulfill({contentType:'image/png',body:image,headers:{'Cache-Control':'private, no-store'}});
+    if(method==='GET'&&path.endsWith('/photo')){loadedPhotos.push(Number(url.searchParams.get('slot')??1));return r.fulfill({contentType:'image/png',body:image,headers:{'Cache-Control':'private, no-store'}});}
     if(path==='/api/feed/photos'){
       if(method==='DELETE')return r.fulfill({json:{removed:true}});
       const key=req.postData()?.match(/name="clientId"\r?\n\r?\n([^\r\n]+)/)?.[1];expect(key).toBeTruthy();uploadKeys.push(key!);
+      const slot=Number(req.postData()?.match(/name="slot"\r?\n\r?\n([^\r\n]+)/)?.[1]??1);slots.push(slot);requestSizes.push(req.postDataBuffer()!.length);
+      activeUploads++;peakUploads=Math.max(peakUploads,activeUploads);await new Promise(resolve=>setTimeout(resolve,30));activeUploads--;
+      if(slot===failedSlot&&!failedAlbum){failedAlbum=true;return r.fulfill({status:503,json:{error:'Interrupted third photo'}});}
       if(failUpload){failUpload=false;return r.fulfill({status:503,json:{error:'Synthetic response lost after upload'}});}
       return r.fulfill({json:{uploaded:true,clientId:key}});
     }
     if(path==='/api/feed'){
       if(method==='GET')return r.fulfill({json:{posts:posts.filter(p=>p.status==='visible'),nextCursor:null}});
       const data=req.postDataJSON();postKeys.push(data.clientId);
-      if(!posts.length){seed();posts[0].body=data.body;posts[0].image_url=data.image?`/api/feed/${postId}/photo`:null;}
+      if(!posts.length){seed();posts[0].body=data.body;posts[0].photo_count=data.photoCount??(data.image?1:0);posts[0].image_url=posts[0].photo_count?`/api/feed/${postId}/photo`:null;}
       if(failPost){failPost=false;return r.fulfill({status:503,json:{error:'Synthetic post response lost'}});}
       return r.fulfill({json:{saved:true,id:postId}});
     }
@@ -65,7 +70,7 @@ async function fixture(context:BrowserContext, {lostResponses=false,replyRows=0}
     }
     return r.fulfill({json:{saved:true}});
   });
-  return {image,uploadKeys,postKeys,replyKeys,likes,seed,failLogout:(value:boolean)=>{failSignOut=value;}};
+  return {image,uploadKeys,postKeys,replyKeys,likes,slots,loadedPhotos,requestSizes,peakUploads:()=>peakUploads,seed,failLogout:(value:boolean)=>{failSignOut=value;}};
 }
 
 test('photo-only post, lost-response retries, replies and likes are usable on a phone',async({page,context},info)=>{
@@ -126,4 +131,35 @@ test('organizer can hide and restore reported replies without changing private c
   await page.goto('/admin/feed');await page.getByRole('button',{name:'Hide reply & resolve'}).click();
   await expect(page.getByText('Open reply report',{exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'Restore reply',exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Restore reply',exact:true}).click();await expect(page.getByRole('button',{name:'Hide reply',exact:true})).toBeVisible();expect(reply.status).toBe('visible');
+});
+
+test('five-photo album rejects six, uploads sequentially, resumes slot three and loads only the selected photo',async({page,context})=>{
+  const f=await fixture(context,{failedSlot:3});await page.goto('/feed');
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
+  const input=page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post');
+  const files=Array.from({length:6},(_,i)=>({name:`photo-${i}.png`,mimeType:'image/png',buffer:f.image}));
+  await input.setInputFiles(files);await expect(page.locator('.wall-composer [role="alert"]')).toContainText('up to 5');expect(f.uploadKeys).toHaveLength(0);
+  await input.setInputFiles(files.slice(0,5));await expect(page.locator('.wall-photo-preview')).toHaveCount(5);
+  await page.getByRole('button',{name:'Post',exact:true}).click();await expect(page.locator('.wall-composer [role="alert"]')).toContainText('Interrupted third');expect(f.postKeys).toHaveLength(0);
+  await page.getByRole('button',{name:'Post',exact:true}).click();await expect(page.locator('.wall-post')).toHaveCount(1);
+  expect(f.slots).toEqual([1,2,3,3,4,5]);expect(new Set(f.uploadKeys).size).toBe(1);expect(f.peakUploads()).toBe(1);expect(Math.max(...f.requestSizes)).toBeLessThan(1.1*1024*1024);
+  const card=page.locator('.wall-post');await card.scrollIntoViewIfNeeded();await expect(card.locator('.wall-photo img')).toHaveCount(1);await expect(card.getByText('Photo 1 of 5',{exact:true})).toBeVisible();expect(f.loadedPhotos.every(slot=>slot===1)).toBe(true);
+  await card.getByRole('button',{name:'Next photo',exact:true}).click();await expect(card.locator('.wall-photo img')).toHaveAttribute('src',/slot=2$/);await expect(card.getByText('Photo 2 of 5',{exact:true})).toBeVisible();
+  await page.reload();await expect(page.locator('.wall-post').getByText('Photo 1 of 5',{exact:true})).toBeVisible();
+});
+
+test('a genuine HEIC prepares in a worker and posts as a bounded derivative',async({page,context})=>{
+  const f=await fixture(context);await page.goto('/feed');
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.locator('.demo-strip').count();}).toBe(0);
+  await page.locator('.wall-composer:visible').getByLabel('Choose a photo for your post').setInputFiles('tests/fixtures/photos/example.heic');
+  await expect(page.getByAltText('Your selected photo preview')).toBeVisible({timeout:35000});
+  await page.getByRole('button',{name:'Post',exact:true}).click();await expect(page.locator('.wall-post')).toHaveCount(1);expect(f.requestSizes[0]).toBeLessThan(1.1*1024*1024);
+});
+
+test('sessions with no description omit the empty-description section',async({page,context})=>{
+  const guide=publicSiteGuide(structuredClone(demoGuide),true);guide.sessions[0].description='   ';
+  await context.route('**/api/guide',r=>r.fulfill({json:guide}));
+  await page.goto('/agenda/'+guide.sessions[0].id);
+  await expect.poll(async()=>{await page.evaluate(()=>window.dispatchEvent(new Event('focus')));return page.getByRole('heading',{name:'In this session',exact:true}).count();}).toBe(0);
+  await expect(page.getByText('Session details will be added by the event team.',{exact:true})).toHaveCount(0);
 });
