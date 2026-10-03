@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { httpsUrl, initials } from "@/lib/format";
 
-/** Speaker photos are editorial portraits, not square attendee avatars.
- * Keep the entire source visible, including unusually tall or wide images. */
+/** Directory portraits share one consistent editorial frame. Source images may
+ * crop at the edges so every speaker fills the same card without gray bars. */
 export function SpeakerPortrait({ name, src, priority = false }: {
   name: string; src?: string | null; priority?: boolean;
 }) {

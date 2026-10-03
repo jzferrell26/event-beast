@@ -33,7 +33,7 @@ export interface SponsorPlacement {
   id: string; event_id: string; day_id: string | null; after_session_id: string | null; sponsor_id: string;
   headline: string; body: string; sort_order: number; published: boolean;
   image_url?: string; image_alt?: string; image_format?: 'square' | 'banner'; link_url?: string;
-  surface?: 'agenda' | 'home' | 'speakers' | 'sponsors' | 'lunch' | 'venue';
+  surface?: 'agenda' | 'home' | 'speakers' | 'sponsors' | 'lunch' | 'venue' | 'help' | 'saved';
 }
 export interface LunchLocation {
   id: string; event_id: string; title: string; location: string; hours: string; description: string;

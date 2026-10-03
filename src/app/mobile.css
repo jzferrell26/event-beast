@@ -157,7 +157,7 @@
   .app-shell .form-description,.app-shell .privacy-option small,.app-shell .form-field small{font-size:13px;line-height:1.65}
   .app-shell .privacy-option strong{font-size:14px;line-height:1.5}
 
-  /* Full portraits, faster browsing: smaller canvas, not cropped source art. */
+  /* Consistent portrait frames keep the directory scannable on phones. */
   .speakers-grid{grid-template-columns:1fr;gap:14px}
   .speaker-directory-card{display:grid;grid-template-columns:112px minmax(0,1fr);grid-template-rows:auto 1fr auto;gap:0;border-radius:13px}
   .speaker-directory-card>.speaker-portrait{grid-column:1;grid-row:1/3;width:96px;margin:16px 0 0 16px;align-self:start;overflow:hidden;border-radius:7px}
