@@ -3,7 +3,8 @@
 .speaker-directory-card:focus-visible{outline:3px solid #d71024;outline-offset:4px}
 .speaker-directory-card:hover{border-color:#b5b5c1;box-shadow:0 8px 24px #1111130a}
 .speaker-portrait{position:relative;aspect-ratio:4/5;width:100%;min-width:0;flex-shrink:0;background:#ececef;isolation:isolate}
-.speaker-portrait>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:center center;border-radius:0}
+.speaker-portrait>img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;object-position:center center;border-radius:0}
+.speaker-directory-card .speaker-portrait-fill>img{object-fit:cover}
 .speaker-portrait-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#e9e9ed;color:#565663}
 .speaker-portrait-placeholder>span{font:700 78px/1 var(--display);letter-spacing:2px}
 .speaker-portrait-placeholder>small{font-size:12px}

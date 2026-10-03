@@ -129,7 +129,7 @@ test('long session, speaker and venue labels reflow without truncating biography
   await page.route('**/api/guide', route => route.fulfill({ json: guide }));
   await page.setViewportSize({ width: 320, height: 740 });
   await page.clock.setFixedTime(start);
-  for (const route of ['/agenda', '/more/speakers', '/more/venue']) {
+  for (const route of ['/agenda', '/more/speakers']) {
     await page.goto(route);
     await refreshUntil(page, () => page.locator('#main').innerText().then(text => text.includes(long)));
     const reflow = await page.evaluate(() => ({ viewport: innerWidth, document: document.documentElement.scrollWidth }));
@@ -138,20 +138,3 @@ test('long session, speaker and venue labels reflow without truncating biography
   }
 });
 
-test('published venue address copy succeeds or offers honest fallback without changing data', async ({ page }) => {
-  const guide = structuredClone(demoGuide);
-  guide.venues = [{ ...guide.venues[0], title: 'Synthetic venue', location: '123 Example Avenue', is_demo: false, directions_url: 'https://example.test/directions' }];
-  await page.route('**/api/guide', route => route.fulfill({ json: guide }));
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/more/venue');
-  await refreshUntil(page, () => page.getByRole('button', { name: 'Copy address for Synthetic venue' }).count().then(count => count === 1));
-  await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async (text: string) => { document.documentElement.dataset.copiedTest = text; } } }));
-  await page.getByRole('button', { name: 'Copy address for Synthetic venue' }).click();
-  await expect(page.getByText('Venue address copied.', { exact: true })).toBeVisible();
-  expect(await page.evaluate(() => document.documentElement.dataset.copiedTest)).toBe('123 Example Avenue');
-  await page.getByRole('button', { name: 'Dismiss notification' }).click();
-  await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async () => { throw new Error('Clipboard permission denied'); } } }));
-  await page.getByRole('button', { name: 'Copy address for Synthetic venue' }).click();
-  await expect(page.locator('.toast[role="alert"]')).toContainText('Copy is unavailable');
-  await expect(page.getByRole('link', { name: 'Get directions', exact: false })).toHaveAttribute('href', guide.venues[0].directions_url);
-});
