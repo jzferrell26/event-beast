@@ -5,6 +5,20 @@
 .public-home .connection-card > svg { margin:28px 0 4px; }
 .help-venue { min-width:0; overflow-wrap:anywhere; }
 .help-venue .text-button { max-width:100%; white-space:normal; }
+.public-help-grid > section > h2 { font:700 29px/1.07 var(--display); margin:0 0 16px; }
+.public-help-grid > section > svg { color:#c51a2e; margin-bottom:16px; }
+.public-help-grid .event-support-copy p { font-size:14px; font-weight:700; line-height:1.7; }
+.public-help-grid .event-support-copy :is(strong,a) { font:inherit; }
+.impact-arena-feature { width:100%; margin-top:24px; padding:32px 34px; border-radius:16px; background:#141417; color:#fff; overflow-wrap:anywhere; }
+.impact-arena-feature h2 { font:700 clamp(34px,3.8vw,56px)/1.05 var(--display); color:inherit; text-transform:uppercase; text-wrap:balance; }
+.impact-arena-feature p { margin:16px 0 0; max-width:70ch; font-size:16px; line-height:1.75; color:#dddde2; }
+@media(max-width:900px) {
+ .impact-arena-feature { padding:24px 22px; }
+ .impact-arena-feature h2 { font-size:32px; }
+ .impact-arena-feature p { font-size:15px; line-height:1.7; }
+}
+@media(min-width:601px) and (max-width:900px) { .impact-arena-feature h2 { font-size:36px; } }
+@media(max-width:359px) { .impact-arena-feature h2 { font-size:28px; } }
 .public-sponsor-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
 .public-sponsor-logo-card { padding:24px 18px; border:1px solid #dedee3; background:#fff; border-radius:16px; text-align:center; min-width:0; }
 .public-sponsor-logo { position:relative; height:130px; margin:0 auto 16px; max-width:260px; }

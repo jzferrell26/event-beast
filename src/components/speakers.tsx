@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight, CalendarDays, Search, X } from 'lucide-react';
 import { useApp } from './app-provider';
@@ -8,17 +8,29 @@ import { SpeakerPortrait } from './speaker-portrait';
 import { SessionCard } from './session-card';
 import { httpsUrl } from '@/lib/format';
 import { SponsorCreative } from './sponsor-creative';
+import { speakerAdPositions } from '@/lib/speaker-ad-positions';
 
 export function SpeakersScreen() {
   const { guide } = useApp();
   const [query, setQuery] = useState('');
   const speakers = [...guide.speakers].filter(speaker => `${speaker.full_name} ${speaker.title} ${speaker.bio}`.toLowerCase().includes(query.toLowerCase())).sort((a, b) => a.full_name.localeCompare(b.full_name));
-  const ads = guide.placements.filter(placement => placement.published && placement.surface === 'speakers').sort((a,b)=>a.sort_order-b.sort_order);
-  const adAt = (index:number) => { const placement=ads[index]; if(!placement)return null; const sponsor=guide.sponsors.find(item=>item.id===placement.sponsor_id&&item.published); return sponsor ? <div className="speaker-inline-ad" key={'ad-'+placement.id}><SponsorCreative placement={placement} sponsorName={sponsor.name} sponsorUrl={sponsor.cta_url} /></div> : null; };
+  const sponsors = new Map(guide.sponsors.filter(sponsor => sponsor.published).map(sponsor => [sponsor.id, sponsor]));
+  const ads = guide.placements.filter(placement => placement.published && placement.surface === 'speakers' && sponsors.has(placement.sponsor_id)).sort((a,b)=>a.sort_order-b.sort_order);
+  const adPositions = speakerAdPositions(speakers.length, ads.length);
   return <><PageTitle eyebrow="THE VOICES IN THE ROOM" title="Meet your speakers." description="Explore the people bringing ideas and perspective to Momentum Builder." />
     <label className="search-field"><Search size={19} /><input value={query} aria-label="Search speakers" placeholder="Find a speaker or topic" onChange={event => setQuery(event.target.value)} />{query && <button type="button" aria-label="Clear speaker search" onClick={() => setQuery('')}><X size={18} /></button>}</label>
     <p className="results-caption">{speakers.length} speakers{guide.mode === 'demo' ? ' · Sample profiles' : ''}</p>
-    <div className="speakers-grid">{speakers.flatMap((speaker, index) => { const card=<Link className="speaker-directory-card" href={`/more/speakers/${speaker.id}`} key={speaker.id} aria-label={`View speaker profile for ${speaker.full_name}`}><SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} priority={index < 3} fill /><div className="speaker-card-copy"><h2>{speaker.full_name}</h2><p className="speaker-card-bio">{speaker.bio || speaker.title || 'The event team is preparing this speaker’s biography.'}</p><span className="speaker-card-link">View speaker & sessions<ArrowUpRight size={17} aria-hidden="true" /></span></div></Link>; const adIndex=Math.floor(index/3); return (index+1)%3===0 && adIndex<ads.length ? [card,adAt(adIndex)] : [card]; })}</div>
+    <div className="speakers-grid">{speakers.map((speaker, index) => <Fragment key={speaker.id}>
+      <Link className="speaker-directory-card" href={`/more/speakers/${speaker.id}`} aria-label={`View speaker profile for ${speaker.full_name}`}>
+        <SpeakerPortrait name={speaker.full_name} src={speaker.headshot_url} priority={index < 3} fill />
+        <div className="speaker-card-copy"><h2>{speaker.full_name}</h2><p className="speaker-card-bio">{speaker.bio || speaker.title || 'The event team is preparing this speaker’s biography.'}</p><span className="speaker-card-link">View speaker & sessions<ArrowUpRight size={17} aria-hidden="true" /></span></div>
+      </Link>
+      {ads.map((placement, adIndex) => {
+        if (adPositions[adIndex] !== index + 1) return null;
+        const sponsor = sponsors.get(placement.sponsor_id)!;
+        return <div className="speaker-inline-ad" key={placement.id}><SponsorCreative placement={placement} sponsorName={sponsor.name} sponsorUrl={sponsor.cta_url} /></div>;
+      })}
+    </Fragment>)}</div>
     {!speakers.length && <EmptyState title="No speakers found.">Try another name, or check back as the program develops.</EmptyState>}
   </>;
 }
