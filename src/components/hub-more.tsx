@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { ArrowRight, BookOpen, Bookmark, CalendarDays, CircleHelp, MessageCircle, MessagesSquare, Sparkles, Handshake, UserRound, Users, Utensils } from 'lucide-react';
+import { ArrowRight, BookOpen, Bookmark, CalendarDays, CircleHelp, MessageCircle, MessagesSquare, Sparkles, Handshake, Users, Utensils } from 'lucide-react';
 import { useApp } from './app-provider';
 import { PageTitle } from './ui';
 import { SignOutButton } from './sign-out';
@@ -8,17 +8,16 @@ export function HubMoreScreen() {
   const { guide, me } = useApp();
   const rows = [
     ...(guide.communityEnabled ? [
-      { href: '/feed', title: 'Social wall', text: 'Shared posts from event attendees', icon: MessagesSquare },
       { href: '/people', title: 'Meet attendees', text: 'Find people who chose to share their profiles', icon: Users },
       { href: '/inbox', title: 'Private messages', text: 'Your one-to-one event conversations', icon: MessageCircle },
-      { href: '/more/profile', title: 'My profile & privacy', text: 'Your introduction, visibility and messaging choices', icon: UserRound },
+      { href: '/feed', title: 'Social wall', text: 'Shared posts from event attendees', icon: MessagesSquare },
     ] : []),
-    { href: '/agenda', title: 'Full agenda', text: 'The program for every event day', icon: CalendarDays },
-    { href: '/more/speakers', title: 'Meet the speakers', text: 'The voices and ideas behind the program', icon: BookOpen },
     { href: '/sponsors', title: 'Impact Partners', text: 'The partners behind the momentum', icon: Handshake },
+    { href: '/agenda', title: 'Full agenda', text: 'The program for every event day', icon: CalendarDays },
+    { href: '/more/saved', title: 'Saved sessions', text: 'Your favorites on this device', icon: Bookmark },
+    { href: '/more/speakers', title: 'Meet the speakers', text: 'The voices and ideas behind the program', icon: BookOpen },
     { href: '/more/lunch', title: 'Lunch & breakouts', text: 'VIP lunch, breakout rooms, seating and food trucks', icon: Utensils },
     { href: '/more/fun-stuff', title: 'Fun Stuff', text: 'The extra event moments, as the organizer publishes them', icon: Sparkles },
-    { href: '/more/saved', title: 'Saved sessions', text: 'Your favorites on this device', icon: Bookmark },
     { href: '/more/help', title: 'Help, Venue, and More', text: 'Find your way, save this site, etc.', icon: CircleHelp },
   ];
   return <><PageTitle eyebrow="EVERYTHING FOR THE LIVE EXPERIENCE" title="Everything else. Right here." description="Event information is open to browse. Create or sign in to your verified attendee account for the social wall, profiles and private messages." />

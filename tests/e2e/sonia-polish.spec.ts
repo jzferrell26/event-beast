@@ -152,6 +152,87 @@ test('Sonia consolidated More removes duplicate venue/admin rows and uses a dist
   const privateRow=page.locator('.more-menu a',{hasText:'Private messages'});await expect(privateRow.locator('.lucide-message-circle')).toHaveCount(1);
 });
 
+test('Sonia final More order keeps profile and private messages available in the signed-in header', async ({page},info) => {
+  await wire(page);
+  await page.route('**/api/me', route => route.fulfill({json:{...demoMe,authenticated:true,eligible:true}}));
+  await page.goto('/more');await settle(page);
+  await expect(page.locator('.more-menu h2')).toHaveText(['Meet attendees','Private messages','Social wall','Impact Partners','Full agenda','Saved sessions','Meet the speakers','Lunch & breakouts','Fun Stuff','Help, Venue, and More']);
+  await expect(page.locator('.more-menu a[href="/more/profile"]')).toHaveCount(0);
+  await expect(page.locator('.topbar .profile-shortcut')).toHaveAttribute('href','/more/profile');
+  await expect(page.locator('.topbar .message-shortcut')).toHaveAttribute('href','/inbox');
+  await page.screenshot({path:info.outputPath('final-more.png'),fullPage:true});
+});
+
+test('Sonia final Help uses consistent display headings, red icons and equal contact typography', async ({page},info) => {
+  const guide=await wire(page);
+  guide.venues=[{...guide.venues[0],title:'Hyatt Regency Dallas',description:'Our main ballroom is on the lobby level, you can’t miss it!'}];
+  await page.goto('/more/help');await settle(page);
+  await expect(page.getByText(guide.venues[0].description,{exact:true})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Keep this site handy.',exact:true})).toBeVisible();
+  const grid=page.locator('.public-help-grid');
+  const headings=await grid.locator(':scope > section > h2').evaluateAll(elements=>elements.map(element=>{
+    const s=getComputedStyle(element);return [s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight].join('|');
+  }));
+  expect(headings).toHaveLength(4);expect(new Set(headings).size).toBe(1);
+  await expect(grid.locator(':scope > section > svg')).toHaveCount(4);
+  const colors=await grid.locator(':scope > section > svg').evaluateAll(elements=>elements.map(element=>getComputedStyle(element).color));
+  expect(colors).toEqual(Array(4).fill('rgb(197, 26, 46)'));
+  const textStyles=await grid.locator('.event-support-copy p, .event-support-copy strong, .event-support-copy a').evaluateAll(elements=>elements.map(element=>{
+    const s=getComputedStyle(element);return [s.fontFamily,s.fontSize,s.fontWeight,s.lineHeight].join('|');
+  }));
+  expect(textStyles).toHaveLength(8);expect(new Set(textStyles).size).toBe(1);
+  await expect(grid.getByRole('link',{name:'Email us at support@example.test'})).toHaveAttribute('href','mailto:support@example.test');
+  await expect(grid.getByRole('link',{name:'Text us at 747-213-2155'})).toHaveAttribute('href','sms:+17472132155');
+  expect((await new AxeBuilder({page}).include('#main').analyze()).violations).toEqual([]);
+  await page.screenshot({path:info.outputPath('final-help.png'),fullPage:true});
+});
+
+test('Sonia final Home ends with the full-width Impact Arena feature after its sponsor ads', async ({page},info) => {
+  const guide=await wire(page);guide.placements[0].surface='home';
+  await page.goto('/');await settle(page);
+  const feature=page.getByRole('region',{name:'WHY VISIT THE IMPACT ARENA',exact:true});
+  await expect(feature).toBeVisible();
+  await expect(feature.locator('p')).toHaveText('Meet our incredible partners, discover new products and services, grab breakfast, win prizes, and more... Your next connection could be waiting in the Impact Arena.');
+  await expect(page.locator('.public-home > :last-child')).toHaveClass('impact-arena-feature');
+  await expect(page.locator('#main .sponsor-creative')).toHaveCount(1);
+  expect(await feature.evaluate(element=>Boolean(document.querySelector('.sponsor-creative')!.compareDocumentPosition(element)&Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  await expect(feature).toHaveCSS('background-color','rgb(20, 20, 23)');
+  const width=await page.locator('.public-home').evaluate(element=>element.getBoundingClientRect().width);
+  expect((await feature.boundingBox())!.width).toBeCloseTo(width,0);
+  const sizes=await page.evaluate(()=>({welcome:parseFloat(getComputedStyle(document.querySelector('.home-hero h1')!).fontSize),impact:parseFloat(getComputedStyle(document.querySelector('.impact-arena-feature h2')!).fontSize)}));
+  expect(sizes.impact/sizes.welcome).toBeGreaterThanOrEqual(0.8);expect(sizes.impact/sizes.welcome).toBeLessThanOrEqual(1.1);
+  await expect(page.locator('.public-home .quick-links>a')).toHaveCount(8);
+  await feature.scrollIntoViewIfNeeded();await page.screenshot({path:info.outputPath('final-impact-arena.png')});
+  expect((await new AxeBuilder({page}).include('#main').analyze()).violations).toEqual([]);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
+});
+
+test('Sonia final speaker ads follow 14 speakers, 14 speakers and the remaining speakers without loss on search', async ({page}) => {
+  const guide=await wire(page);
+  guide.speakers=Array.from({length:45},(_,index)=>({...guide.speakers[0],id:`90000000-0000-4000-8000-${String(index+1).padStart(12,'0')}`,full_name:`Test Speaker ${String(index+1).padStart(2,'0')}`}));
+  const sponsor=guide.sponsors[0];
+  guide.sponsors=['Xactus','Figure','Total Expert'].map((name,index)=>({...sponsor,id:`91000000-0000-4000-8000-${String(index+1).padStart(12,'0')}`,name}));
+  const creative=guide.placements[0];
+  guide.placements=guide.sponsors.map((sponsor,index)=>({...creative,id:`92000000-0000-4000-8000-${String(index+1).padStart(12,'0')}`,sponsor_id:sponsor.id,surface:'speakers',sort_order:index+1}));
+  await page.goto('/more/speakers');await settle(page);
+  await expect(page.locator('.speaker-directory-card')).toHaveCount(45);
+  const adPositions=()=>page.locator('.speakers-grid').evaluate(element=>{
+    let speakers=0;return Array.from(element.children).flatMap(child=>{
+      if(child.classList.contains('speaker-directory-card')){speakers++;return [];}
+      return [{after:speakers,label:child.querySelector('.sponsor-creative')?.getAttribute('aria-label')}];
+    });
+  });
+  const positions=await adPositions();expect(positions.map(position=>position.after)).toEqual([14,28,45]);
+  ['Xactus','Figure','Total Expert'].forEach((name,index)=>expect(positions[index].label).toMatch(new RegExp('^'+name+':')));
+  await page.getByRole('textbox',{name:'Search speakers'}).fill('Test Speaker 01');
+  await expect(page.locator('.speaker-directory-card')).toHaveCount(1);
+  expect((await adPositions()).map(position=>position.after)).toEqual([1,1,1]);
+  await page.getByRole('textbox',{name:'Search speakers'}).fill('No match');
+  await expect(page.locator('.speaker-inline-ad')).toHaveCount(0);
+  await page.getByRole('button',{name:'Clear speaker search'}).click();
+  expect((await adPositions()).map(position=>position.after)).toEqual([14,28,45]);
+});
+
 test('combined Help preserves venue reflow and honest clipboard success and failure', async ({ page }) => {
   const guide = await wire(page);
   const long = 'ExtraordinarilyLongUnbrokenVenueAndLocationName'.repeat(3);

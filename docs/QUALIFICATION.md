@@ -2,6 +2,28 @@
 
 This document distinguishes implemented behavior from verified operation. A successful source edit is not a production sign-off.
 
+## October 3 evening — Sonia's final app refinements
+
+See `SONIA-FINAL-APP-REFINEMENTS.md` for the approved scope. More uses the
+requested ten-row order while header profile/private-message access remains.
+Help has the revised heading, matched display headings, red card icons and
+equal contact typography. Speaker ads use 14/28/final-speaker breaks. Home
+retains its eight tiles and sponsor ads, then ends with the full-width black
+Impact Arena section and Sonia's exact copy.
+
+Lint, TypeScript, the production build and **342 source/database tests in 47
+files** pass. All **12 focused browser regressions** pass across desktop
+Chromium, mobile Chromium and mobile WebKit; the four new cases first failed
+against the preceding build. Mobile/desktop screenshots were inspected, and
+the new Home/Help checks include scoped accessibility tests. The existing
+Hyatt venue description was updated in the dedicated production database with
+an exact-match guard; no other venue fields or agenda content were changed.
+
+Sonia confirmed that picture posting worked in her email; this pass does not
+change that code. Full CI and final production page/revision evidence are
+recorded on the release PR. Local browser fixtures are not production writes,
+and the separate marketing-email request is not included.
+
 ## October 3 — consolidated Sonia release and production visual check
 
 PR #30 merged as `cf5cfc67c252bb9281f60dcb773452ca06e5e64b` after GitHub run `37147970669` passed lint, TypeScript, 333 source/database tests, the build, 135 public-site browser tests, 123 legacy browser tests and 27 mobile WebKit tests. The production release endpoint on `2026live.momentumbuilder.com`, `eventapp.momentumbuilder.com` and `event-beast.vercel.app` returned that exact revision at 19:46 UTC. Read-only live Chromium checks verified the ordered Home tiles, updated navigation, combined Help/Venue with nested floor-plan link, clipboard success, old Venue redirect, More/Sponsors cleanup, filled directory portraits, inline sponsor ads, Day 2 session return and desktop reflow; no page errors were observed.

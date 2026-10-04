@@ -9,6 +9,7 @@ import { MobileEventAlerts, MobileEventMoment } from './mobile-event';
 import { HubMoreScreen } from './hub-more';
 import { ImpactPartnersScreen } from './impact-partners';
 import { EventSupport, EventWifi } from './event-support';
+import { PageSponsorAds } from './page-sponsor-ads';
 
 export function PublicHomeScreen() {
   const { guide, saved } = useApp();
@@ -27,6 +28,11 @@ export function PublicHomeScreen() {
     <section className="home-hero"><div className="hero-copy"><div className="hero-kicker"><span className="live-dot" />THE LIVE EXPERIENCE<span className="hero-year">2026</span></div><h1>{guide.settings.welcome_title}</h1><p>{guide.settings.welcome_body || 'The full program. The speakers. The details that make your day.'}</p><Link className="button button-red" href="/agenda">Explore the full agenda<ArrowUpRight size={18} /></Link></div><div className="hero-emblem" aria-hidden="true"><span>BUILD</span><span>WHAT’S</span><span>NEXT<span className="red-period">.</span></span></div><div className="hero-bottom"><span>{guide.mode === 'demo' ? 'SAMPLE PROGRAM' : 'YOUR EVENT, IN YOUR POCKET'}</span><span>{guide.event.start_date ? `${eventDay(guide.event.start_date)}${guide.event.end_date ? ` — ${eventDay(guide.event.end_date)}` : ''}` : 'DATES COMING SOON'}</span></div></section>
     <MobileEventMoment />
     <div className="quick-links">{quickLinks.map(({ href, label, caption, icon: Icon }) => <Link href={href} key={href}><span className="quick-icon"><Icon size={22} /></span><div><strong>{label}</strong><span>{caption}</span></div><ArrowUpRight size={17} className="quick-arrow" /></Link>)}</div>
+    <PageSponsorAds surface="home" />
+    <section className="impact-arena-feature" aria-labelledby="impact-arena-heading">
+      <h2 id="impact-arena-heading">WHY VISIT THE IMPACT ARENA</h2>
+      <p>Meet our incredible partners, discover new products and services, grab breakfast, win prizes, and more... Your next connection could be waiting in the Impact Arena.</p>
+    </section>
   </div>;
 }
 
@@ -51,9 +57,9 @@ export function PublicSponsorsScreen() {
 export function PublicHelpScreen() {
   const { guide, notify } = useApp();
   const copyAddress = async (address: string) => { try { await navigator.clipboard.writeText(address); notify('Venue address copied.'); } catch { notify('Copy is unavailable in this browser. Select the address to copy it.', true); } };
-  return <><PageTitle eyebrow="A LITTLE HELP GOES A LONG WAY" title="Help, venue, and more." description="Find your way, save this site, and get a real person when you need one." /><div className="help-grid">
+  return <><PageTitle eyebrow="A LITTLE HELP GOES A LONG WAY" title="Help, venue, and more." description="Find your way, save this site, and get a real person when you need one." /><div className="help-grid public-help-grid">
     {guide.venues.map((venue,index) => <section className="help-topic help-venue" key={venue.id}><MapPin size={26} /><h2>{venue.title}</h2><p>{venue.location}</p>{httpsUrl(venue.directions_url) && <a className="button button-outline" href={venue.directions_url} target="_blank" rel="noopener noreferrer">Get directions<ArrowUpRight size={17} /></a>}{venue.location && <button className="text-button" type="button" aria-label={`Copy address for ${venue.title}`} onClick={() => void copyAddress(venue.location)}>Copy address</button>}<p>{venue.description}</p>{index===0&&httpsUrl(guide.settings.venue_floor_plan_url) && <a className="text-button" href={guide.settings.venue_floor_plan_url} target="_blank" rel="noopener noreferrer">Hyatt Regency Dallas floor plan (PDF)<ArrowUpRight size={15} /></a>}</section>)}
-    <section className="help-topic"><Smartphone size={26} /><h2>Keep the guide handy.</h2><p><strong>On iPhone:</strong> open this site in Safari, tap Share, then Add to Home Screen.</p><p><strong>On Android:</strong> use your browser menu to choose Install app or Add to Home screen when available.</p><p>Installation is optional. Event information is public; sign in for the social wall and private messages.</p></section>
+    <section className="help-topic"><Smartphone size={26} /><h2>Keep this site handy.</h2><p><strong>On iPhone:</strong> open this site in Safari, tap Share, then Add to Home Screen.</p><p><strong>On Android:</strong> use your browser menu to choose Install app or Add to home screen when available.</p><p>Installation is optional. Event information is public; sign in for the social wall and private messages.</p></section>
     <EventWifi />
     <section className="help-topic"><CircleHelp size={26} /><h2>A real person can help.</h2><EventSupport /></section>
   </div></>;
