@@ -1,0 +1,43 @@
+name: Event Beast billing integration
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: event-beast-billing-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  prepare:
+    if: github.head_ref == 'feat/subscription-provisioning'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Resolve exact billing dependencies for review
+        run: |
+          npm install --save-exact --ignore-scripts stripe pg
+          npm install --save-dev --save-exact --ignore-scripts @types/pg
+          npm ls stripe pg @types/pg
+      - name: Generate the billing migration with the CLI
+        run: |
+          npx --yes supabase@2.121.0 migration new --help
+          npx --yes supabase@2.121.0 migration new subscription_billing
+      - name: Prepare isolated source and dependencies
+        run: |
+          tar --exclude=.git --exclude=node_modules --exclude='*.tar.gz' -czf billing-source.tar.gz .
+          tar -czf billing-dependencies.tar.gz node_modules
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: billing-implementation-inputs
+          path: |
+            billing-source.tar.gz
+            billing-dependencies.tar.gz
+          retention-days: 1
