@@ -75,8 +75,14 @@ describe('agency and organization ownership against actual migrations', () => {
   });
 
   it('refuses direct ownership, membership and publication changes through the Data API', async () => {
-    await expect(asUser(db, ids.alice, () => db.query('update public.events set organization_id=$1,organization_slug=$2 where id=$3', [beta, 'beta-events', alphaEvent]))).rejects.toThrow(/workspace event actions/);
-    await expect(asUser(db, ids.alice, () => db.query('update public.events set published=true where id=$1', [alphaEvent]))).rejects.toThrow(/workspace event actions/);
+    const before = await db.query('select organization_id,organization_slug,name,published,platform_version from public.events where id=$1', [alphaEvent]);
+    // Column grants can reject protected fields before the trigger runs. Assert
+    // PostgreSQL's authorization code, then exercise the trigger on an allowed
+    // legacy column to prove tenant edits still require the workspace RPC.
+    await expect(asUser(db, ids.alice, () => db.query('update public.events set organization_id=$1,organization_slug=$2 where id=$3', [beta, 'beta-events', alphaEvent]))).rejects.toMatchObject({ code: '42501' });
+    await expect(asUser(db, ids.alice, () => db.query('update public.events set published=true where id=$1', [alphaEvent]))).rejects.toMatchObject({ code: '42501' });
+    await expect(asUser(db, ids.alice, () => db.query("update public.events set name='Bypassed workspace' where id=$1", [alphaEvent]))).rejects.toThrow(/workspace event actions/);
+    expect((await db.query('select organization_id,organization_slug,name,published,platform_version from public.events where id=$1', [alphaEvent])).rows).toEqual(before.rows);
     await expect(asUser(db, ids.alice, () => db.query("update public.organization_memberships set role='owner' where organization_id=$1", [beta]))).rejects.toThrow(/permission denied/);
     await expect(db.query("update public.events set organization_slug='beta-events' where id=$1", [alphaEvent])).rejects.toThrow(/foreign key/);
   });
