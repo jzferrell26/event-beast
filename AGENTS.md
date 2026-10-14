@@ -2,7 +2,7 @@
 
 Canonical repo: jzferrell26/event-beast. Work in this primary conversation; do not spawn workers.
 
-This app serves Momentum Builder LIVE 2026. Next.js App Router + TypeScript, dedicated Supabase and Vercel projects under Cuantico. No shared Listing Studio or Cuantico SMS database. HighLevel owns SMS; do not add SMS code.
+Momentum Builder LIVE 2026 has concluded. Event Beast is now being productized as Jonathan's private agency -> customer subaccounts -> events; preserve the existing event and its history. The implementation is gated by EVENT_BEAST_PLATFORM_ENABLED. Read docs/PLATFORM-IMPLEMENTATION.md for the current release boundary and activation steps. Next.js App Router + TypeScript, dedicated Supabase and Vercel projects under Cuantico. No shared Listing Studio or Cuantico SMS database. HighLevel owns SMS; do not add SMS code.
 
 Registration eligibility is separate from auth and from public directory visibility. Importing an attendee never publishes their CRM information. Profiles are private by default. Authenticated attendee data, messages, auth and admin responses must never enter the service worker cache.
 

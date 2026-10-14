@@ -31,6 +31,8 @@ export function LoadState({ loading, error, refresh, children }: { loading: bool
 export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) { return <label className={`platform-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>; }
 export function Status({ children }: { children: ReactNode }) { return <span className="platform-status">{children}</span>; }
 export function PendingRequest() {
+  // A factory called once by useState; distinct bodies get distinct keys, while
+  // retries after a lost response retain the original creation request.
   let previous = ''; let id = '';
   return (body: unknown) => { const serialized = JSON.stringify(body); if (serialized !== previous || !id) { previous = serialized; id = crypto.randomUUID(); } return id; };
 }

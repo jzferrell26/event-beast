@@ -4,9 +4,9 @@
 
 [![Event Beast quality](https://github.com/jzferrell26/event-beast/actions/workflows/quality.yml/badge.svg)](https://github.com/jzferrell26/event-beast/actions/workflows/quality.yml)
 
-Event Beast is a mobile-first event website with a public event guide, a private attendee community, and an organizer console for managing the live experience. Built with **Next.js, TypeScript, and Supabase**, it is currently being delivered for **Momentum Builder LIVE 2026** with Cuantico AI.
+Event Beast combines a mobile-first event guide, a private attendee community, and organizer tools. Built with **Next.js, TypeScript, and Supabase**, its first deployment served **Momentum Builder LIVE 2026** with Cuantico AI. The event has concluded, and the product is expanding into agency-managed customer subaccounts.
 
-The event website is the first deployment—not the limit of the product. A reusable commercial platform is planned after Momentum Builder. Multi-organization SaaS, self-service event creation, billing, and reseller packaging are **roadmap items, not shipped features**.
+This implementation includes Jonathan’s private agency console, customer workspaces, owner invitations, team controls, event editing and public publishing behind `EVENT_BEAST_PLATFORM_ENABLED`. The [implementation handoff](docs/PLATFORM-IMPLEMENTATION.md) explains activation and validation. **Paid subscription provisioning, billing and reseller packaging remain roadmap work; the platform has not been activated in production.**
 
 **[Open the event website](https://eventapp.momentumbuilder.com/)** · **[Organizer guide](docs/OPERATOR-CONSOLE.md)** · **[Qualification record](docs/QUALIFICATION.md)** · **[Post-event product roadmap](docs/POST-MOMENTUM-BUILDER-PRODUCT.md)**
 
@@ -137,3 +137,12 @@ Before opening an attendee wave, independently verify the approved roster, trans
 After Momentum Builder, use the actual event's lessons to productize reusable branding, module selection, event creation, organization/event tenancy, commercial entitlements, and repeatable launch qualification. See the [post-event roadmap](docs/POST-MOMENTUM-BUILDER-PRODUCT.md).
 
 **Built for a real event. Being shaped into a repeatable product.**
+
+## Agency and customer workspace development
+
+The `feat/agency-subaccounts` implementation adds private agency access, customer
+organizations, owner invitations, team controls, multi-event editing and public
+event publishing behind `EVENT_BEAST_PLATFORM_ENABLED`. See the
+[implementation handoff](docs/PLATFORM-IMPLEMENTATION.md) for source capabilities,
+activation, isolation checks and the remaining billing work. Production
+activation and paid subscription provisioning are separate release steps.
