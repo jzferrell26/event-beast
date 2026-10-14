@@ -21,10 +21,10 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - name: Resolve exact billing dependencies for review
+      - name: Install reviewed billing dependency versions
         run: |
-          npm install --save-exact --ignore-scripts stripe pg
-          npm install --save-dev --save-exact --ignore-scripts @types/pg
+          npm install --save-exact --ignore-scripts stripe@23.0.0 pg@8.23.1
+          npm install --save-dev --save-exact --ignore-scripts @types/pg@8.23.1
           npm ls stripe pg @types/pg
       - name: Generate the billing migration with the CLI
         run: |
@@ -32,12 +32,12 @@ jobs:
           npx --yes supabase@2.121.0 migration new subscription_billing
       - name: Prepare isolated source and dependencies
         run: |
-          tar --exclude=.git --exclude=node_modules --exclude='*.tar.gz' -czf billing-source.tar.gz .
-          tar -czf billing-dependencies.tar.gz node_modules
+          tar --exclude=.git --exclude=node_modules -czf /tmp/billing-source.tar.gz .
+          tar -czf /tmp/billing-dependencies.tar.gz node_modules
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: billing-implementation-inputs
           path: |
-            billing-source.tar.gz
-            billing-dependencies.tar.gz
+            /tmp/billing-source.tar.gz
+            /tmp/billing-dependencies.tar.gz
           retention-days: 1
