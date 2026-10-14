@@ -65,7 +65,7 @@ async function run(request: Request, context: Context, method: Method): Promise<
       const events = await db.from('events').select('*').eq('organization_id', org.id).order('created_at', { ascending: false }).limit(200);
       databaseError(events.error);
       const [members, invitations] = owner ? await Promise.all([
-        db.from('organization_memberships').select('*').eq('organization_id', org.id).order('created_at').limit(200),
+        db.rpc('platform_team_members', { p_organization: org.id }),
         db.from('organization_invitations').select('*').eq('organization_id', org.id).is('accepted_by', null).is('revoked_at', null).order('created_at', { ascending: false }).limit(200),
       ]) : [{ data: [], error: null }, { data: [], error: null }];
       databaseError(members.error); databaseError(invitations.error);

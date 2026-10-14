@@ -25,7 +25,7 @@ async function saveRecord(page: Page) {
 
 test('agency handoff, customer publishing, second-customer isolation and recovery', async ({ browser }, info) => {
   const contexts: BrowserContext[] = [];
-  const newContext = async () => { const context = await browser.newContext({ baseURL: origin, viewport: { width: 1440, height: 1000 } }); contexts.push(context); return context; };
+  const newContext = async () => { const context = await browser.newContext({ baseURL: origin, viewport: { width: 1440, height: 1000 } }); context.setDefaultTimeout(15_000); contexts.push(context); return context; };
   try {
     const agency = await newContext(); const agencyPage = await agency.newPage();
     await signIn(agencyPage, 'agency', '/agency');
@@ -87,6 +87,8 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await saveRecord(owner);
     await section(owner, 'Agenda');
     await owner.getByRole('button', { name: 'Add session', exact: true }).click();
+    const available = await (await alpha.request.get(`${origin}${endpoint}/lookups`)).json();
+    expect(available.agenda_days).toEqual(expect.arrayContaining([expect.objectContaining({ label: 'Friday' })]));
     await owner.getByLabel('Event day', { exact: true }).selectOption({ label: 'Friday' });
     await owner.getByLabel('Session title').fill('Sample opening keynote');
     await owner.getByLabel(/^Starts at/).fill('2027-04-02T09:00');
@@ -153,5 +155,5 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await owner.getByRole('button', { name: 'Sign out', exact: true }).click();
     await expect(owner).toHaveURL(`${origin}/platform/auth`);
     expect((await alpha.request.get(`${origin}${endpoint}`)).status()).toBe(401);
-  } finally { await Promise.all(contexts.map(context => context.close())); }
+  } finally { await Promise.allSettled(contexts.map(context => context.close())); }
 });

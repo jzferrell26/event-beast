@@ -304,6 +304,18 @@ begin
   perform private.platform_log(p_organization,null,'support.workspace_opened');
 end $$;
 
+-- Only workspace owners may see the verified account identities of their
+-- staff. This is separate from attendee contact data and public profiles.
+create function private.platform_team_members(p_organization uuid)
+returns table(organization_id uuid,user_id uuid,email text,role text,status text,version integer)
+language plpgsql stable security definer set search_path='' as $$
+begin
+  if not private.owns_organization(p_organization) then raise exception 'Workspace owner access required' using errcode='42501'; end if;
+  return query select m.organization_id,m.user_id,u.email::text,m.role,m.status,m.version
+    from public.organization_memberships m join auth.users u on u.id=m.user_id
+    where m.organization_id=p_organization order by m.created_at,m.user_id limit 200;
+end $$;
+
 -- Thin invoker wrappers. Privileged bodies remain unexposed and always verify
 -- the caller; no service-role client is introduced into the application.
 create function public.platform_access() returns boolean language sql stable security invoker set search_path='' as $$ select private.is_platform_owner(); $$;
@@ -322,11 +334,13 @@ create function public.platform_legacy_events() returns table(id uuid,slug text,
 create function public.platform_adopt_event(p_organization uuid,p_event uuid) returns void language sql security invoker set search_path='' as $$ select private.platform_adopt_event(p_organization,p_event); $$;
 create function public.platform_support_open(p_organization uuid) returns void language sql security invoker set search_path='' as $$ select private.platform_support_open(p_organization); $$;
 
+create function public.platform_team_members(p_organization uuid) returns table(organization_id uuid,user_id uuid,email text,role text,status text,version integer) language sql stable security invoker set search_path='' as $$ select * from private.platform_team_members(p_organization); $$;
+
 -- Revoke both PostgreSQL PUBLIC defaults and Supabase's explicit role defaults.
 do $$ declare fn record; begin
   for fn in select p.oid::regprocedure as signature,p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
-    where (n.nspname='private' and p.proname in ('platform_verified_email','is_platform_owner','can_manage_organization','owns_organization','can_see_organization','guard_platform_event_write','platform_log','platform_create_organization','platform_accept_invitation','platform_invite_member','platform_revoke_invitation','platform_update_member','platform_update_organization','platform_validate_event','platform_create_event','platform_update_event','platform_publish_event','platform_legacy_events','platform_adopt_event','platform_support_open'))
-    or (n.nspname='public' and p.proname in ('platform_access','platform_can_manage_organization','platform_owns_organization','platform_create_organization','platform_accept_invitation','platform_invite_member','platform_revoke_invitation','platform_update_member','platform_update_organization','platform_create_event','platform_update_event','platform_publish_event','platform_legacy_events','platform_adopt_event','platform_support_open'))
+    where (n.nspname='private' and p.proname in ('platform_verified_email','is_platform_owner','can_manage_organization','owns_organization','can_see_organization','guard_platform_event_write','platform_log','platform_create_organization','platform_accept_invitation','platform_invite_member','platform_revoke_invitation','platform_update_member','platform_update_organization','platform_validate_event','platform_create_event','platform_update_event','platform_publish_event','platform_legacy_events','platform_adopt_event','platform_support_open','platform_team_members'))
+    or (n.nspname='public' and p.proname in ('platform_access','platform_can_manage_organization','platform_owns_organization','platform_create_organization','platform_accept_invitation','platform_invite_member','platform_revoke_invitation','platform_update_member','platform_update_organization','platform_create_event','platform_update_event','platform_publish_event','platform_legacy_events','platform_adopt_event','platform_support_open','platform_team_members'))
   loop
     execute format('revoke all on function %s from public,anon,authenticated',fn.signature);
     if fn.proname not in ('guard_platform_event_write','platform_log','platform_validate_event') then execute format('grant execute on function %s to authenticated',fn.signature); end if;

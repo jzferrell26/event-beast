@@ -5,10 +5,11 @@ import type { EventInfo } from './types';
 
 export interface Organization { id: string; slug: string; name: string; status: 'active' | 'suspended'; event_limit: number | null; version: number; created_at: string }
 export interface OrganizationMember { organization_id: string; user_id: string; role: 'owner' | 'admin'; status: 'active' | 'disabled'; version: number }
+export interface WorkspaceTeamMember extends OrganizationMember { email: string }
 export interface OrganizationInvitation { id: string; organization_id: string; email: string; role: 'owner' | 'admin'; expires_at: string; accepted_by: string | null; revoked_at: string | null }
 export interface PlatformEvent extends EventInfo { organization_id: string; organization_slug: string; platform_version: number; brand_logo_url: string }
 export interface WorkspaceHome { user: { id: string; email: string }; agency: boolean; organizations: Organization[]; memberships: OrganizationMember[]; invitations: OrganizationInvitation[] }
-export interface WorkspaceData { organization: Organization; events: PlatformEvent[]; owner: boolean; agency: boolean; members: OrganizationMember[]; invitations: OrganizationInvitation[] }
+export interface WorkspaceData { organization: Organization; events: PlatformEvent[]; owner: boolean; agency: boolean; members: WorkspaceTeamMember[]; invitations: OrganizationInvitation[] }
 export interface AgencyData { organizations: Organization[]; events: PlatformEvent[]; invitations: OrganizationInvitation[]; legacyEvents: Pick<EventInfo, 'id' | 'slug' | 'name' | 'published'>[] }
 export type ContentRow = Record<string, unknown>;
 export type ContentLookups = Record<string, { id: string; label: string; day_id?: string; published?: boolean }[]>;
