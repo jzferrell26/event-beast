@@ -23,21 +23,21 @@ jobs:
       NEXT_PUBLIC_EVENT_SLUG: momentum-builder-live-2026
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
-      - name: Prepare isolated source review
-        if: github.head_ref == 'feat/agency-subaccounts'
-        run: git archive --format=tar.gz --output=source-review.tar.gz HEAD
-      - name: Save isolated source review
-        if: github.head_ref == 'feat/agency-subaccounts'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: source-review
-          path: source-review.tar.gz
-          retention-days: 1
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Prepare isolated dependency review
+        if: github.head_ref == 'feat/agency-subaccounts'
+        run: tar -czf dependency-review.tar.gz node_modules
+      - name: Save isolated dependency review
+        if: github.head_ref == 'feat/agency-subaccounts'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: dependency-review
+          path: dependency-review.tar.gz
+          retention-days: 1
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test

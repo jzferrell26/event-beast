@@ -11,14 +11,20 @@ jobs:
   platform-integration:
     if: github.head_ref == 'feat/agency-subaccounts'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
-      - run: npx --yes supabase@2.121.0 start --help
-      - run: npx --yes supabase@2.121.0 status --help
-      - run: npx --yes supabase@2.121.0 db reset --help
-      - run: npx --yes supabase@2.121.0 db advisors --help
-      - run: npx --yes supabase@2.121.0 stop --help
+          cache: npm
+      - run: npm ci
+      - name: Start isolated Supabase services
+        run: npx --yes supabase@2.121.0 start --exclude studio,edge-runtime,logflare,vector,supavisor,postgres-meta > /tmp/event-beast-local-start.log 2>&1
+      - name: Rehearse migrations on the local database
+        run: npx --yes supabase@2.121.0 db reset --local --no-seed --yes
+      - name: Run local security advisors
+        run: npx --yes supabase@2.121.0 db advisors --local --type security --level error --fail-on error
+      - name: Stop isolated services
+        if: always()
+        run: npx --yes supabase@2.121.0 stop --project-id event-beast --no-backup
