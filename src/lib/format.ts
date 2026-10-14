@@ -35,7 +35,7 @@ export function safeNext(next: string | null | undefined): string {
   if (!next) return "/";
   // Workspace destinations are explicit so sign-in, invitation verification and
   // recovery stay in the requested account without allowing external redirects.
-  if (/^\/(?:agency|app(?:\/[a-z0-9][a-z0-9-]{2,63}(?:\/events\/[a-f0-9-]{36}(?:\/preview)?)?)?|e\/[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9][a-z0-9-]{2,63}|platform\/auth(?:\?mode=reset)?)$/.test(next)) return next;
+  if (/^\/(?:agency(?:\/billing)?|app(?:\/[a-z0-9][a-z0-9-]{2,63}(?:\/(?:billing|events\/[a-f0-9-]{36}(?:\/preview)?))?)?|e\/[a-z0-9][a-z0-9-]{2,63}\/[a-z0-9][a-z0-9-]{2,63}|platform\/(?:auth(?:\?mode=reset)?|subscribe(?:\?checkout=[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})?))$/.test(next)) return next;
   return /^\/(?:agenda(?:\/[a-f0-9-]{36})?|people(?:\/[a-f0-9-]{36})?|inbox(?:\/[a-f0-9-]{36})?|feed|sponsors|sponsor(?:\/[a-f0-9-]{36})?|more(?:\/[a-z-]+)?|admin(?:\/[a-z_]+)?|reset-password|account-ready|access)?$/.test(next) ? next : "/";
 }
 
