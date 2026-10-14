@@ -29,7 +29,7 @@ export async function platformOrganization(actor: PlatformActor, slug: string) {
   const organization = result.data as Organization;
   const access = await actor.db.rpc('platform_can_manage_organization', { p_organization: organization.id });
   databaseError(access.error);
-  if (!access.data) throw new ApiError(403, organization.status === 'suspended' ? 'This workspace is suspended. Contact Event Beast support.' : 'Accept your invitation or ask the owner for workspace access.');
+  if (!access.data) throw new ApiError(403, organization.status === 'suspended' ? 'This workspace is suspended. Contact Event Beast support.' : 'Workspace editing is unavailable. Review Billing for subscription recovery, or ask the owner to check your access.');
   return { ...actor, organization };
 }
 export async function platformEvent(actor: PlatformActor, organizationSlug: string, eventId: string) {

@@ -3,7 +3,7 @@ import { adminResources, type AdminResource } from './admin-resources';
 import { secureUrl, uuid } from './validation';
 import type { EventInfo } from './types';
 
-export interface Organization { id: string; slug: string; name: string; status: 'active' | 'suspended'; event_limit: number | null; version: number; created_at: string }
+export interface Organization { id: string; slug: string; name: string; status: 'active' | 'suspended'; event_limit: number | null; billing_event_limit?: number | null; version: number; created_at: string }
 export interface OrganizationMember { organization_id: string; user_id: string; role: 'owner' | 'admin'; status: 'active' | 'disabled'; version: number }
 export interface WorkspaceTeamMember extends OrganizationMember { email: string }
 export interface OrganizationInvitation { id: string; organization_id: string; email: string; role: 'owner' | 'admin'; expires_at: string; accepted_by: string | null; revoked_at: string | null }

@@ -146,3 +146,7 @@ event publishing behind `EVENT_BEAST_PLATFORM_ENABLED`. See the
 [implementation handoff](docs/PLATFORM-IMPLEMENTATION.md) for source capabilities,
 activation, isolation checks and the remaining billing work. Production
 activation and paid subscription provisioning are separate release steps.
+
+## Subscription platform work
+
+The subscription implementation builds on the agency/customer workspace release. See [Billing implementation](docs/BILLING-IMPLEMENTATION.md) for checkout, automatic subaccounts, owner billing, and the restricted payment provisioner, and [Billing qualification](docs/BILLING-QUALIFICATION.md) for test evidence. Billing is disabled by default; source implementation does not establish production activation or a completed Stripe-hosted payment test.

@@ -1,11 +1,14 @@
 'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import { useResource } from '@/lib/hooks';
 import { errorMessage, mutate } from '@/lib/client';
 import type { WorkspaceHome } from '@/lib/platform';
 
 export function PlatformShell({ children, organizationSlug, agency = false }: { children: ReactNode; organizationSlug?: string; agency?: boolean }) {
+  const pathname = usePathname();
+  const billing = useResource<{ enabled: boolean }>('/api/billing/plans');
   const identity = useResource<WorkspaceHome>('/api/platform');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -19,7 +22,7 @@ export function PlatformShell({ children, organizationSlug, agency = false }: { 
     }
     catch (cause) { setError(errorMessage(cause)); setBusy(false); }
   };
-  return <div className="platform"><a className="platform-skip" href="#workspace-content">Skip to workspace</a><header className="platform-topbar"><Link href="/app" className="platform-brand"><span aria-hidden="true">EB</span>EVENT BEAST</Link><div className="platform-top-actions">{identity.data?.agency && <Link href="/agency">Agency</Link>}<Link href="/app">Workspaces</Link>{identity.data && <button type="button" onClick={() => void signOut()} disabled={busy}>{busy ? 'Signing out…' : 'Sign out'}</button>}</div></header><div className="platform-frame"><aside className="platform-sidebar"><p className="platform-eyebrow">{agency ? 'AGENCY CONTROL' : 'YOUR WORKSPACE'}</p><nav aria-label="Workspace navigation"><Link className={!organizationSlug ? 'selected' : ''} href={agency ? '/agency' : '/app'}>{agency ? 'Subaccounts' : 'All workspaces'}</Link>{organizationSlug && <><Link className="selected" href={`/app/${encodeURIComponent(organizationSlug)}`}>Events & team</Link><Link href={`/app/${encodeURIComponent(organizationSlug)}#settings`}>Workspace settings</Link></>}</nav>{identity.data && <div className="platform-identity"><strong>{identity.data.user.email}</strong><span>{identity.data.agency ? 'Platform owner' : 'Signed in'}</span></div>}</aside><main id="workspace-content" className="platform-main">{error && <Alert>{error}</Alert>}{children}</main></div></div>;
+  return <div className="platform"><a className="platform-skip" href="#workspace-content">Skip to workspace</a><header className="platform-topbar"><Link href="/app" className="platform-brand"><span aria-hidden="true">EB</span>EVENT BEAST</Link><div className="platform-top-actions">{identity.data?.agency && <Link href="/agency">Agency</Link>}<Link href="/app">Workspaces</Link>{identity.data && <button type="button" onClick={() => void signOut()} disabled={busy}>{busy ? 'Signing out…' : 'Sign out'}</button>}</div></header><div className="platform-frame"><aside className="platform-sidebar"><p className="platform-eyebrow">{agency ? 'AGENCY CONTROL' : 'YOUR WORKSPACE'}</p><nav aria-label="Workspace navigation"><Link className={pathname === (agency ? '/agency' : '/app') ? 'selected' : ''} href={agency ? '/agency' : '/app'}>{agency ? 'Subaccounts' : 'All workspaces'}</Link>{organizationSlug && <><Link className={pathname === `/app/${organizationSlug}` || pathname.includes('/events/') ? 'selected' : ''} href={`/app/${encodeURIComponent(organizationSlug)}`}>Events & team</Link><Link href={`/app/${encodeURIComponent(organizationSlug)}#settings`}>Workspace settings</Link>{billing.data?.enabled && <Link className={pathname.endsWith('/billing') ? 'selected' : ''} href={`/app/${encodeURIComponent(organizationSlug)}/billing`}>Billing</Link>}</>}{billing.data?.enabled && (agency ? <Link className={pathname === '/agency/billing' ? 'selected' : ''} href="/agency/billing">Subscriptions</Link> : !organizationSlug && <Link className={pathname === '/platform/subscribe' ? 'selected' : ''} href="/platform/subscribe">New subscription</Link>)}</nav>{identity.data && <div className="platform-identity"><strong>{identity.data.user.email}</strong><span>{identity.data.agency ? 'Platform owner' : 'Signed in'}</span></div>}</aside><main id="workspace-content" className="platform-main">{error && <Alert>{error}</Alert>}{children}</main></div></div>;
 }
 export function Alert({ children, success = false }: { children: ReactNode; success?: boolean }) { return <div className={`platform-alert ${success ? 'success' : ''}`} role={success ? 'status' : 'alert'}>{children}</div>; }
 export function Heading({ eyebrow, title, children, action }: { eyebrow: string; title: string; children?: ReactNode; action?: ReactNode }) { return <div className="platform-heading"><div><p className="platform-eyebrow">{eyebrow}</p><h1>{title}</h1>{children && <p>{children}</p>}</div>{action}</div>; }
