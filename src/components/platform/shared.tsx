@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { safeNext } from '@/lib/format';
 import { useState, type ReactNode } from 'react';
 import { useResource } from '@/lib/hooks';
 import { errorMessage, mutate } from '@/lib/client';
@@ -27,8 +28,12 @@ export function PlatformShell({ children, organizationSlug, agency = false }: { 
 export function Alert({ children, success = false }: { children: ReactNode; success?: boolean }) { return <div className={`platform-alert ${success ? 'success' : ''}`} role={success ? 'status' : 'alert'}>{children}</div>; }
 export function Heading({ eyebrow, title, children, action }: { eyebrow: string; title: string; children?: ReactNode; action?: ReactNode }) { return <div className="platform-heading"><div><p className="platform-eyebrow">{eyebrow}</p><h1>{title}</h1>{children && <p>{children}</p>}</div>{action}</div>; }
 export function LoadState({ loading, error, refresh, children }: { loading: boolean; error: string; refresh: () => Promise<void>; children?: ReactNode }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const next = safeNext(`${pathname}${query ? `?${query}` : ''}`);
   if (loading) return <div className="platform-loading" role="status">Opening your workspace…</div>;
-  if (error) return <Alert><p>{error}</p><div className="platform-actions"><button type="button" onClick={() => void refresh()}>Try again</button><Link href="/platform/auth">Sign in</Link></div></Alert>;
+  if (error) return <Alert><p>{error}</p><div className="platform-actions"><button type="button" onClick={() => void refresh()}>Try again</button><Link href={`/platform/auth?next=${encodeURIComponent(next)}`}>Sign in</Link></div></Alert>;
   return children;
 }
 export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) { return <label className={`platform-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>; }

@@ -22,7 +22,15 @@ test('agency and customer billing views use the actually provisioned local accou
     await expect(owner.getByText('Event allowance: 2.')).toBeVisible();
     expect(await owner.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true);
     await owner.screenshot({path:info.outputPath('customer-billing-mobile.png'),fullPage:true});
-    const otherPage=await other.newPage(); await signIn(otherPage,'other','/platform/subscribe');
+    const otherPage=await other.newPage();
+    await otherPage.goto('/platform/subscribe');
+    await otherPage.getByRole('link',{name:'Sign in',exact:true}).click();
+    await expect(otherPage).toHaveURL(`${origin}/platform/auth?next=%2Fplatform%2Fsubscribe`);
+    await otherPage.getByLabel('Email address').fill('other@billing.example.test');
+    await otherPage.getByLabel('Password',{exact:true}).fill(process.env.BILLING_TEST_PASSWORD!);
+    await otherPage.getByRole('button',{name:'Sign in',exact:true}).click();
+    await expect(otherPage).toHaveURL(`${origin}/platform/subscribe`);
+
     await expect(otherPage.getByRole('heading',{name:'Make room for your next big event.'})).toBeVisible();
     await expect(otherPage.getByText('$49.00 / month',{exact:true})).toBeVisible();
     await otherPage.getByLabel('Organizer or business name').fill('Sample New Organizer');

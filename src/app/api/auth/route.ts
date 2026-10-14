@@ -7,13 +7,14 @@ import { ApiError, handle, json, parseBody } from '@/lib/server/http';
 
 export const maxDuration = 60;
 const audience = z.literal('workspace').optional();
+const destination = z.string().max(256).optional();
 const schema = z.discriminatedUnion('action', [
   z.object({ action: z.literal('sign-in'), email: z.email(), password: z.string().min(1).max(256), next: z.string().optional() }),
-  z.object({ action: z.literal('sign-up'), email: z.email(), password: z.string().min(8, 'Use at least 8 characters').max(256), context: audience }),
+  z.object({ action: z.literal('sign-up'), email: z.email(), password: z.string().min(8, 'Use at least 8 characters').max(256), context: audience, next: destination }),
   z.object({ action: z.literal('recover'), email: z.email(), context: audience }),
-  z.object({ action: z.literal('resend'), email: z.email(), context: audience }),
-  z.object({ action: z.literal('verify-email'), email: z.email(), token: z.string().regex(/^\d{6,10}$/), context: audience }),
-  z.object({ action: z.literal('update-password'), password: z.string().min(8, 'Use at least 8 characters').max(256), expectedUserId: z.uuid(), context: audience }),
+  z.object({ action: z.literal('resend'), email: z.email(), context: audience, next: destination }),
+  z.object({ action: z.literal('verify-email'), email: z.email(), token: z.string().regex(/^\d{6,10}$/), context: audience, next: destination }),
+  z.object({ action: z.literal('update-password'), password: z.string().min(8, 'Your password has to contain at least 8 characters').max(256), expectedUserId: z.uuid(), context: audience }),
   z.object({ action: z.literal('sign-out') }),
 ]);
 export const POST = (request: Request) => handle(async () => {
@@ -26,7 +27,8 @@ export const POST = (request: Request) => handle(async () => {
   const configuredSite = workspace ? process.env.EVENT_BEAST_PLATFORM_URL ?? process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL : process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
   if (!configuredSite) throw new ApiError(503, 'Event sign-in is being configured.');
   const site = authenticationOrigin(configuredSite);
-  const verifiedNext = workspace ? '/app' : '/account-ready';
+  const verifiedNext = workspace ? ('next' in body ? safeNext(body.next ?? '/app') : '/app') : '/account-ready';
+  const verificationRedirect = `${site}/auth/callback?next=${encodeURIComponent(verifiedNext)}`;
   const emailReady = process.env.EVENT_BEAST_EMAIL_READY === 'true';
   const recoveryReady = emailReady || process.env.EVENT_BEAST_RECOVERY_READY === 'true';
   if (['sign-up', 'resend'].includes(body.action) && !emailReady) throw new ApiError(503, workspace ? 'Account email delivery is being prepared. Contact Event Beast support to complete your account setup.' : 'Account email delivery is being prepared by the event team. The public agenda is available now.');
@@ -42,9 +44,9 @@ export const POST = (request: Request) => handle(async () => {
     return json({ next: safeNext(body.next) });
   }
   if (body.action === 'sign-up') {
-    const { error } = await db.auth.signUp({ email: body.email.trim().toLowerCase(), password: body.password, options: { emailRedirectTo: `${site}/auth/callback?next=${verifiedNext}` } });
+    const { error } = await db.auth.signUp({ email: body.email.trim().toLowerCase(), password: body.password, options: { emailRedirectTo: verificationRedirect } });
     checkedAuthError(error, 'We could not create your account. Please try signing in or use password recovery.');
-    return json({ message: workspace ? 'Check your email to verify your account. After verification, open Workspaces to accept your invitation.' : 'Check your email to verify your account. After verification, you can join the attendee community with this email.' });
+    return json({ message: workspace ? 'Check your email to verify your account and continue setting up your workspace.' : 'Check your email to verify your account. After verification, you can join the attendee community with this email.' });
   }
   if (body.action === 'recover') {
     const resetNext = workspace ? encodeURIComponent('/platform/auth?mode=reset') : '/reset-password';
@@ -53,7 +55,7 @@ export const POST = (request: Request) => handle(async () => {
     return json({ message: 'If an account exists for this email, a password reset link is on its way.' });
   }
   if (body.action === 'resend') {
-    const { error } = await db.auth.resend({ type: 'signup', email: body.email.trim().toLowerCase(), options: { emailRedirectTo: `${site}/auth/callback?next=${verifiedNext}` } });
+    const { error } = await db.auth.resend({ type: 'signup', email: body.email.trim().toLowerCase(), options: { emailRedirectTo: verificationRedirect } });
     checkedAuthError(error, 'Check your inbox and wait a minute before requesting another code.');
     return json({ message: 'Check your email for your verification code.' });
   }
