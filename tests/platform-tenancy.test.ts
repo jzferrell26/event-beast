@@ -26,7 +26,6 @@ describe('agency and organization ownership against actual migrations', () => {
   beforeAll(async () => {
     db = await createDatabase({ hostedFunctionGrants: true });
     await seedSecurityFixture(db);
-    // Fixture-only bootstrap: application roles have no grant to this table.
     await db.query('insert into private.platform_owner(user_id) values($1)', [ids.admin]);
     alpha = await createOrg('alpha-events', 'alice@example.test', 1, 3);
     beta = await createOrg('beta-events', 'bob@example.test', 2);
@@ -61,7 +60,7 @@ describe('agency and organization ownership against actual migrations', () => {
     expect(await asUser(db, ids.alice, () => scalar<boolean>('select public.is_event_admin($1)', [alphaEvent]))).toBe(true);
     expect(await asUser(db, ids.alice, () => scalar('select public.current_attendee($1)', [alphaEvent]))).toBeNull();
     const settings = await db.query('select directory_enabled,messaging_enabled,community_enabled,feed_enabled,self_service_access_enabled from public.event_settings where event_id=$1', [alphaEvent]);
-    expect(Object.values(settings.rows[0])).toEqual([false, false, false, false, false]);
+    expect(settings.rows[0]).toEqual({ directory_enabled: false, messaging_enabled: false, community_enabled: false, feed_enabled: false, self_service_access_enabled: false });
   });
 
   it('isolates private organizations, invitations, draft events and event content', async () => {
@@ -91,7 +90,6 @@ describe('agency and organization ownership against actual migrations', () => {
     await expect(asUser(db, ids.outsider, () => scalar('select public.platform_invite_member($1,$2,$3)', [alpha, 'bob@example.test', 'owner']))).rejects.toThrow(/owner access/);
     await asUser(db, ids.alice, () => scalar('select public.platform_update_member($1,$2,$3,$4,$5)', [alpha, ids.outsider, 'admin', 'disabled', 0]));
     expect(await asUser(db, ids.outsider, () => scalar<boolean>('select public.is_event_admin($1)', [alphaEvent]))).toBe(false);
-    // Replaying an accepted invitation must not reactivate a revoked member.
     await asUser(db, ids.outsider, () => scalar('select public.platform_accept_invitation($1)', [invitation]));
     expect(await asUser(db, ids.outsider, () => scalar<boolean>('select public.platform_can_manage_organization($1)', [alpha]))).toBe(false);
   });
