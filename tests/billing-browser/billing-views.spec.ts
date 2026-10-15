@@ -11,6 +11,7 @@ test('agency and customer billing views use the actually provisioned local accou
   const agency=await browser.newContext({baseURL:origin,viewport:{width:1440,height:1000}});
   const customer=await browser.newContext({baseURL:origin,viewport:{width:390,height:844}});
   const other=await browser.newContext({baseURL:origin});
+  for (const context of [agency,customer,other]) context.setDefaultTimeout(10000);
   try {
     const agencyPage=await agency.newPage(); await signIn(agencyPage,'agency','/agency/billing');
     await expect(agencyPage.getByRole('heading',{name:'Turn subscriptions into workspaces.'})).toBeVisible();
@@ -34,7 +35,12 @@ test('agency and customer billing views use the actually provisioned local accou
     await expect(otherPage.getByRole('heading',{name:'Make room for your next big event.'})).toBeVisible();
     await expect(otherPage.getByText('$49.00 / month',{exact:true})).toBeVisible();
     await otherPage.getByLabel('Organizer or business name').fill('Sample New Organizer');
+    const workspaceUrl=otherPage.getByRole('textbox',{name:'Workspace URL',exact:true});
+    await expect(workspaceUrl).toHaveAccessibleDescription('3–64 lowercase letters, numbers or hyphens. Your event URLs will use this name.');
+    await otherPage.getByText('Workspace URL',{exact:true}).click();
+    await expect(workspaceUrl).toBeFocused();
     await otherPage.getByLabel('Workspace URL',{exact:true}).fill('sample-new-organizer');
+    await expect(workspaceUrl).toHaveValue('sample-new-organizer');
     await otherPage.screenshot({path:info.outputPath('subscribe-desktop.png'),fullPage:true});
     expect((await other.request.get(`${origin}/api/billing/agency`)).status()).toBe(403);
     expect((await other.request.get(`${origin}/api/billing/organizations/sample-paid-organizer`)).status()).toBe(404);
