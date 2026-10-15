@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { safeNext } from '@/lib/format';
-import { useState, type ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, useId, useState, type ReactNode } from 'react';
 import { useResource } from '@/lib/hooks';
 import { errorMessage, mutate } from '@/lib/client';
 import type { WorkspaceHome } from '@/lib/platform';
@@ -36,7 +36,23 @@ export function LoadState({ loading, error, refresh, children }: { loading: bool
   if (error) return <Alert><p>{error}</p><div className="platform-actions"><button type="button" onClick={() => void refresh()}>Try again</button><Link href={`/platform/auth?next=${encodeURIComponent(next)}`}>Sign in</Link></div></Alert>;
   return children;
 }
-export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) { return <label className={`platform-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>; }
+export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
+  let firstControlId: string | undefined;
+  let controlIndex = 0;
+  // Content editors may include a separately named upload beside the main
+  // control. Keep both controls outside the label and preserve their own props.
+  const controls = Children.map(children, child => {
+    if (!isValidElement<{ id?: string; 'aria-describedby'?: string }>(child)
+      || typeof child.type !== 'string' || !['input', 'select', 'textarea'].includes(child.type)) return child;
+    const controlId = child.props.id ?? `${id}-control-${controlIndex++}`;
+    firstControlId ??= controlId;
+    const description = [child.props['aria-describedby'], hintId].filter(Boolean).join(' ') || undefined;
+    return cloneElement(child, { id: controlId, 'aria-describedby': description });
+  });
+  return <div className={`platform-field ${wide ? 'wide' : ''}`}><span><label htmlFor={firstControlId}>{label}</label></span>{controls}{hint && <small id={hintId}>{hint}</small>}</div>;
+}
 export function Status({ children }: { children: ReactNode }) { return <span className="platform-status">{children}</span>; }
 export function PendingRequest() {
   // A factory called once by useState; distinct bodies get distinct keys, while
