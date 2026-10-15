@@ -22,20 +22,6 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
-      - name: Capture isolated review inputs
-        if: github.head_ref == 'feat/subscription-provisioning'
-        run: |
-          git archive --format=tar.gz --output=billing-source.tar.gz HEAD
-          tar -czf billing-dependencies.tar.gz node_modules
-      - name: Save isolated review inputs
-        if: github.head_ref == 'feat/subscription-provisioning'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: billing-review-inputs
-          path: |
-            billing-source.tar.gz
-            billing-dependencies.tar.gz
-          retention-days: 1
       - name: Start isolated Supabase services
         run: npx --yes supabase@2.121.0 start --exclude studio,edge-runtime,logflare,vector,supavisor,postgres-meta > /tmp/event-beast-billing-start.log 2>&1
       - name: Rehearse all migrations
