@@ -1,16 +1,25 @@
 import { NextResponse } from "next/server";
 import { serverSupabase } from "@/lib/supabase/server";
-import { safeNext } from "@/lib/format";
-import { authenticationOrigin } from '@/lib/auth-navigation';
+import { emailLinkNavigation } from '@/lib/server/auth-email-navigation';
+import { handle } from '@/lib/server/http';
 
-export async function GET(request: Request) {
+const headers = { 'Cache-Control': 'private, no-store', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex, nofollow' };
+export const GET = (request: Request) => handle(async () => {
   const url = new URL(request.url);
-  const origin = authenticationOrigin(process.env.EVENT_BEAST_SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL);
+  const navigation = emailLinkNavigation(url.searchParams);
+  const canonical = new URL('/auth/callback', navigation.origin);
+  canonical.search = url.search;
+  const browserHost = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? url.host;
+  // Issue session cookies only on the same host that initiated the email flow.
+  if (browserHost !== canonical.host) return NextResponse.redirect(canonical, { status: 307, headers });
   const code = url.searchParams.get("code");
-  const db = await serverSupabase();
-  if (code && db) {
-    const { error } = await db.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(new URL(safeNext(url.searchParams.get("next")), origin));
+  if (code) {
+    const db = await serverSupabase();
+    if (db) {
+      const { error } = await db.auth.exchangeCodeForSession(code);
+      if (!error) return NextResponse.redirect(new URL(navigation.next, navigation.origin), { status: 303, headers });
+    }
   }
-  return NextResponse.redirect(new URL("/auth?error=link", origin));
-}
+  const failure = navigation.workspace ? navigation.failure : '/auth?error=link';
+  return NextResponse.redirect(new URL(failure, navigation.origin), { status: 303, headers });
+});

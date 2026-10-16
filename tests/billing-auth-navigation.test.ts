@@ -29,7 +29,8 @@ describe('subscription signup and email verification return', () => {
     const redirect = new URL(mocks.signUp.mock.calls[0][0].options.emailRedirectTo);
     expect(redirect.origin).toBe(site);
     expect(redirect.searchParams.get('next')).toBe(next);
-    expect([...redirect.searchParams.keys()]).toEqual(['next']);
+    expect(redirect.searchParams.get('context')).toBe('workspace');
+    expect([...redirect.searchParams.keys()]).toEqual(['next', 'context']);
   });
   it('keeps the same verified destination when resending the confirmation', async () => {
     expect((await send({ action: 'resend', next })).status).toBe(200);

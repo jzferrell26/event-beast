@@ -28,7 +28,7 @@ export const POST = (request: Request) => handle(async () => {
   if (!configuredSite) throw new ApiError(503, 'Event sign-in is being configured.');
   const site = authenticationOrigin(configuredSite);
   const verifiedNext = workspace ? ('next' in body ? safeNext(body.next ?? '/app') : '/app') : '/account-ready';
-  const verificationRedirect = `${site}/auth/callback?next=${encodeURIComponent(verifiedNext)}`;
+  const verificationRedirect = `${site}/auth/callback?next=${encodeURIComponent(verifiedNext)}${workspace ? '&context=workspace' : ''}`;
   const emailReady = process.env.EVENT_BEAST_EMAIL_READY === 'true';
   const recoveryReady = emailReady || process.env.EVENT_BEAST_RECOVERY_READY === 'true';
   if (['sign-up', 'resend'].includes(body.action) && !emailReady) throw new ApiError(503, workspace ? 'Account email delivery is being prepared. Contact Event Beast support to complete your account setup.' : 'Account email delivery is being prepared by the event team. The public agenda is available now.');
@@ -50,7 +50,7 @@ export const POST = (request: Request) => handle(async () => {
   }
   if (body.action === 'recover') {
     const resetNext = workspace ? encodeURIComponent('/platform/auth?mode=reset') : '/reset-password';
-    const { error } = await db.auth.resetPasswordForEmail(body.email.trim().toLowerCase(), { redirectTo: `${site}/auth/callback?next=${resetNext}` });
+    const { error } = await db.auth.resetPasswordForEmail(body.email.trim().toLowerCase(), { redirectTo: `${site}/auth/callback?next=${resetNext}${workspace ? '&context=workspace' : ''}` });
     checkedAuthError(error, 'We could not request a reset right now. Please try again shortly.');
     return json({ message: 'If an account exists for this email, a password reset link is on its way.' });
   }

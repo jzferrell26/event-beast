@@ -12,6 +12,27 @@ The attempted temporary Auth-admin function deployment and normal-signup script 
 
 ## Required account step
 
+### Workspace email-link routing
+
+Workspace invitation and recovery links now use `context=workspace` on
+`/auth/confirm`. They keep Event Beast branding, verify only after the recipient
+presses Continue securely, and then open `/platform/auth?mode=reset`. Expired
+links return to workspace sign-in with an actionable message. Existing links
+with an allowed workspace `next` destination are also recognized. Callback
+codes move to the configured platform host before session cookies are issued.
+
+The preview-only email templates are authored at
+`supabase/templates/workspace/invite.html` and
+`supabase/templates/workspace/recovery.html`. They are ready for the preview
+Auth configuration; committing them does not install them in Supabase. Set the
+preview Auth Site URL to the stable Vercel origin in HOSTED-PREVIEW.md before
+using them. Keep the production event's existing templates and configuration.
+
+This correction does not create an account, send email, mark an identity as
+verified, or grant agency access. The supported preview Auth setup below is
+still required. Jonathan's verified live-event account stays in production and
+can receive the production agency role during the separately verified rollout.
+
 Use the supported [preview Authentication Users screen](https://supabase.com/dashboard/project/tbmipnmffyekkfbslxqx/auth/users) to establish the chosen account. Keep the password out of chat and source control. Complete email verification through the configured Auth flow; do not infer verification from an event role or user-editable metadata.
 
 The preview still needs its Auth sender, confirmation templates and redirect allowlist configured and verified before general signup/recovery can open. See [hosted preview](HOSTED-PREVIEW.md) for the existing Vercel origin and gates. Do not enable public signup merely to make the owner setup appear complete.

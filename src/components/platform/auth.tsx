@@ -8,10 +8,10 @@ import type { WorkspaceHome } from '@/lib/platform';
 import { Alert, Field } from './shared';
 
 type Mode = 'sign-in' | 'sign-up' | 'verify-email' | 'recover' | 'reset';
-export function PlatformAuth({ next, reset = false }: { next: string; reset?: boolean }) {
+export function PlatformAuth({ next, reset = false, linkError = false }: { next: string; reset?: boolean; linkError?: boolean }) {
   const [mode, setMode] = useState<Mode>(reset ? 'reset' : 'sign-in');
   const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [token, setToken] = useState('');
-  const [error, setError] = useState(''); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(linkError ? 'This email link has expired or was already used. Sign in or request a new password reset link.' : ''); const [message, setMessage] = useState(''); const [busy, setBusy] = useState(false);
   const identity = useResource<WorkspaceHome>(mode === 'reset' ? '/api/platform' : null);
   const titles = { 'sign-in': 'Welcome back.', 'sign-up': 'Create your account.', 'verify-email': 'Verify your email.', recover: 'Reset your password.', reset: 'Choose a new password.' };
   const submit = async (event: FormEvent) => {
