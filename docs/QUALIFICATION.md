@@ -3,6 +3,15 @@
 This document distinguishes implemented behavior from verified operation.
 Source tests do not establish production activation.
 
+## October 16 — isolated hosted platform preview
+
+The subscription branch is deployed on Vercel with its own healthy Supabase
+preview branch and both new platform migrations. Sign-in rendering and release
+provenance were checked. Preview owner identity, account-email delivery, hosted
+customer onboarding and Stripe-hosted payment qualification remain incomplete.
+See [Hosted preview checkpoint](HOSTED-PREVIEW.md) for exact targets, settings,
+permission checks, advisor findings and the remaining activation steps.
+
 ## October 14 — agency and customer workspaces
 
 PR #34 implements the first manual customer journey: agency subaccount creation,

@@ -1,11 +1,15 @@
 'use client';
 import Link from 'next/link';
-import { useState, type ReactNode } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { safeNext } from '@/lib/format';
+import { Children, cloneElement, isValidElement, useId, useState, type ReactNode } from 'react';
 import { useResource } from '@/lib/hooks';
 import { errorMessage, mutate } from '@/lib/client';
 import type { WorkspaceHome } from '@/lib/platform';
 
 export function PlatformShell({ children, organizationSlug, agency = false }: { children: ReactNode; organizationSlug?: string; agency?: boolean }) {
+  const pathname = usePathname();
+  const billing = useResource<{ enabled: boolean }>('/api/billing/plans');
   const identity = useResource<WorkspaceHome>('/api/platform');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -19,16 +23,36 @@ export function PlatformShell({ children, organizationSlug, agency = false }: { 
     }
     catch (cause) { setError(errorMessage(cause)); setBusy(false); }
   };
-  return <div className="platform"><a className="platform-skip" href="#workspace-content">Skip to workspace</a><header className="platform-topbar"><Link href="/app" className="platform-brand"><span aria-hidden="true">EB</span>EVENT BEAST</Link><div className="platform-top-actions">{identity.data?.agency && <Link href="/agency">Agency</Link>}<Link href="/app">Workspaces</Link>{identity.data && <button type="button" onClick={() => void signOut()} disabled={busy}>{busy ? 'Signing out…' : 'Sign out'}</button>}</div></header><div className="platform-frame"><aside className="platform-sidebar"><p className="platform-eyebrow">{agency ? 'AGENCY CONTROL' : 'YOUR WORKSPACE'}</p><nav aria-label="Workspace navigation"><Link className={!organizationSlug ? 'selected' : ''} href={agency ? '/agency' : '/app'}>{agency ? 'Subaccounts' : 'All workspaces'}</Link>{organizationSlug && <><Link className="selected" href={`/app/${encodeURIComponent(organizationSlug)}`}>Events & team</Link><Link href={`/app/${encodeURIComponent(organizationSlug)}#settings`}>Workspace settings</Link></>}</nav>{identity.data && <div className="platform-identity"><strong>{identity.data.user.email}</strong><span>{identity.data.agency ? 'Platform owner' : 'Signed in'}</span></div>}</aside><main id="workspace-content" className="platform-main">{error && <Alert>{error}</Alert>}{children}</main></div></div>;
+  return <div className="platform"><a className="platform-skip" href="#workspace-content">Skip to workspace</a><header className="platform-topbar"><Link href="/app" className="platform-brand"><span aria-hidden="true">EB</span>EVENT BEAST</Link><div className="platform-top-actions">{identity.data?.agency && <Link href="/agency">Agency</Link>}<Link href="/app">Workspaces</Link>{identity.data && <button type="button" onClick={() => void signOut()} disabled={busy}>{busy ? 'Signing out…' : 'Sign out'}</button>}</div></header><div className="platform-frame"><aside className="platform-sidebar"><p className="platform-eyebrow">{agency ? 'AGENCY CONTROL' : 'YOUR WORKSPACE'}</p><nav aria-label="Workspace navigation"><Link className={pathname === (agency ? '/agency' : '/app') ? 'selected' : ''} href={agency ? '/agency' : '/app'}>{agency ? 'Subaccounts' : 'All workspaces'}</Link>{organizationSlug && <><Link className={pathname === `/app/${organizationSlug}` || pathname.includes('/events/') ? 'selected' : ''} href={`/app/${encodeURIComponent(organizationSlug)}`}>Events & team</Link><Link href={`/app/${encodeURIComponent(organizationSlug)}#settings`}>Workspace settings</Link>{billing.data?.enabled && <Link className={pathname.endsWith('/billing') ? 'selected' : ''} href={`/app/${encodeURIComponent(organizationSlug)}/billing`}>Billing</Link>}</>}{billing.data?.enabled && (agency ? <Link className={pathname === '/agency/billing' ? 'selected' : ''} href="/agency/billing">Subscriptions</Link> : !organizationSlug && <Link className={pathname === '/platform/subscribe' ? 'selected' : ''} href="/platform/subscribe">New subscription</Link>)}</nav>{identity.data && <div className="platform-identity"><strong>{identity.data.user.email}</strong><span>{identity.data.agency ? 'Platform owner' : 'Signed in'}</span></div>}</aside><main id="workspace-content" className="platform-main">{error && <Alert>{error}</Alert>}{children}</main></div></div>;
 }
 export function Alert({ children, success = false }: { children: ReactNode; success?: boolean }) { return <div className={`platform-alert ${success ? 'success' : ''}`} role={success ? 'status' : 'alert'}>{children}</div>; }
 export function Heading({ eyebrow, title, children, action }: { eyebrow: string; title: string; children?: ReactNode; action?: ReactNode }) { return <div className="platform-heading"><div><p className="platform-eyebrow">{eyebrow}</p><h1>{title}</h1>{children && <p>{children}</p>}</div>{action}</div>; }
 export function LoadState({ loading, error, refresh, children }: { loading: boolean; error: string; refresh: () => Promise<void>; children?: ReactNode }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const query = searchParams.toString();
+  const next = safeNext(`${pathname}${query ? `?${query}` : ''}`);
   if (loading) return <div className="platform-loading" role="status">Opening your workspace…</div>;
-  if (error) return <Alert><p>{error}</p><div className="platform-actions"><button type="button" onClick={() => void refresh()}>Try again</button><Link href="/platform/auth">Sign in</Link></div></Alert>;
+  if (error) return <Alert><p>{error}</p><div className="platform-actions"><button type="button" onClick={() => void refresh()}>Try again</button><Link href={`/platform/auth?next=${encodeURIComponent(next)}`}>Sign in</Link></div></Alert>;
   return children;
 }
-export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) { return <label className={`platform-field ${wide ? 'wide' : ''}`}><span>{label}</span>{children}{hint && <small>{hint}</small>}</label>; }
+export function Field({ label, children, wide = false, hint }: { label: string; children: ReactNode; wide?: boolean; hint?: string }) {
+  const id = useId();
+  const hintId = hint ? `${id}-hint` : undefined;
+  let firstControlId: string | undefined;
+  let controlIndex = 0;
+  // Content editors may include a separately named upload beside the main
+  // control. Keep both controls outside the label and preserve their own props.
+  const controls = Children.map(children, child => {
+    if (!isValidElement<{ id?: string; 'aria-describedby'?: string }>(child)
+      || typeof child.type !== 'string' || !['input', 'select', 'textarea'].includes(child.type)) return child;
+    const controlId = child.props.id ?? `${id}-control-${controlIndex++}`;
+    firstControlId ??= controlId;
+    const description = [child.props['aria-describedby'], hintId].filter(Boolean).join(' ') || undefined;
+    return cloneElement(child, { id: controlId, 'aria-describedby': description });
+  });
+  return <div className={`platform-field ${wide ? 'wide' : ''}`}><span><label htmlFor={firstControlId}>{label}</label></span>{controls}{hint && <small id={hintId}>{hint}</small>}</div>;
+}
 export function Status({ children }: { children: ReactNode }) { return <span className="platform-status">{children}</span>; }
 export function PendingRequest() {
   // A factory called once by useState; distinct bodies get distinct keys, while
