@@ -3,6 +3,14 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   turbopack: { root: process.cwd() },
+  async redirects() {
+    return [{
+      source: '/',
+      has: [{ type: 'host', value: 'eventbeast.jonathanferrell.com' }],
+      destination: '/agency',
+      permanent: false,
+    }];
+  },
   async headers() {
     return [
       {

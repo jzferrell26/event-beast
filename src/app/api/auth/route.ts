@@ -29,8 +29,8 @@ export const POST = (request: Request) => handle(async () => {
   const site = authenticationOrigin(configuredSite);
   const verifiedNext = workspace ? ('next' in body ? safeNext(body.next ?? '/app') : '/app') : '/account-ready';
   const verificationRedirect = `${site}/auth/callback?next=${encodeURIComponent(verifiedNext)}${workspace ? '&context=workspace' : ''}`;
-  const emailReady = process.env.EVENT_BEAST_EMAIL_READY === 'true';
-  const recoveryReady = emailReady || process.env.EVENT_BEAST_RECOVERY_READY === 'true';
+  const emailReady = (workspace ? process.env.EVENT_BEAST_WORKSPACE_EMAIL_READY ?? process.env.EVENT_BEAST_EMAIL_READY : process.env.EVENT_BEAST_EMAIL_READY) === 'true';
+  const recoveryReady = emailReady || (workspace ? process.env.EVENT_BEAST_WORKSPACE_RECOVERY_READY ?? process.env.EVENT_BEAST_RECOVERY_READY : process.env.EVENT_BEAST_RECOVERY_READY) === 'true';
   if (['sign-up', 'resend'].includes(body.action) && !emailReady) throw new ApiError(503, workspace ? 'Account email delivery is being prepared. Contact Event Beast support to complete your account setup.' : 'Account email delivery is being prepared by the event team. The public agenda is available now.');
   if (body.action === 'recover' && !recoveryReady) throw new ApiError(503, 'Password recovery email is being prepared by the event team. Please contact event support.');
   const checkedAuthError = (error: { status?: number; code?: string } | null, fallback: string) => {

@@ -23,6 +23,15 @@ describe('subscription signup and email verification return', () => {
     mocks.server.mockResolvedValue({ auth: { signUp: mocks.signUp, resend: mocks.resend, verifyOtp: mocks.verifyOtp } });
   });
   afterEach(() => vi.unstubAllEnvs());
+  it('can keep workspace enrollment closed while legacy event enrollment remains available', async () => {
+    vi.stubEnv('EVENT_BEAST_WORKSPACE_EMAIL_READY', 'false');
+    const workspace = await send({ action: 'sign-up', password: 'synthetic-password' });
+    expect(workspace.status).toBe(503);
+    expect(mocks.signUp).not.toHaveBeenCalled();
+    const legacy = await send({ action: 'sign-up', password: 'synthetic-password', context: undefined });
+    expect(legacy.status).toBe(200);
+    expect(mocks.signUp).toHaveBeenCalledOnce();
+  });
   it('keeps the checkout request as one encoded callback parameter during signup', async () => {
     const response = await send({ action: 'sign-up', password: 'synthetic-password', next });
     expect(response.status).toBe(200);
