@@ -1,0 +1,45 @@
+name: Event Beast platform integration
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: event-beast-platform-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  platform-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Start isolated Supabase services
+        run: npx --yes supabase@2.121.0 start --exclude studio,edge-runtime,logflare,vector,supavisor,postgres-meta > /tmp/event-beast-local-start.log 2>&1
+      - name: Rehearse migrations on the local database
+        run: npx --yes supabase@2.121.0 db reset --local --no-seed --yes
+      - name: Run local security advisors
+        run: npx --yes supabase@2.121.0 db advisors --local --type security --level error --fail-on error
+      - name: Inspect local status command
+        run: npx --yes supabase@2.121.0 status --help
+      - name: Install customer journey browser
+        run: npx playwright install --with-deps chromium
+      - name: Verify real agency and customer workflow
+        run: node scripts/qualify-platform-local.mjs
+      - name: Save platform qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-qualification
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Stop isolated services
+        if: always()
+        run: npx --yes supabase@2.121.0 stop --project-id event-beast --no-backup
