@@ -7,6 +7,7 @@ import { ApiError, databaseError, handle, json, parseBody, assertSameOrigin } fr
 import { contentActions } from '@/lib/server/content-actions';
 import { invalidatePublicGuide } from '@/lib/server/guide';
 import { saveEventImage } from '@/lib/server/image-upload';
+import { getEventSetup } from '@/lib/server/event-setup';
 
 type Context = { params: Promise<{ segments?: string[] }> };
 type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE';
@@ -122,6 +123,9 @@ async function run(request: Request, context: Context, method: Method): Promise<
       invalidate(event);
       return json({ saved: true });
     }
+  }
+  if (segments.length === 5 && segments[4] === 'setup' && method === 'GET') {
+    return json(await getEventSetup(eventActor));
   }
   if (segments.length === 5 && segments[4] === 'publish' && method === 'POST') {
     const body = await parseBody(request, publishSchema);

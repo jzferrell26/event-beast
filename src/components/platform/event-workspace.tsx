@@ -7,20 +7,43 @@ import { errorMessage, mutate, request } from '@/lib/client';
 import { adminDefaults, adminSaveValues, instantToWall, wallToInstant, resourceSchema, type AdminField, type AdminResource } from '@/lib/admin-resources';
 import { eventDetailValues, eventDetailsSchema, platformResources, publicEventPath, workspaceEventPath, type ContentLookups, type ContentRow, type Organization, type PlatformEvent } from '@/lib/platform';
 import { Alert, Field, Heading, LoadState, PlatformShell, Status } from './shared';
+import { SetupGuide, LaunchReview } from './setup-guide';
+import type { EventSetup } from '@/lib/event-setup';
+import './setup-guide.css';
 
 type EventData = { event: PlatformEvent; organization: Organization; agency: boolean };
-const labels: Record<string, string> = { details: 'Event details', event_settings: 'Welcome & help', agenda_days: 'Event days', agenda_sessions: 'Agenda', speakers: 'Speakers', sponsor_tiers: 'Sponsor tiers', sponsors: 'Sponsors', agenda_sponsor_placements: 'Sponsor ads', venue_locations: 'Venue', lunch_locations: 'Meals', event_activities: 'Activities', publish: 'Preview & publish' };
+const labels: Record<string, string> = { setup: 'Setup guide', details: 'Event details', event_settings: 'Welcome & help', agenda_days: 'Event days', agenda_sessions: 'Agenda', speakers: 'Speakers', sponsor_tiers: 'Sponsor tiers', sponsors: 'Sponsors', agenda_sponsor_placements: 'Sponsor ads', venue_locations: 'Venue', lunch_locations: 'Meals', event_activities: 'Activities', publish: 'Preview & publish' };
 export function EventWorkspace({ organizationSlug, eventId }: { organizationSlug: string; eventId: string }) {
   const endpoint = `/api/platform/organizations/${encodeURIComponent(organizationSlug)}/events/${encodeURIComponent(eventId)}`;
   const state = useResource<EventData>(endpoint);
   const lookups = useResource<ContentLookups>(state.data ? `${endpoint}/lookups` : null);
-  const [section, setSection] = useState('details');
+  const setup = useResource<EventSetup>(state.data ? `${endpoint}/setup` : null);
+  const [section, setSection] = useState('setup');
   const [notice, setNotice] = useState('');
   const [dirty, setDirty] = useState(false);
   useEffect(() => { if (!dirty) return; const leave = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; }; window.addEventListener('beforeunload', leave); return () => window.removeEventListener('beforeunload', leave); }, [dirty]);
-  const selectSection = (next: string) => { if (next === section || (dirty && !window.confirm('Discard your unsaved changes?'))) return; setDirty(false); setSection(next); setNotice(''); };
-  const saved = async () => { setDirty(false); setNotice('Your changes are saved.'); await Promise.all([state.refresh(), lookups.refresh()]); };
-  return <PlatformShell organizationSlug={organizationSlug}><LoadState {...state}>{state.data && <>{state.data.agency && <Alert success>Agency support view · You are managing this event with your own identity.</Alert>}<Link className="platform-fine" href={`/app/${organizationSlug}`}>← {state.data.organization.name}</Link><Heading eyebrow={state.data.event.published ? 'PUBLISHED EVENT' : 'DRAFT EVENT'} title={state.data.event.name}>Build the details here. Event times use {state.data.event.timezone}.</Heading>{notice && <Alert success>{notice}</Alert>}<div className="platform-setup">{[{ key: 'details', label: 'Event dates', ready: Boolean(state.data.event.start_date && state.data.event.end_date) }, { key: 'agenda_sessions', label: 'Agenda', ready: Boolean(lookups.data?.agenda_sessions.length) }, { key: 'speakers', label: 'Speakers', ready: Boolean(lookups.data?.speakers.length) }, { key: 'sponsors', label: 'Sponsors', ready: Boolean(lookups.data?.sponsors.length) }].map(step => <button type="button" key={step.key} onClick={() => selectSection(step.key)}>{step.label}<span aria-label={step.ready ? 'Added' : 'Not added'}>{step.ready ? '✓' : '+'}</span></button>)}</div><nav className="platform-tabs" aria-label="Event sections">{Object.entries(labels).map(([key, label]) => <button type="button" key={key} aria-pressed={section === key} onClick={() => selectSection(key)}>{label}</button>)}</nav>{section === 'details' ? <EventDetails key={`${eventId}:${state.data.event.platform_version}`} event={state.data.event} endpoint={endpoint} onDirty={setDirty} onSaved={saved} /> : section === 'publish' ? <Publication event={state.data.event} organizationSlug={organizationSlug} endpoint={endpoint} onSaved={saved} /> : <ContentManager key={`${eventId}:${section}`} resource={section} definition={platformResources[section]} endpoint={endpoint} event={state.data.event} lookups={lookups.data} lookupError={lookups.error} onDirty={setDirty} onSaved={saved} />}</>}</LoadState></PlatformShell>;
+  const selectSection = (next: string) => {
+    if (next === section || (dirty && !window.confirm('Discard your unsaved changes?'))) return;
+    setDirty(false); setSection(next); setNotice('');
+    if (next === 'setup' || next === 'publish') void setup.refresh();
+  };
+  const saved = async () => {
+    setDirty(false); setNotice('Your changes are saved.');
+    await Promise.all([state.refresh(), lookups.refresh(), setup.refresh()]);
+  };
+  return <PlatformShell organizationSlug={organizationSlug}><LoadState {...state}>{state.data && <>
+    {state.data.agency && <Alert success>Agency support view · You are managing this event with your own identity.</Alert>}
+    <Link className="platform-fine" href={`/app/${organizationSlug}`}>← {state.data.organization.name}</Link>
+    <Heading eyebrow={state.data.event.published ? 'PUBLISHED EVENT' : 'DRAFT EVENT'} title={state.data.event.name}>Build the details here. Event times use {state.data.event.timezone}.</Heading>
+    {notice && <Alert success>{notice}</Alert>}
+    {section !== 'setup' && <div className="setup-summary"><button type="button" onClick={() => selectSection('setup')}>Open setup guide</button>
+      <span>{setup.error ? 'Setup progress needs a refresh.' : setup.data ? `${setup.data.completed} of ${setup.data.total} setup checks complete` : 'Checking saved event content…'}</span></div>}
+    <nav className="platform-tabs" aria-label="Event sections">{Object.entries(labels).map(([key, label]) => <button type="button" key={key} aria-pressed={section === key} onClick={() => selectSection(key)}>{label}</button>)}</nav>
+    {section === 'setup' ? <LoadState {...setup}>{setup.data && <SetupGuide setup={setup.data} onSelect={selectSection} onPublish={() => selectSection('publish')} />}</LoadState>
+      : section === 'details' ? <EventDetails key={`${eventId}:${state.data.event.platform_version}`} event={state.data.event} endpoint={endpoint} onDirty={setDirty} onSaved={saved} />
+      : section === 'publish' ? <Publication event={state.data.event} organizationSlug={organizationSlug} endpoint={endpoint} setup={setup} onSelect={selectSection} onSaved={saved} />
+      : <ContentManager key={`${eventId}:${section}`} resource={section} definition={platformResources[section]} endpoint={endpoint} event={state.data.event} lookups={lookups.data} lookupError={lookups.error} onDirty={setDirty} onSaved={saved} />}
+  </>}</LoadState></PlatformShell>;
 }
 function EventDetails({ event, endpoint, onDirty, onSaved }: { event: PlatformEvent; endpoint: string; onDirty: (dirty: boolean) => void; onSaved: () => Promise<void> }) {
   const [values, setValues] = useState(() => eventDetailValues(event));
@@ -30,10 +53,18 @@ function EventDetails({ event, endpoint, onDirty, onSaved }: { event: PlatformEv
   const submit = async (submitEvent: FormEvent) => { submitEvent.preventDefault(); setBusy(true); setError(''); try { const checked = eventDetailsSchema.parse(values); await mutate(endpoint, 'PATCH', { version: event.platform_version, values: checked }); await onSaved(); } catch (cause) { setError(errorMessage(cause)); } finally { setBusy(false); } };
   return <section className="platform-card"><h2>Event details & branding</h2><p>{event.published ? 'This event is published. Saving these details updates its public guide.' : 'Your draft stays private until you publish the event.'}</p><form onSubmit={submit}><fieldset disabled={busy || uploading} className="platform-form-grid"><Field label="Event name"><input required maxLength={160} value={values.name} onChange={input => change('name', input.target.value)} /></Field><Field label="Timezone"><input required value={values.timezone} onChange={input => change('timezone', input.target.value)} /></Field><Field label="Tagline" wide><textarea maxLength={600} value={values.tagline} onChange={input => change('tagline', input.target.value)} /></Field><Field label="First event date"><input type="date" value={values.start_date ?? ''} onChange={input => change('start_date', input.target.value || null)} /></Field><Field label="Last event date"><input type="date" value={values.end_date ?? ''} onChange={input => change('end_date', input.target.value || null)} /></Field><Field label="Event logo URL" hint="Use an HTTPS image URL, or upload a logo below."><input type="url" value={values.brand_logo_url} onChange={input => change('brand_logo_url', input.target.value)} /></Field><Field label="Upload event logo" hint="JPG, PNG or WebP, up to 3 MB. Save details after uploading."><input type="file" accept="image/jpeg,image/png,image/webp" onChange={input => void upload(input.target.files?.[0])} /></Field>{values.brand_logo_url && <Image className="platform-logo-preview" src={values.brand_logo_url} width={180} height={80} unoptimized alt="Event logo preview" />}</fieldset>{error && <Alert>{error}</Alert>}<button className="platform-primary" disabled={busy || uploading}>{uploading ? 'Uploading…' : busy ? 'Saving…' : 'Save event details'}</button></form></section>;
 }
-function Publication({ event, organizationSlug, endpoint, onSaved }: { event: PlatformEvent; organizationSlug: string; endpoint: string; onSaved: () => Promise<void> }) {
+function Publication({ event, organizationSlug, endpoint, setup, onSelect, onSaved }: { event: PlatformEvent; organizationSlug: string; endpoint: string; setup: ReturnType<typeof useResource<EventSetup>>; onSelect: (section: string) => void; onSaved: () => Promise<void> }) {
   const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
   const publish = async () => { setBusy(true); setError(''); try { await mutate(`${endpoint}/publish`, 'POST', { version: event.platform_version, published: !event.published }); await onSaved(); } catch (cause) { setError(errorMessage(cause)); } finally { setBusy(false); } };
-  return <section className="platform-card"><Status>{event.published ? 'Published' : 'Private draft'}</Status><h2>{event.published ? 'Your event guide is live.' : 'Ready to share your event?'}</h2><p>Preview the guide and check your dates, agenda, speakers, sponsor order and venue details. Content marked Published is included in the guide.</p>{!event.start_date || !event.end_date ? <Alert>Add the first and last event dates before publishing.</Alert> : null}<p>{event.published ? 'Saving changes to published content updates this guide immediately. Unpublishing removes the public guide from its event URL.' : 'Publishing makes this guide available to anyone with its link.'}</p>{error && <Alert>{error}</Alert>}<div className="platform-actions"><Link href={`${workspaceEventPath(organizationSlug, event.id)}/preview`} target="_blank" rel="noopener noreferrer">Preview guide ↗</Link>{event.published && <Link href={publicEventPath(event)} target="_blank" rel="noopener noreferrer">Open public event ↗</Link>}<button className="platform-primary" type="button" disabled={busy || (!event.published && (!event.start_date || !event.end_date))} onClick={() => void publish()}>{busy ? 'Updating…' : event.published ? 'Unpublish event' : 'Publish event'}</button></div></section>;
+  return <section className="platform-card"><Status>{event.published ? 'Published' : 'Private draft'}</Status>
+    <h2>{event.published ? 'Your event guide is live.' : 'Ready to share your event?'}</h2>
+    <LoadState {...setup}>{setup.data && <LaunchReview setup={setup.data} onSelect={onSelect} />}</LoadState>
+    <p>{event.published ? 'Saving changes to published content updates this guide immediately. Unpublishing removes the public guide from its event URL.' : 'Publishing makes this guide available to anyone with its link.'}</p>
+    {error && <Alert>{error}</Alert>}
+    <div className="platform-actions"><Link href={`${workspaceEventPath(organizationSlug, event.id)}/preview`} target="_blank" rel="noopener noreferrer">Preview guide ↗</Link>
+      {event.published && <Link href={publicEventPath(event)} target="_blank" rel="noopener noreferrer">Open public event ↗</Link>}
+      <button className="platform-primary" type="button" disabled={busy || (!event.published && (setup.loading || Boolean(setup.error) || !setup.data?.canPublish || !event.start_date || !event.end_date))} onClick={() => void publish()}>{busy ? 'Updating…' : event.published ? 'Unpublish event' : 'Publish event'}</button></div>
+  </section>;
 }
 function ContentManager({ resource, definition, endpoint, event, lookups, lookupError, onDirty, onSaved }: { resource: string; definition: AdminResource; endpoint: string; event: PlatformEvent; lookups: ContentLookups | null; lookupError: string; onDirty: (dirty: boolean) => void; onSaved: () => Promise<void> }) {
   const [offset, setOffset] = useState(0);
