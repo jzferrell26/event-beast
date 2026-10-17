@@ -3,6 +3,60 @@
 This document distinguishes implemented behavior from verified operation.
 Source tests do not establish production activation.
 
+## October 17 — guided event setup and launch review
+
+[PR #36](https://github.com/jzferrell26/event-beast/pull/36) is merged. Opening
+an event now starts with eight saved-content checks, direct editor actions and
+a launch review that distinguishes published guide content from drafts. Dates
+remain the required publishing input; optional sections do not block publication.
+See [Guided event setup](GUIDED-EVENT-SETUP.md) for the implementation and its
+read-only count semantics.
+
+Tested head: `951522cf510db4e21b2a54abe254e1f69e515b21`. All three workflows
+completed successfully before release:
+
+| Check | Evidence | Result |
+| --- | --- | --- |
+| Application quality | [Run 39035905321](https://github.com/jzferrell26/event-beast/actions/runs/39035905321) | Lint, TypeScript, unit/database tests, production build, public browser suite, legacy browser suite and mobile WebKit passed. |
+| Platform integration | [Run 39035905359](https://github.com/jzferrell26/event-beast/actions/runs/39035905359) | Migration/advisor checks and all three real local Supabase browser scenarios passed; zero skipped, failed or flaky results. |
+| Billing integration | [Run 39035905385](https://github.com/jzferrell26/event-beast/actions/runs/39035905385) | Existing isolated subscription provisioning and billing browser checks passed. |
+
+The platform journey exercises an undated draft, disabled publishing, saved
+dates, content creation, a published session hidden by its draft parent day,
+accurate progress after reload, correction of the hidden-day issue, public
+publishing, and anonymous/second-customer denial. The existing hostname and
+email-link checks passed as well. The first browser attempt stopped on an
+ambiguous substring selector; the tested head selects the exact Review & publish
+action. Platform artifact `12102246709` contains the final report and screenshots.
+The setup guide was visually reviewed on desktop and at a 390-pixel mobile
+viewport, including the draft-content warnings and overflow check. Those images
+use synthetic test accounts and content.
+
+Production merge: `609b23bedb0df61ec082aa9a2eda50eca67363fe`. Its tree equals
+the tested head tree, `4c54fb5ec72c0c31bddd4b36390201eda5a582cc`.
+Vercel deployment `dpl_2caTQPtS6m3wMrKSHurP4Qb9DgDv` was verified READY in
+the existing production Event Beast project under Cuantico AI.
+
+At October 17, 2026, 13:33:05 UTC, direct HTTPS checks on BOTH
+`eventapp.momentumbuilder.com` and `2026live.momentumbuilder.com` confirmed:
+
+- Root HTTP 200 with Momentum Builder branding and no redirect.
+- Release endpoint HTTP 200 with the exact production merge revision.
+- Public guide HTTP 200 with original event ID
+  `a9bdf080-f47f-538e-94f7-38e4ff996116`, 49 sessions, 44 speakers and 37 sponsors.
+- Workspace sign-in and the organization/event public guide both HTTP 200.
+- The new event setup endpoint rejects anonymous access with HTTP 401 and
+  private/no-store headers, without returning checklist data.
+
+Filtered HTTP evidence and the read-only verification script are retained in the
+local ignored `test-results/` directory. No production event records, schema,
+permissions, DNS, environment variables, email settings or billing activation
+were changed by this feature. Actual production password-based owner login was
+not performed by the agent. Hosted email delivery, Stripe-hosted payment flows,
+capacity and the previously recorded security/dependency advisories remain
+separate qualification work. Jonathan deferred the custom agency DNS record;
+this release does not assert that the new custom hostname resolves.
+
 ## October 16 — production agency and Momentum Builder
 
 PRs #34 and #35 are merged. The production deployment at
