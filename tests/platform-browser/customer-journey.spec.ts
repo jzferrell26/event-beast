@@ -53,8 +53,6 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await owner.getByRole('button', { name: 'Create your first event' }).click();
     await owner.getByLabel('Event name', { exact: true }).fill('Sample Alpha Summit');
     await owner.locator('input[name="slug"]').fill('sample-alpha-summit');
-    await owner.getByLabel('First event date').fill('2027-04-02');
-    await owner.getByLabel('Last event date').fill('2027-04-02');
     await owner.getByRole('button', { name: 'Create draft event' }).click();
     await expect(owner).toHaveURL(/\/app\/sample-alpha\/events\/[0-9a-f-]{36}$/);
     const eventId = new URL(owner.url()).pathname.split('/').at(-1)!;
@@ -65,7 +63,15 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await guide.goto(publicPath);
     await expect(guide.getByRole('heading', { name: 'Sample Alpha Summit', exact: true })).toHaveCount(0);
     expect((await visitor.request.get(`${origin}${endpoint}`)).status()).toBe(401);
+    expect((await visitor.request.get(`${origin}${endpoint}/setup`)).status()).toBe(401);
 
+    await expect(owner.getByRole('heading', { name: 'Your event setup guide' })).toBeVisible();
+    await expect(owner.getByRole('progressbar', { name: 'Event setup progress' })).toHaveAttribute('value', '0');
+    await owner.getByRole('button', { name: 'Review & publish' }).click();
+    await expect(owner.getByRole('button', { name: 'Publish event', exact: true })).toBeDisabled();
+    await section(owner, 'Event details');
+    await owner.getByLabel('First event date').fill('2027-04-02');
+    await owner.getByLabel('Last event date').fill('2027-04-02');
     await owner.getByLabel('Tagline', { exact: true }).fill('A sample event built by its own organizer.');
     await owner.getByRole('button', { name: 'Save event details' }).click();
     await expect(owner.getByText('Your changes are saved.', { exact: true })).toBeVisible();
@@ -96,6 +102,30 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await owner.getByRole('group', { name: 'Speakers for this session' }).getByLabel('Sample Speaker').check();
     await owner.getByLabel('This is sample content').check();
     await saveRecord(owner);
+
+    // A published session cannot appear while its parent day is still a draft.
+    await section(owner, 'Event days');
+    await owner.getByRole('button', { name: 'Edit', exact: true }).click();
+    await owner.getByLabel('Published in the attendee guide', { exact: true }).uncheck();
+    await owner.getByRole('button', { name: 'Save changes', exact: true }).click();
+    await expect(owner.locator('form.platform-editor')).toHaveCount(0);
+    await section(owner, 'Setup guide');
+    await expect(owner.getByText(/1 marked Published session is hidden/)).toBeVisible();
+    const setupResponse = await alpha.request.get(`${origin}${endpoint}/setup`);
+    expect(setupResponse.headers()['cache-control']).toContain('no-store');
+    expect(await setupResponse.json()).toMatchObject({ eventId, canPublish: true, sessionsOnHiddenDays: 1 });
+    await owner.reload();
+    await expect(owner.getByText(/1 marked Published session is hidden/)).toBeVisible();
+    await owner.screenshot({ path: info.outputPath('setup-desktop.png'), fullPage: true });
+    await owner.setViewportSize({ width: 390, height: 844 });
+    await owner.screenshot({ path: info.outputPath('setup-mobile.png'), fullPage: true });
+    expect(await owner.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+    await owner.locator('.setup-check').filter({ has: owner.getByRole('heading', { name: 'Event days', exact: true }) }).getByRole('button').click();
+    await owner.getByRole('button', { name: 'Edit', exact: true }).click();
+    await saveRecord(owner);
+    await section(owner, 'Setup guide');
+    await expect(owner.getByText('1 session included in the guide.', { exact: true })).toBeVisible();
+    await expect(owner.getByText(/marked Published session is hidden/)).toHaveCount(0);
     await owner.reload();
     await section(owner, 'Agenda');
     await expect(owner.getByRole('heading', { name: 'Sample opening keynote', exact: true })).toBeVisible();
@@ -124,6 +154,7 @@ test('agency handoff, customer publishing, second-customer isolation and recover
     await betaPage.locator('a.platform-workspace-link').filter({ hasText: 'Sample Beta Events' }).click();
     expect((await beta.request.get(`${origin}/api/platform/agency`)).status()).toBe(403);
     expect((await beta.request.get(`${origin}${endpoint}`)).status()).toBe(404);
+    expect((await beta.request.get(`${origin}${endpoint}/setup`)).status()).toBe(404);
     expect((await write(beta, endpoint, { version: 0, values: {} }, 'PATCH')).status()).toBe(404);
     expect((await beta.request.get(`${origin}/api/platform/organizations/sample-beta/events/${eventId}`)).status()).toBe(404);
     const betaValues = { slug: 'sample-beta-summit', name: 'Sample Beta Summit', tagline: '', timezone: 'America/Chicago', start_date: '2027-04-03', end_date: '2027-04-03', brand_logo_url: '' };

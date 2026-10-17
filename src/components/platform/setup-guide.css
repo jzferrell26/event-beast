@@ -1,0 +1,23 @@
+.setup-guide-header{display:flex;justify-content:space-between;gap:32px;align-items:flex-start}
+.setup-guide-header>div:first-child{max-width:620px}
+.setup-progress{min-width:180px;display:grid;gap:6px;font-size:12px;color:var(--p-muted)}
+.setup-progress strong{font-size:30px;line-height:1.15;color:var(--p-ink)}
+.setup-progress progress{width:100%;height:10px;accent-color:var(--p-accent);margin-top:6px}
+.setup-next{border:1px solid #c4dacd;background:#f2f8f4;border-radius:12px;padding:20px;margin:12px 0 26px}
+.setup-next p{font-size:14px;margin-bottom:10px}
+.setup-checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.setup-check{border:1px solid var(--p-border);border-radius:12px;padding:20px;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.setup-check-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%}
+.setup-check h3{margin:0;flex:1}
+.setup-check .platform-status{white-space:nowrap;font-size:10px}
+.setup-check p{font-size:14px;overflow-wrap:anywhere;margin:12px 0 18px}
+.setup-check button{margin-top:auto;font-size:13px}
+.setup-check.complete .platform-status{background:#eaf7ef;color:#235c41}
+.setup-check.attention .platform-status{background:#fff1d6;color:#754b12}
+.setup-summary{display:flex;flex-wrap:wrap;align-items:center;gap:14px;font-size:13px;color:var(--p-muted)}
+.setup-launch-review{border-top:1px solid var(--p-border);margin-top:22px;padding-top:8px}
+.setup-review-items>div{padding:16px 0;border-bottom:1px solid var(--p-border);display:flex;gap:20px;align-items:center;justify-content:space-between}
+.setup-review-items p{font-size:14px;margin:0;flex:1}
+.setup-review-items button{flex-shrink:0;font-size:13px}
+@media(max-width:1000px){.setup-guide-header{flex-direction:column;gap:10px}.setup-progress{width:100%;margin-bottom:20px}.setup-check-heading{align-items:flex-start;flex-direction:column}}
+@media(max-width:720px){.setup-checks{grid-template-columns:1fr}.setup-check-heading{flex-direction:row}.setup-review-items>div{flex-direction:column;align-items:flex-start}.setup-next .platform-actions button{width:100%}}
