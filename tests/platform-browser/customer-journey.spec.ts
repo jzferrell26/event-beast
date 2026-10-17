@@ -67,7 +67,7 @@ test('agency handoff, customer publishing, second-customer isolation and recover
 
     await expect(owner.getByRole('heading', { name: 'Your event setup guide' })).toBeVisible();
     await expect(owner.getByRole('progressbar', { name: 'Event setup progress' })).toHaveAttribute('value', '0');
-    await owner.getByRole('button', { name: 'Review & publish' }).click();
+    await owner.getByRole('button', { name: 'Review & publish', exact: true }).click();
     await expect(owner.getByRole('button', { name: 'Publish event', exact: true })).toBeDisabled();
     await section(owner, 'Event details');
     await owner.getByLabel('First event date').fill('2027-04-02');
